@@ -1,52 +1,30 @@
 import * as React from 'react';
-import { compose, withState } from 'recompose';
 import { ModuleProps } from './moduleBase';
 
-interface OscillatorTypeState {
+interface SimpleOscillatorState {
     type: OscillatorType;
-    setType: (type: OscillatorType) => void;
-}
-
-interface FrequencyState {
     frequency: number;
-    setFrequency: (frequency: number) => void;
 }
 
-type SimpleOscillatorProps = ModuleProps & OscillatorTypeState & FrequencyState;
-
-class SimpleOscillator extends React.Component<SimpleOscillatorProps> {    
+class SimpleOscillator extends React.Component<ModuleProps, SimpleOscillatorState> {    
     private _oscillator: OscillatorNode;    
 
-    constructor(props: SimpleOscillatorProps) {
+    constructor(props: ModuleProps) {
         super(props);
         this._oscillator = props.audioContext.createOscillator();
+        this.state = {
+            type: this._oscillator.type,
+            frequency: this._oscillator.frequency.value
+        }
     }
 
-    componentWillMount() {
-        const { type, frequency, audioContext } = this.props;
-        this._oscillator.type = type;
-        this._oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    componentWillMount() {        
         this._oscillator.start();
-    }
-
-    componentDidUpdate(prevProps: SimpleOscillatorProps) {
-        const { type, frequency, audioContext } = this.props;
-        if (type !== prevProps.type) {
-            this._oscillator.type = type;
-        }
-
-        if (frequency !== prevProps.frequency) {
-            this._oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        }
-    }
+    }    
 
     render() {
         return <div>Oscillator</div>;
     }
 }
 
-export default compose<SimpleOscillatorProps, {}>(
-    withState<OscillatorTypeState, OscillatorType, 'type', 'setType'>('type', 'setType', 'sine'),
-    withState<FrequencyState, number, 'frequency', 'setFrequency'>('frequency', 'setFrequency', 440)
-)(SimpleOscillator);
-// export default Oscillator;
+export default SimpleOscillator;

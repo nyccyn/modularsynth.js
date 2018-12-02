@@ -5,13 +5,11 @@
   "dependencies": {
     "@types/ramda": "^0.25.42",
     "@types/react-redux": "^6.0.10",
-    "@types/recompose": "^0.30.0",
     "ramda": "^0.26.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-redux": "^5.1.1",
     "react-scripts-ts": "3.1.0",
-    "recompose": "^0.30.0",
     "redux": "^4.0.1"
   },
   "scripts": {
