@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { compose, withState } from 'recompose';
+import { compose, withState, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
 import { getAllInputs, getAllOutputs } from "./selectors";
@@ -81,6 +81,7 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 export default compose(
+    setStatic('isBrowserSupported', typeof OscillatorNode !== 'undefined'),
     withState('type', 'setType', 'sine'),
     withState('frequency', 'setFrequency', 440),
     withState('vOctConnected', 'setVOctConnected', false),

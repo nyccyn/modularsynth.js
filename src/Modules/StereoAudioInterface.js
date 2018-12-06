@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs } from '../actions';
 import { getAllOutputs } from './selectors';
 import Port from './Port';
 
-class AudioInterface extends Component {
+class StereoAudioInterface extends Component {
     constructor(props){
         super(props);
         if (!props.audioContext) throw new Error('audioContext property must be provided');
@@ -48,4 +49,7 @@ const mapStateToProps = (state, ownProps) => ({
     possibleOutputs: getAllOutputs(state)
 });
 
-export default connect(mapStateToProps, { connectModules, registerInputs })(AudioInterface);
+export default compose(
+    setStatic('isBrowserSupported', typeof StereoPannerNode !== 'undefined'),
+    connect(mapStateToProps, { connectModules, registerInputs })
+)(StereoAudioInterface);

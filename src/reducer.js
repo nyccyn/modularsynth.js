@@ -18,6 +18,10 @@ const removeLastConnection = R.curry(({ moduleId, portId }, connections) => R.wh
 const reducer = handleActions({
     [ActionTypes.ADD_MODULE]: (state, { moduleType }) => {
         const newModule = createModule(moduleType);
+        if (!newModule) {
+            window.alert(`Your browser doesn't support this module: ${moduleType}`);
+            return state;
+        }
         return R.evolve({
             modules: R.assoc(newModule.id, newModule),
             connections: R.assoc(newModule.id, {})
