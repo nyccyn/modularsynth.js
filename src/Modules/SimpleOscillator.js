@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { compose, withState, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
-import { getAllInputs, getAllOutputs } from "./selectors";
 import Port from './Port';
 
 class SimpleOscillator extends Component {
@@ -13,6 +12,7 @@ class SimpleOscillator extends Component {
         this._oscillator = props.audioContext.createOscillator();
         this.handleTypeChange = this.handleTypeChange.bind(this);
         this.handleFrequencyChange = this.handleFrequencyChange.bind(this);
+        this.handleVOctChange = this.handleVOctChange.bind(this);
     }
 
     componentWillMount() {
@@ -21,10 +21,12 @@ class SimpleOscillator extends Component {
         registerInputs(id, {
             'V/Oct': {
                 connect: port => {
-                    setVOctConnected(true);
+                    setVOctConnected(true);                    
                     port.onChange = this.handleVOctChange;
+                    this.handleVOctChange({ value: port.value });
                 },
-                disconnect: () => {
+                disconnect: port => {
+                    port.onChange = null;
                     setVOctConnected(false, () => this.handleFrequencyChange(this.props.frequency));
                 }
             }
@@ -46,16 +48,16 @@ class SimpleOscillator extends Component {
         const newFrequency = Number(value);
         setFrequency(newFrequency);
         if (!vOctConnected) {
-            this.handleVOctChange(newFrequency);
+            this.handleVOctChange({ value: newFrequency });
         }
     }
 
-    handleVOctChange(frequency) {
-        this._oscillator.frequency.setValueAtTime(frequency, this.props.audioContext.currentTime);
+    handleVOctChange({ value }) {
+        this._oscillator.frequency.setValueAtTime(value, this.props.audioContext.currentTime);
     }
     
     render() {
-        const { id, type, frequency, connections, possibleInputs } = this.props;
+        const { id, type, frequency, connections } = this.props;
         return <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span>
                 { id }
@@ -67,17 +69,18 @@ class SimpleOscillator extends Component {
                 <option value='sawtooth'>Sawtooth</option>
                 <option value='triangle'>Triangle</option>
             </select>
+            Freq:
             <input type='range' min={15} max={8000} step={1} value={frequency} onChange={({ target: { value }}) => this.handleFrequencyChange(value)}/>
+            V/Oct
+            <Port portId='V/Oct' connections={connections} moduleId={id} portType='input'/>
             Out:
-            <Port portId='Out' connections={connections} possiblePorts={possibleInputs} moduleId={id} portType='output'/>
+            <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
         </div>;
     }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-    connections: state.connections[ownProps.id],
-    possibleInputs: getAllInputs(state),
-    possibleOutputs: getAllOutputs(state)
+    connections: state.connections[ownProps.id]
 });
 
 export default compose(

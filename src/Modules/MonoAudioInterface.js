@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs } from '../actions';
-import { getAllOutputs } from './selectors';
 import Port from './Port';
 
 class StereoAudioInterface extends Component {
@@ -22,20 +21,19 @@ class StereoAudioInterface extends Component {
     }
 
     render(){
-        const { id, connections, possibleOutputs } = this.props;
+        const { id, connections } = this.props;
         return <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span>
                 { id }
             </span>
             Line:
-            <Port portId='Line' connections={connections} possiblePorts={possibleOutputs} moduleId={id} portType='input'/>
+            <Port portId='Line' connections={connections} moduleId={id} portType='input'/>
         </div>;
     }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-    connections: state.connections[ownProps.id],
-    possibleOutputs: getAllOutputs(state)
+    connections: state.connections[ownProps.id]
 });
 
 export default compose(
