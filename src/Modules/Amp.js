@@ -41,7 +41,7 @@ class Amp extends Component {
         if (forceChange) {
             this._gain.gain.cancelScheduledValues(this.props.audioContext.currentTime);
         }
-        this._gain.gain.linearRampToValueAtTime(value, this.props.audioContext.currentTime + time);
+        this._gain.gain.exponentialRampToValueAtTime(value, this.props.audioContext.currentTime + time);
     }
 
     render() {
