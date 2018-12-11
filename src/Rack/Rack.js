@@ -3,6 +3,9 @@ import { connect } from "react-redux";
 import * as R from 'ramda';
 import ModulePicker from './ModulePicker';
 
+import * as actions from '../actions';
+import { MODULE_TYPE } from '../Modules/moduleFactory';
+
 class Rack extends Component {
     constructor(props){
         super(props);
@@ -10,10 +13,43 @@ class Rack extends Component {
         this._audioContext = new AudioContext();
     }
 
+    handleCreate() {
+        this.props.addModule(MODULE_TYPE.KEYBOARD);
+        this.props.addModule(MODULE_TYPE.OSCILLATOR);
+        this.props.addModule(MODULE_TYPE.ADSR);
+        this.props.addModule(MODULE_TYPE.AMP);
+        this.props.addModule(MODULE_TYPE.MONO_AUDIO_INTERFACE);
+    }
+
+    handleConnect() {
+        this.props.connectModules({
+            input: { moduleId: 'OSCILLATOR1', portId: 'V/Oct' },
+            output: { moduleId: 'KEYBOARD1', portId: 'CV' }
+        });
+        this.props.connectModules({
+            input: { moduleId: 'ADSR1', portId: 'Gate' },
+            output: { moduleId: 'KEYBOARD1', portId: 'Gate' }
+        });
+        this.props.connectModules({
+            input: { moduleId: 'AMP1', portId: 'In' },
+            output: { moduleId: 'OSCILLATOR1', portId: 'Out' }
+        });
+        this.props.connectModules({
+            input: { moduleId: 'AMP1', portId: 'CV' },
+            output: { moduleId: 'ADSR1', portId: 'Out' }
+        });
+        this.props.connectModules({
+            input: { moduleId: 'MONO_AUDIO_INTERFACE1', portId: 'In' },
+            output: { moduleId: 'AMP1', portId: 'Out' }
+        });
+    }
+
     render() {
         const { modules } = this.props;
         return <div>
             <ModulePicker/>
+            <button onClick={() => this.handleCreate()}>Create sample</button>
+            <button onClick={() => this.handleConnect()}>Connect sample</button>
             <div style={{ display: "flex" }}>
                 { modules.map(({ Module, id }) => <Module id={id} key={id} audioContext={this._audioContext}/>) }
             </div>
@@ -24,4 +60,4 @@ class Rack extends Component {
 const mapStateToProps = state => ({
     modules: R.values(state.modules)
 });
-export default connect(mapStateToProps, {})(Rack);
+export default connect(mapStateToProps, {...actions})(Rack);

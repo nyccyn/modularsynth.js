@@ -36,7 +36,7 @@ class ADSR extends Component {
         const { attack, decay, sustain, release } = this.props;
         if (value === 1) {            
             this._portOut.onChange({ value: 1, time: attack });
-            this._portOut.onChange({ value: sustain, time: decay });
+            this._portOut.onChange({ value: sustain, time: attack + decay });
         } else if (value === 0) {            
             this._portOut.onChange({ value: 0, time: release, forceChange: true });
         }

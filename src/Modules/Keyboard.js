@@ -1,31 +1,23 @@
 import React, { Component } from 'react';
+import * as R from 'ramda';
 import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerOutputs } from '../actions';
 import Port from './Port';
 
-const KEYCODE_FREQ = {
-    90: 261.63,
-    83: 277.18,
-    88: 293.66,
-    68: 311.13,
-    67: 329.63,
-    86: 349.23,
-    71: 369.99,
-    66: 392.00,
-    72: 415.30,
-    78: 440.00,
-    74: 466.16,
-    77: 493.88,
-    188: 523.25
-};
+const KEY_CODES_NOTES = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188];
+const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C'];
+
+// The ground oscillation frequency is 440, so we want to send 0 volts when keyboard is in A4
+const calculateNoteVolt = (noteIndex, octave) => octave - 5 + (noteIndex + 3) / 12;
+
 
 class Keyboard extends Component {
     constructor(props) {
         super(props);
         this._cvOutPort = {
             onChange: null,
-            value: props.frequency
+            value: props.cv
         };
         this._gateOutPort = {
             onChange: null
@@ -46,10 +38,11 @@ class Keyboard extends Component {
         });
     }
 
-    handleKeyboardDown(event) {        
-        if (!this._keyboardDown && KEYCODE_FREQ[event.keyCode]) {
+    handleKeyboardDown(event) {
+        const keyCodeIndex = R.indexOf(event.keyCode, KEY_CODES_NOTES);
+        if (!this._keyboardDown && keyCodeIndex !== -1) {
             this._keyboardDown = true;
-            this.handleKeyDown(KEYCODE_FREQ[event.keyCode] * this.props.octave);
+            this.handleKeyDown(calculateNoteVolt(keyCodeIndex, this.props.octave));
         }
     }
 
@@ -58,8 +51,8 @@ class Keyboard extends Component {
         this.handleKeyUp();
     }
 
-    handleKeyDown(frequency) {
-        this.changeFrequency(frequency);
+    handleKeyDown(cv) {
+        this.changeFrequency(cv);
         if (this._gateOutPort.onChange) { 
             this._gateOutPort.onChange(1);
         }
@@ -72,17 +65,17 @@ class Keyboard extends Component {
     }
 
     handleOctaveChange({ target: { value }}) {
-        const { setOctave, octave, frequency } = this.props;
-        const newOctave = Number(value);        
-        this.changeFrequency(frequency * newOctave / octave);
+        const { setOctave, octave, cv } = this.props;
+        const newOctave = Number(value);
+        this.changeFrequency(cv + newOctave - octave);
         setOctave(newOctave);
     }
 
-    changeFrequency(frequency) {
-        this.props.setFrequency(frequency);
-        this._cvOutPort.value = frequency;
+    changeFrequency(cv) {
+        this.props.setCv(cv);
+        this._cvOutPort.value = cv;
         if (this._cvOutPort.onChange) {
-            this._cvOutPort.onChange({ value: frequency });
+            this._cvOutPort.onChange({ value: cv });
         }
     }
 
@@ -94,27 +87,20 @@ class Keyboard extends Component {
             <Port portId='CV' connections={connections} moduleId={id} portType='output'/>
             Gate:
             <Port portId='Gate' connections={connections} moduleId={id} portType='output'/>
+            Octave:
             <select value={octave} onChange={this.handleOctaveChange}>
-                <option value={0.25}>-2</option>
-                <option value={0.5}>-1</option>
-                <option value={1}>0</option>
-                <option value={2}>+1</option>
-                <option value={3}>+2</option>
+                <option value={2}>-2</option>
+                <option value={3}>-1</option>
+                <option value={4}>0</option>
+                <option value={5}>+1</option>
+                <option value={6}>+2</option>
             </select>
-            <div style={{ display: 'flex' }} onKeyDown={this.handleKeyboardDown} onKeyUp={this.handleKeyboardUp} tabIndex={0}>
-                <button onMouseDown={() => this.handleKeyDown(261.63 * octave)} onMouseUp={this.handleKeyUp}>C</button>
-                <button onMouseDown={() => this.handleKeyDown(277.18 * octave)} onMouseUp={this.handleKeyUp}>C#</button>
-                <button onMouseDown={() => this.handleKeyDown(293.66 * octave)} onMouseUp={this.handleKeyUp}>D</button>
-                <button onMouseDown={() => this.handleKeyDown(311.13 * octave)} onMouseUp={this.handleKeyUp}>D#</button>
-                <button onMouseDown={() => this.handleKeyDown(329.63 * octave)} onMouseUp={this.handleKeyUp}>E</button>
-                <button onMouseDown={() => this.handleKeyDown(349.23 * octave)} onMouseUp={this.handleKeyUp}>F</button>
-                <button onMouseDown={() => this.handleKeyDown(369.99 * octave)} onMouseUp={this.handleKeyUp}>F#</button>
-                <button onMouseDown={() => this.handleKeyDown(392.00 * octave)} onMouseUp={this.handleKeyUp}>G</button>
-                <button onMouseDown={() => this.handleKeyDown(415.30 * octave)} onMouseUp={this.handleKeyUp}>G#</button>
-                <button onMouseDown={() => this.handleKeyDown(440.00 * octave)} onMouseUp={this.handleKeyUp}>A</button>
-                <button onMouseDown={() => this.handleKeyDown(466.16 * octave)} onMouseUp={this.handleKeyUp}>A#</button>
-                <button onMouseDown={() => this.handleKeyDown(493.88 * octave)} onMouseUp={this.handleKeyUp}>B</button>
-                <button onMouseDown={() => this.handleKeyDown(523.25 * octave)} onMouseUp={this.handleKeyUp}>C</button>
+            <div style={{ display: 'flex' }} tabIndex={0} onKeyDown={this.handleKeyboardDown} onKeyUp={this.handleKeyboardUp}>
+                {
+                    NOTES.map((note, i) =>
+                        <button key={`${note}${i}`} onMouseDown={() => this.handleKeyDown(calculateNoteVolt(i, octave))} onMouseUp={this.handleKeyUp}>{note}</button>
+                    )
+                }
             </div>
         </div>;
     }
@@ -126,7 +112,7 @@ const mapStateToProps = (state, ownProps) => ({
 
 export default compose(
     setStatic('isBrowserSupported', true),
-    withState('frequency', 'setFrequency', 440),
-    withState('octave', 'setOctave', 1),
+    withState('cv', 'setCv', 0),
+    withState('octave', 'setOctave', 4),
     connect(mapStateToProps, { connectModules, registerOutputs })
 )(Keyboard);

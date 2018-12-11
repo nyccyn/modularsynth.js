@@ -13,21 +13,21 @@ class SimpleOscillator extends Component {
         this.handleTypeChange = this.handleTypeChange.bind(this);
         this.handleFrequencyChange = this.handleFrequencyChange.bind(this);
         this.handleVOctChange = this.handleVOctChange.bind(this);
+        this.setPitch = this.setPitch.bind(this);
     }
 
     componentWillMount() {
-        const { id, registerInputs, registerOutputs, setVOctConnected } = this.props;
+        const { id, registerInputs, registerOutputs } = this.props;
         this._oscillator.start();
         registerInputs(id, {
             'V/Oct': {
                 connect: port => {
-                    setVOctConnected(true);                    
                     port.onChange = this.handleVOctChange;
                     this.handleVOctChange({ value: port.value });
                 },
                 disconnect: port => {
                     port.onChange = null;
-                    setVOctConnected(false, () => this.handleFrequencyChange(this.props.frequency));
+                    this.handleVOctChange({ value: 0 });
                 }
             }
         });
@@ -44,16 +44,17 @@ class SimpleOscillator extends Component {
     }
 
     handleFrequencyChange(value) {
-        const { setFrequency, vOctConnected } = this.props;
-        const newFrequency = Number(value);
-        setFrequency(newFrequency);
-        if (!vOctConnected) {
-            this.handleVOctChange({ value: newFrequency });
-        }
+        this.props.setFrequency(Number(value), this.setPitch);
     }
 
     handleVOctChange({ value }) {
-        this._oscillator.frequency.setValueAtTime(value, this.props.audioContext.currentTime);
+        this.props.setVOct(value, this.setPitch);
+    }
+
+    setPitch(){
+        const { vOct, frequency, audioContext } = this.props;
+        const oscFreq = 440 * Math.pow(2, vOct + frequency);
+        this._oscillator.frequency.setValueAtTime(oscFreq, audioContext.currentTime);
     }
     
     render() {
@@ -70,7 +71,7 @@ class SimpleOscillator extends Component {
                 <option value='triangle'>Triangle</option>
             </select>
             Freq:
-            <input type='range' min={15} max={8000} step={1} value={frequency} onChange={({ target: { value }}) => this.handleFrequencyChange(value)}/>
+            <input type='range' min={-2} max={2} step={0.001} value={frequency} onChange={({ target: { value }}) => this.handleFrequencyChange(value)}/>
             V/Oct
             <Port portId='V/Oct' connections={connections} moduleId={id} portType='input'/>
             Out:
@@ -86,7 +87,7 @@ const mapStateToProps = (state, ownProps) => ({
 export default compose(
     setStatic('isBrowserSupported', typeof OscillatorNode !== 'undefined'),
     withState('type', 'setType', 'sine'),
-    withState('frequency', 'setFrequency', 440),
-    withState('vOctConnected', 'setVOctConnected', false),
+    withState('frequency', 'setFrequency', 0),
+    withState('vOct', 'setVOct', 0),
     connect(mapStateToProps, { connectModules, registerInputs, registerOutputs })
 )(SimpleOscillator);

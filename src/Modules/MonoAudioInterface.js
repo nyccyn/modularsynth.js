@@ -13,7 +13,7 @@ class StereoAudioInterface extends Component {
     componentWillMount() {
         const { id, registerInputs } = this.props;
         registerInputs(id, {
-            Line: {
+            In: {
                 connect: port => port.audioNode.connect(this.props.audioContext.destination),
                 disconnect: port => port.audioNode.disconnect(this.props.audioContext.destination)
             }
@@ -26,8 +26,8 @@ class StereoAudioInterface extends Component {
             <span>
                 { id }
             </span>
-            Line:
-            <Port portId='Line' connections={connections} moduleId={id} portType='input'/>
+            In:
+            <Port portId='In' connections={connections} moduleId={id} portType='input'/>
         </div>;
     }
 }
