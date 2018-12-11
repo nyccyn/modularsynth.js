@@ -37,12 +37,8 @@ class Amp extends Component {
         });
     }
 
-    handleGainChange({ value, time, forceChange }) {
-        const { audioContext } = this.props;
-        if (forceChange) {
-            this._gain.gain.cancelScheduledValues(audioContext.currentTime);
-        }
-        this._gain.gain.linearRampToValueAtTime(value, audioContext.currentTime + time);
+    handleGainChange(callback) {
+        callback(this._gain.gain);
     }
 
     render() {

@@ -6,7 +6,9 @@ import Port from './Port';
 
 class ADSR extends Component {
     constructor(props) {
-        super(props);    
+        super(props);
+        if (!props.audioContext) throw new Error("audioContext property must be provided");
+
         this.handleGateInChange = this.handleGateInChange.bind(this);    
         this._portOut = {
             onChange: null
@@ -33,12 +35,22 @@ class ADSR extends Component {
 
     handleGateInChange(value) {
         if (!this._portOut.onChange) return;
-        const { attack, decay, sustain, release } = this.props;
-        if (value === 1) {            
-            this._portOut.onChange({ value: 1, time: attack });
-            this._portOut.onChange({ value: sustain, time: attack + decay });
-        } else if (value === 0) {            
-            this._portOut.onChange({ value: 0, time: release, forceChange: true });
+        const { attack, decay, sustain, release, audioContext } = this.props;
+        const now = audioContext.currentTime;
+
+        if (value === 1) {
+            this._portOut.onChange(param => {
+                param.cancelScheduledValues(0);
+                param.linearRampToValueAtTime(0, now + 0.01);
+                param.linearRampToValueAtTime(1, now + attack);
+                param.linearRampToValueAtTime(sustain, now + attack + decay);
+            })
+        } else if (value === 0) {
+            this._portOut.onChange(param => {
+                param.cancelScheduledValues(0);
+                param.setValueAtTime(param.value, now);
+                param.linearRampToValueAtTime(0, now + release);
+            })
         }
     }
 
