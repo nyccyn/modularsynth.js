@@ -15,13 +15,16 @@ const calculateNoteVolt = (noteIndex, octave) => octave - 5 + (noteIndex + 3) / 
 class Keyboard extends Component {
     constructor(props) {
         super(props);
+        if (!props.audioContext) throw new Error("audioContext property must be provided");
+
+        this._gate = props.audioContext.createConstantSource();
+        this._gate.offset.value = 0;
+        this._gate.start();
         this._cvOutPort = {
             onChange: null,
             value: props.cv
         };
-        this._gateOutPort = {
-            onChange: null
-        };
+
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.handleOctaveChange = this.handleOctaveChange.bind(this);
@@ -34,7 +37,7 @@ class Keyboard extends Component {
         const { id, registerOutputs } = this.props;        
         registerOutputs(id, {
             CV: this._cvOutPort,
-            Gate: this._gateOutPort
+            Gate: this._gate
         });
     }
 
@@ -53,15 +56,11 @@ class Keyboard extends Component {
 
     handleKeyDown(cv) {
         this.changeFrequency(cv);
-        if (this._gateOutPort.onChange) { 
-            this._gateOutPort.onChange(1);
-        }
+        this._gate.offset.value = 1;
     }
 
     handleKeyUp() {
-        if (this._gateOutPort.onChange) { 
-            this._gateOutPort.onChange(0);
-        }
+        this._gate.offset.value = 0;
     }
 
     handleOctaveChange({ target: { value }}) {

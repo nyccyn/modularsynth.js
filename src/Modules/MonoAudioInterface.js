@@ -14,8 +14,8 @@ class StereoAudioInterface extends Component {
         const { id, registerInputs } = this.props;
         registerInputs(id, {
             In: {
-                connect: port => port.audioNode.connect(this.props.audioContext.destination),
-                disconnect: port => port.audioNode.disconnect(this.props.audioContext.destination)
+                connect: audioNode => audioNode.connect(this.props.audioContext.destination),
+                disconnect: audioNode => audioNode.disconnect(this.props.audioContext.destination)
             }
         })
     }

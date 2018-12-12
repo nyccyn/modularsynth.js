@@ -19,14 +19,12 @@ class Amp extends Component {
                 disconnect: port => port.audioNode.disconnect(this._gain)
             },
             CV: {
-                connect: port => port.audioNode.connect(this._gain.gain),
-                disconnect: port => port.audioNode.disconnect(this._gain.gain)
+                connect: audioNode => audioNode.connect(this._gain.gain),
+                disconnect: audioNode => audioNode.disconnect(this._gain.gain)
             }
         });
         registerOutputs(id, {
-           Out: {
-               audioNode: this._gain
-           }
+           Out: this._gain
         });
     }
 

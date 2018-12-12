@@ -19,19 +19,30 @@ class ADSR extends Component {
         const { id, registerInputs, registerOutputs } = this.props;        
         registerInputs(id, {
             Gate: {
-                connect: port => {                
-                    port.onChange = this.handleGateInChange;
-                    this.handleGateInChange(port.value);
+                connect: audioNode => {
+                    this._gateInterval = null;
+                    for (let p in audioNode) {
+                        if (audioNode[p] instanceof AudioParam) {
+                            this._lastValue = audioNode[p].value;
+                            this._gateInterval = setInterval(() => {
+                                if (this._lastValue !== audioNode[p].value) {
+                                    this._lastValue = audioNode[p].value;
+                                    this.handleGateInChange(this._lastValue);
+                                }
+                            }, 0);
+                            break;
+                        }
+                    }
                 },
-                disconnect: port => {
-                    port.onChange = null;                
+                disconnect: () => {
+                    if (this._gateInterval) {
+                        clearInterval((this._gateInterval));
+                    }
                 }
             }
         });
         registerOutputs(id, {
-           Out: {
-               audioNode: this._adsr
-           }
+           Out: this._adsr
         });
     }
 
