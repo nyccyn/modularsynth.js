@@ -9,10 +9,10 @@ class ADSR extends Component {
         super(props);
         if (!props.audioContext) throw new Error("audioContext property must be provided");
 
-        this.handleGateInChange = this.handleGateInChange.bind(this);    
-        this._portOut = {
-            onChange: null
-        }
+        this._adsr = props.audioContext.createConstantSource();        
+        this._adsr.offset.value = -1;
+        this._adsr.start();
+        this.handleGateInChange = this.handleGateInChange.bind(this);        
     }
 
     componentWillMount() {
@@ -29,28 +29,26 @@ class ADSR extends Component {
             }
         });
         registerOutputs(id, {
-           Out: this._portOut
+           Out: {
+               audioNode: this._adsr
+           }
         });
     }
 
-    handleGateInChange(value) {
-        if (!this._portOut.onChange) return;
+    handleGateInChange(value) {    
         const { attack, decay, sustain, release, audioContext } = this.props;
         const now = audioContext.currentTime;
+        const offset = this._adsr.offset;
 
         if (value === 1) {
-            this._portOut.onChange(param => {
-                param.cancelScheduledValues(0);
-                param.linearRampToValueAtTime(0, now + 0.01);
-                param.linearRampToValueAtTime(1, now + attack);
-                param.linearRampToValueAtTime(sustain, now + attack + decay);
-            })
+            offset.cancelScheduledValues(0);
+            offset.linearRampToValueAtTime(-1, now + 0.01);
+            offset.linearRampToValueAtTime(0, now + attack);
+            offset.linearRampToValueAtTime(sustain - 1, now + attack + decay);
         } else if (value === 0) {
-            this._portOut.onChange(param => {
-                param.cancelScheduledValues(0);
-                param.setValueAtTime(param.value, now);
-                param.linearRampToValueAtTime(0, now + release);
-            })
+            offset.cancelScheduledValues(0);
+            offset.setValueAtTime(offset.value, now);
+            offset.linearRampToValueAtTime(-1, now + release);
         }
     }
 
@@ -80,7 +78,7 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 export default compose(
-    setStatic('isBrowserSupported', true),
+    setStatic('isBrowserSupported', typeof ConstantSourceNode !== 'undefined'),
     withState('attack', 'setAttack', 0.01),
     withState('decay', 'setDecay', 0.6),
     withState('sustain', 'setSustain', 0.5),

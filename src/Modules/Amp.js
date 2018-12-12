@@ -8,8 +8,7 @@ class Amp extends Component {
     constructor(props) {
         super(props);
         if (!props.audioContext) throw new Error("audioContext property must be provided");
-        this._gain = props.audioContext.createGain();
-        this.handleGainChange = this.handleGainChange.bind(this)
+        this._gain = props.audioContext.createGain();            
     }
 
     componentWillMount() {
@@ -20,14 +19,8 @@ class Amp extends Component {
                 disconnect: port => port.audioNode.disconnect(this._gain)
             },
             CV: {
-                connect: port => {
-                    port.onChange = this.handleGainChange
-                    this._gain.gain.setValueAtTime(0, audioContext.currentTime);
-                },
-                disconnect: port => {
-                    port.onChange = null;
-                    this._gain.gain.setValueAtTime(1, audioContext.currentTime);
-                }
+                connect: port => port.audioNode.connect(this._gain.gain),
+                disconnect: port => port.audioNode.disconnect(this._gain.gain)
             }
         });
         registerOutputs(id, {
@@ -35,10 +28,6 @@ class Amp extends Component {
                audioNode: this._gain
            }
         });
-    }
-
-    handleGainChange(callback) {
-        callback(this._gain.gain);
     }
 
     render() {
