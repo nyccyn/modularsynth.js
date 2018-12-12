@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { compose, withState, setStatic } from 'recompose';
 import { connect } from 'react-redux';
-import { connectModules, registerInputs, registerOutputs } from '../actions';
+import { connectModules, registerInputs, registerOutputs } from '../../actions';
 import Port from './Port';
+import { listenToFirstAudioParam } from '../portHelpers';
 
 class SimpleOscillator extends Component {
     constructor(props) {
@@ -21,20 +22,18 @@ class SimpleOscillator extends Component {
         this._oscillator.start();
         registerInputs(id, {
             'V/Oct': {
-                connect: port => {
-                    port.onChange = this.handleVOctChange;
-                    this.handleVOctChange({ value: port.value });
-                },
-                disconnect: port => {
-                    port.onChange = null;
-                    this.handleVOctChange({ value: 0 });
+                connect: audioNode => this._cvInterval = listenToFirstAudioParam(audioNode, this.handleVOctChange),
+                disconnect: () => {
+                    if (this._cvInterval) {
+                        clearInterval(this._cvInterval);
+                        this._cvInterval = null;
+                    }
+                    this.handleVOctChange(0);
                 }
             }
         });
         registerOutputs(id, {
-           Out: {
-               audioNode: this._oscillator
-           }
+           Out: this._oscillator
         });
     }
 
@@ -47,7 +46,7 @@ class SimpleOscillator extends Component {
         this.props.setFrequency(Number(value), this.setPitch);
     }
 
-    handleVOctChange({ value }) {
+    handleVOctChange(value) {
         this.props.setVOct(value, this.setPitch);
     }
 

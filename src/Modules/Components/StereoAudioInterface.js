@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
-import { connectModules, registerInputs } from '../actions';
+import { connectModules, registerInputs } from '../../actions';
 import Port from './Port';
 
 class StereoAudioInterface extends Component {

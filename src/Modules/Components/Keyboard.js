@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as R from 'ramda';
 import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
-import { connectModules, registerOutputs } from '../actions';
+import { connectModules, registerOutputs } from '../../actions';
 import Port from './Port';
 
 const KEY_CODES_NOTES = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188];
@@ -20,10 +20,9 @@ class Keyboard extends Component {
         this._gate = props.audioContext.createConstantSource();
         this._gate.offset.value = 0;
         this._gate.start();
-        this._cvOutPort = {
-            onChange: null,
-            value: props.cv
-        };
+        this._cv = props.audioContext.createConstantSource();
+        this._cv.offset.value = 0;
+        this._cv.start();
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -36,9 +35,12 @@ class Keyboard extends Component {
     componentWillMount() {
         const { id, registerOutputs } = this.props;        
         registerOutputs(id, {
-            CV: this._cvOutPort,
+            CV: this._cv,
             Gate: this._gate
         });
+
+        document.addEventListener('keydown', this.handleKeyboardDown);
+        document.addEventListener('keyup', this.handleKeyboardUp);
     }
 
     handleKeyboardDown(event) {
@@ -64,18 +66,15 @@ class Keyboard extends Component {
     }
 
     handleOctaveChange({ target: { value }}) {
-        const { setOctave, octave, cv } = this.props;
+        const { setOctave, octave } = this.props;
         const newOctave = Number(value);
+        const cv = this._cv.offset.value;
         this.changeFrequency(cv + newOctave - octave);
         setOctave(newOctave);
     }
 
     changeFrequency(cv) {
-        this.props.setCv(cv);
-        this._cvOutPort.value = cv;
-        if (this._cvOutPort.onChange) {
-            this._cvOutPort.onChange({ value: cv });
-        }
+        this._cv.offset.value = cv;
     }
 
     render() {
@@ -94,7 +93,7 @@ class Keyboard extends Component {
                 <option value={5}>+1</option>
                 <option value={6}>+2</option>
             </select>
-            <div style={{ display: 'flex' }} tabIndex={0} onKeyDown={this.handleKeyboardDown} onKeyUp={this.handleKeyboardUp}>
+            <div style={{ display: 'flex' }} tabIndex={0}>
                 {
                     NOTES.map((note, i) =>
                         <button key={`${note}${i}`} onMouseDown={() => this.handleKeyDown(calculateNoteVolt(i, octave))} onMouseUp={this.handleKeyUp}>{note}</button>
@@ -111,7 +110,6 @@ const mapStateToProps = (state, ownProps) => ({
 
 export default compose(
     setStatic('isBrowserSupported', true),
-    withState('cv', 'setCv', 0),
     withState('octave', 'setOctave', 4),
     connect(mapStateToProps, { connectModules, registerOutputs })
 )(Keyboard);

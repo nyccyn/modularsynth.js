@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
-import { connectModules, registerInputs, registerOutputs } from '../actions';
+import { connectModules, registerInputs, registerOutputs } from '../../actions';
 import Port from './Port';
 
 class Amp extends Component {
@@ -15,8 +15,8 @@ class Amp extends Component {
         const { id, registerInputs, registerOutputs, audioContext } = this.props;        
         registerInputs(id, {
             In: {
-                connect: port => port.audioNode.connect(this._gain),
-                disconnect: port => port.audioNode.disconnect(this._gain)
+                connect: audioNode => audioNode.connect(this._gain),
+                disconnect: audioNode => audioNode.disconnect(this._gain)
             },
             CV: {
                 connect: audioNode => audioNode.connect(this._gain.gain),

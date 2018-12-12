@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { connectModules, disconnectModule } from '../actions';
-import { getAllOutputs, getAllInputs } from './selectors';
+import { connectModules, disconnectModule } from '../../actions';
+import { getAllOutputs, getAllInputs } from '../selectors';
 
 const Port = ({ portId, connections, connectModules, disconnectModule, moduleId, portType, possibleInputs, possibleOutputs }) => {
     const handleChange = ({ target: { value }}) => {

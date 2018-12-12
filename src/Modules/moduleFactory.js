@@ -1,10 +1,10 @@
 import * as R from 'ramda';
-import SimpleOscillator from './SimpleOscillator';
-import StereoAudioInterface from './StereoAudioInterface';
-import MonoAudioInterface from './MonoAudioInterface';
-import Keyboard from './Keyboard';
-import ADSR from './ADSR';
-import Amp from './Amp';
+import SimpleOscillator from './Components/SimpleOscillator';
+import StereoAudioInterface from './Components/StereoAudioInterface';
+import MonoAudioInterface from './Components/MonoAudioInterface';
+import Keyboard from './Components/Keyboard';
+import ADSR from './Components/ADSR';
+import Amp from './Components/Amp';
 
 export const MODULE_TYPE = {
     OSCILLATOR: 'OSCILLATOR',

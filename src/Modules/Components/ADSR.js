@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
-import { connectModules, registerInputs, registerOutputs } from '../actions';
+import { connectModules, registerInputs, registerOutputs } from '../../actions';
 import Port from './Port';
+import { listenToFirstAudioParam } from '../portHelpers';
 
 class ADSR extends Component {
     constructor(props) {
@@ -19,24 +20,11 @@ class ADSR extends Component {
         const { id, registerInputs, registerOutputs } = this.props;        
         registerInputs(id, {
             Gate: {
-                connect: audioNode => {
-                    this._gateInterval = null;
-                    for (let p in audioNode) {
-                        if (audioNode[p] instanceof AudioParam) {
-                            this._lastValue = audioNode[p].value;
-                            this._gateInterval = setInterval(() => {
-                                if (this._lastValue !== audioNode[p].value) {
-                                    this._lastValue = audioNode[p].value;
-                                    this.handleGateInChange(this._lastValue);
-                                }
-                            }, 0);
-                            break;
-                        }
-                    }
-                },
+                connect: audioNode => this._gateInterval = listenToFirstAudioParam(audioNode, this.handleGateInChange),
                 disconnect: () => {
                     if (this._gateInterval) {
                         clearInterval((this._gateInterval));
+                        this._gateInterval = null;
                     }
                 }
             }
