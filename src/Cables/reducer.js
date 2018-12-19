@@ -7,15 +7,15 @@ const initialState = {
 };
 
 export default handleActions({
-    [ActionTypes.ADD_CABLE]: (state, { port, fromPoint }) => R.evolve({
-        cables: R.assoc(port, { fromPoint, toPoint: fromPoint })
+    [ActionTypes.ADD_CABLE]: (state, { portId, fromPoint, color }) => R.evolve({
+        cables: R.assoc(portId, { portId, fromPoint, toPoint: fromPoint, color })
     })(state),
-    [ActionTypes.MODIFY_CABLE]: (state, { port, fromPoint, toPoint }) => R.evolve({
+    [ActionTypes.MODIFY_CABLE]: (state, { portId, toPoint }) => R.evolve({
         cables: R.evolve({
-            [port]: R.always({ fromPoint, toPoint })
+            [portId]: R.assoc('toPoint', toPoint)
         })
     })(state),
-    [ActionTypes.REMOVE_CABLE]: (stable, port) => R.evolve({
-        cables: R.dissoc(port)
+    [ActionTypes.REMOVE_CABLE]: (state, { portId }) => R.evolve({
+        cables: R.dissoc(portId)
     })(state)
 }, initialState);

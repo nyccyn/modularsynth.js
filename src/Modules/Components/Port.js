@@ -1,32 +1,30 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { connectModules, disconnectModule, setStartingPort, unsetStartingPort } from '../actions';
-import { getAllOutputs, getAllInputs } from '../selectors';
+import { addCable, removeCable, modifyCable } from '../../Cables/actions';
 import cx from 'classnames';
+import randomColor from 'randomcolor';
 import './Port.css';
 
-const Port = ({ portId, connections, connectModules, disconnectModule, moduleId, portType, possibleInputs, possibleOutputs, startingPort, setStartingPort, unsetStartingPort }) => {
-    const handleChange = ({ target: { value }}) => {
-        if (value === '') {
+const Port = ({ portId, connections, connectModules, disconnectModule, moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable }) => {
+    let _elem;
+    const handleMouseDown = () => {
+        const port = { portId, portType, moduleId };
+        if (connections[portId]) {
             disconnectModule({
                 moduleId,
                 portId
             });
+            removeCable(`${connections[portId].moduleId}-${connections[portId].portId}`);
         }
-        else {
-            const port = JSON.parse(value);
-            connectModules({
-                [portType === 'input' ? 'output' : 'input']: port,
-                [portType]: {
-                    moduleId: moduleId,
-                    portId
-                }
-            });
-        }
-    };
 
-    const handleMouseDown = () => {
-        setStartingPort({ portId, portType, moduleId });
+        setStartingPort(port);
+        const { x, y, width, height } = _elem.getBoundingClientRect();
+        addCable({
+            portId: `${moduleId}-${portId}`,
+            fromPoint: { x: x + width / 2 , y: y + height / 2 },
+            color: randomColor({ luminosity: 'dark' })
+        });
     };
 
     const handleMouseUp = e => {
@@ -35,6 +33,21 @@ const Port = ({ portId, connections, connectModules, disconnectModule, moduleId,
         if (!startingPort ||
             (startingPort.portType === portType) ||
             (startingPort.moduleId === moduleId && startingPort.id === portId)) return;
+
+        const { x, y, width, height } = _elem.getBoundingClientRect();
+
+        console.log('connections', connections[portId]);
+        console.log('startingPort', startingPort);
+        if (connections[portId] &&
+            (connections[portId].moduleId !== startingPort.moduleId || connections[portId].portId !== startingPort.portId)) {
+            removeCable(`${connections[portId].moduleId}-${connections[portId].portId}`);
+            removeCable(`${moduleId}-${portId}`);
+        }
+
+        modifyCable({
+            portId: `${startingPort.moduleId}-${startingPort.portId}`,
+            toPoint: { x: x + width / 2 , y: y + height / 2 }
+        });
         connectModules({
             [startingPort.portType]: startingPort,
             [portType]: {
@@ -42,27 +55,17 @@ const Port = ({ portId, connections, connectModules, disconnectModule, moduleId,
                 portId
             }
         });
-    }
+    };
 
-    const possiblePorts = portType === 'input' ? possibleOutputs : possibleInputs;
     return <div className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
-    onMouseDown={ handleMouseDown }
-    onMouseUp={ handleMouseUp }
-    >
+                ref={elem => _elem = elem}
+                onMouseDown={ handleMouseDown }
+                onMouseUp={ handleMouseUp }>
     </div>;
-    // return <select value={connections[portId] ? JSON.stringify(connections[portId]) : ''} onChange={handleChange}>
-    //     <option value={''}></option>
-    //     {possiblePorts.map(({ moduleId, portId }) => <option key={`${moduleId}-${portId}`} value={JSON.stringify({
-    //         moduleId,
-    //         portId
-    //     })}>{`${moduleId}-${portId}`}</option>)}
-    // </select>;
 };
 
 const mapStateToProps = ({ modules }) => ({
-    possibleInputs: getAllInputs(modules),
-    possibleOutputs: getAllOutputs(modules),
     startingPort: modules.startingPort
 });
 
-export default connect(mapStateToProps, { connectModules, disconnectModule, setStartingPort, unsetStartingPort })(Port);
+export default connect(mapStateToProps, { connectModules, disconnectModule, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable })(Port);

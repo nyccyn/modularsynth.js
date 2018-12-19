@@ -6,7 +6,7 @@
 }
 
 .port:not(.disabled) {
-    background: gray;
+    background: lightgrey;
 }
 
 .port:hover:not(.disabled) {
