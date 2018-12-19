@@ -6,6 +6,7 @@
     "node": "11.x"
   },
   "dependencies": {
+    "classnames": "^2.2.6",
     "ramda": "^0.26.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as R from 'ramda';
 import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
-import { connectModules, registerOutputs } from '../../actions';
+import { connectModules, registerOutputs } from '../actions';
 import Port from './Port';
 
 const KEY_CODES_NOTES = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188];
@@ -104,8 +104,8 @@ class Keyboard extends Component {
     }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-    connections: state.connections[ownProps.id]
+const mapStateToProps = ({ modules }, ownProps) => ({
+    connections: modules.connections[ownProps.id]
 });
 
 export default compose(

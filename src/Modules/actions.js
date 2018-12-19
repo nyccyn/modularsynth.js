@@ -1,4 +1,4 @@
-import * as ActionTypes from './actionTypes';
+import * as ActionTypes from '../actionTypes';
 
 export const addModule = moduleType => ({
     type: ActionTypes.ADD_MODULE,
@@ -26,4 +26,13 @@ export const registerOutputs = (id, outputs) => ({
     type: ActionTypes.REGISTER_OUTPUTS,
     id,
     outputs
+});
+
+export const setStartingPort = port => ({
+    type: ActionTypes.SET_STARTING_PORT,
+    port
+});
+
+export const unsetStartingPort = () => ({
+    type: ActionTypes.UNSET_STARTING_PORT
 });

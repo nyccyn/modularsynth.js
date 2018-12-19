@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
-import { connectModules, registerInputs } from '../../actions';
+import { connectModules, registerInputs } from '../actions';
 import Port from './Port';
 
 class StereoAudioInterface extends Component {
@@ -43,8 +43,8 @@ class StereoAudioInterface extends Component {
     }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-    connections: state.connections[ownProps.id]
+const mapStateToProps = ({ modules }, ownProps) => ({
+    connections: modules.connections[ownProps.id]
 });
 
 export default compose(

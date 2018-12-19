@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
-import { connectModules, registerInputs, registerOutputs } from '../../actions';
+import { connectModules, registerInputs, registerOutputs } from '../actions';
 import Port from './Port';
 
 class Amp extends Component {
@@ -42,8 +42,8 @@ class Amp extends Component {
     }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-    connections: state.connections[ownProps.id]    
+const mapStateToProps = ({ modules }, ownProps) => ({
+    connections: modules.connections[ownProps.id]    
 });
 
 export default compose(

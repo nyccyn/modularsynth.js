@@ -1,0 +1,19 @@
+.port {    
+    margin: auto;
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;    
+}
+
+.port:not(.disabled) {
+    background: gray;
+}
+
+.port:hover:not(.disabled) {
+    cursor: pointer;
+}
+
+.port.disabled {
+    cursor: not-allowed;
+    background: black;
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from "react-redux";
 import { addModule } from '../actions';
-import { MODULE_TYPE } from '../Modules/moduleFactory';
+import { MODULE_TYPE } from '../moduleFactory';
 
 const ModulePicker = ({ addModule }) => <div>
     <button onClick={() => addModule(MODULE_TYPE.KEYBOARD) }>Add Keyboard</button>

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import * as R from 'ramda';
-import ModulePicker from './ModulePicker';
+import ModulePicker from '../Modules/Components/ModulePicker';
 
-import * as actions from '../actions';
+import * as actions from '../Modules/actions';
 import { MODULE_TYPE } from '../Modules/moduleFactory';
 
 class Rack extends Component {
@@ -11,6 +11,7 @@ class Rack extends Component {
         super(props);
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         this._audioContext = new AudioContext();
+        this.handleMouseUp = this.handleMouseUp.bind(this);
     }
 
     handleCreate() {
@@ -44,9 +45,13 @@ class Rack extends Component {
         });
     }
 
+    handleMouseUp(){
+        this.props.unsetStartingPort();
+    }
+
     render() {
         const { modules } = this.props;
-        return <div>
+        return <div onMouseUp={this.handleMouseUp}>
             <ModulePicker/>
             <button onClick={() => this.handleCreate()}>Create sample</button>
             <button onClick={() => this.handleConnect()}>Connect sample</button>
@@ -58,6 +63,6 @@ class Rack extends Component {
 }
 
 const mapStateToProps = state => ({
-    modules: R.values(state.modules)
+    modules: R.values(state.modules.modules)
 });
 export default connect(mapStateToProps, {...actions})(Rack);

@@ -4,7 +4,7 @@ import * as actionType from './actionTypes';
 const middleware = ({ getState }) => next => action => {
     switch  (action.type) {
         case actionType.CONNECT_MODULES: {
-            const { modules, connections } = getState();
+            const { modules, connections } = getState().modules;
             const input = R.path([action.input.moduleId, 'inputs', action.input.portId])(modules);
             const output = R.path([action.output.moduleId, 'outputs', action.output.portId])(modules);
 
@@ -27,7 +27,7 @@ const middleware = ({ getState }) => next => action => {
             break;
         }
         case actionType.DISCONNECT_MODULE: {
-            const { modules, connections } = getState();
+            const { modules, connections } = getState().modules;
             const input = R.path([action.port.moduleId, 'inputs', action.port.portId])(modules);
             if (input) {
                 R.pipe(
