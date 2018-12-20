@@ -28,16 +28,17 @@ const Port = ({ portId, connections, connectModules, disconnectModule, moduleId,
     };
 
     const handleMouseUp = e => {
-        e.stopPropagation();
         unsetStartingPort();
         if (!startingPort ||
             (startingPort.portType === portType) ||
-            (startingPort.moduleId === moduleId && startingPort.id === portId)) return;
+            (startingPort.moduleId === moduleId && startingPort.id === portId))
+        {
+            return;
+        }
 
+        e.stopPropagation();
         const { x, y, width, height } = _elem.getBoundingClientRect();
 
-        console.log('connections', connections[portId]);
-        console.log('startingPort', startingPort);
         if (connections[portId] &&
             (connections[portId].moduleId !== startingPort.moduleId || connections[portId].portId !== startingPort.portId)) {
             removeCable(`${connections[portId].moduleId}-${connections[portId].portId}`);
@@ -57,10 +58,11 @@ const Port = ({ portId, connections, connectModules, disconnectModule, moduleId,
         });
     };
 
-    return <div className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
+    return <div id={`${moduleId}-${portId}`}
+                className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
                 ref={elem => _elem = elem}
-                onMouseDown={ handleMouseDown }
-                onMouseUp={ handleMouseUp }>
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}>
     </div>;
 };
 

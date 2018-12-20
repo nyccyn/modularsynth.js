@@ -17,8 +17,8 @@ const removeLastConnection = R.curry(({ moduleId, portId }, connections) => R.wh
     ))(connections));
 
 export default handleActions({
-    [ActionTypes.ADD_MODULE]: (state, { moduleType }) => {
-        const newModule = createModule(moduleType);
+    [ActionTypes.ADD_MODULE]: (state, { moduleType, id }) => {
+        const newModule = createModule({ type: moduleType, id });
         if (!newModule) {
             window.alert(`Your browser doesn't support this module: ${moduleType}`);
             return state;

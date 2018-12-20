@@ -1,8 +1,9 @@
 import * as ActionTypes from '../actionTypes';
 
-export const addModule = moduleType => ({
+export const addModule = (moduleType, id) => ({
     type: ActionTypes.ADD_MODULE,
-    moduleType
+    moduleType,
+    id
 });
 
 export const connectModules = ({ output, input }) => ({

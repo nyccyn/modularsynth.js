@@ -17,8 +17,8 @@ export const MODULE_TYPE = {
 
 const moduleCounters = R.map(R.always(1))(MODULE_TYPE);
 
-export const createModule = type => {
-    const module = { id: `${type}${moduleCounters[type]}` };
+export const createModule = ({ type, id = undefined }) => {
+    const module = { id: id || `${type}${moduleCounters[type]}` };
     switch (type){
         case MODULE_TYPE.OSCILLATOR:
             module.Module = SimpleOscillator;
