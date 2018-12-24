@@ -3,9 +3,7 @@ import React from 'react';
 const calculateMidpoint = (fromPoint, toPoint) => {
     const lowestPoint = fromPoint.y > toPoint.y ? fromPoint : toPoint;
     const highestPoint = fromPoint.y < toPoint.y ? fromPoint : toPoint;
-    const deltaX = Math.abs(toPoint.x - fromPoint.x);
-    const deltaY = Math.abs(toPoint.x - fromPoint.x);
-    const midpointY = 0.1 * deltaX + Math.abs(fromPoint.y - toPoint.y) / 0.4;
+    const midpointY = 0.1 * Math.abs(toPoint.x - fromPoint.x) + Math.abs(fromPoint.y - toPoint.y) / 0.4;
     let distance = 0.5 + Math.log(1 + Math.abs((toPoint.y - fromPoint.y) / (toPoint.x - fromPoint.x))) / (3 * Math.log(2));
     distance = lowestPoint.x < highestPoint.x ? 1 - distance : distance;
     const direction = fromPoint.x < toPoint.x ? 1 : -1;
