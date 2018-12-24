@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
-import Port from './Port';
+import Port from '../Common/Port';
+import Panel from '../Common/Panel';
 import { listenToFirstAudioParam } from '../portHelpers';
 
 class ADSR extends Component {
@@ -54,8 +55,7 @@ class ADSR extends Component {
     render() {
         const { id, connections, attack, setAttack, decay, setDecay,
             sustain, setSustain, release, setRelease } = this.props;        
-        return <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span>{id}</span>
+        return <Panel header='ADSR'>
             Attack:
             <input type='range' min={0.01} max={15} step={0.01} value={attack} onChange={({ target: { value }}) => setAttack(Number(value))}/>
             Decay:
@@ -64,11 +64,9 @@ class ADSR extends Component {
             <input type='range' min={0} max={1} step={0.01} value={sustain} onChange={({ target: { value }}) => setSustain(Number(value))}/>
             Release:
             <input type='range' min={0.01} max={15} step={0.01} value={release} onChange={({ target: { value }}) => setRelease(Number(value))}/>
-            Gate:
             <Port portId='Gate' connections={connections} moduleId={id} portType='input'/>
-            Out:
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
-        </div>;
+        </Panel>;
     }
 }
 

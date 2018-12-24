@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { compose, withState, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
-import Port from './Port';
+import Port from '../Common/Port';
+import Panel from '../Common/Panel';
 import { listenToFirstAudioParam } from '../portHelpers';
 
 class SimpleOscillator extends Component {
@@ -58,10 +59,7 @@ class SimpleOscillator extends Component {
     
     render() {
         const { id, type, frequency, connections } = this.props;
-        return <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span>
-                { id }
-            </span>
+        return <Panel header='VCO'>
             Shape:
             <select value={type} onChange={this.handleTypeChange}>
                 <option value='sine'>Sine</option>
@@ -71,11 +69,9 @@ class SimpleOscillator extends Component {
             </select>
             Freq:
             <input type='range' min={-2} max={2} step={0.001} value={frequency} onChange={({ target: { value }}) => this.handleFrequencyChange(value)}/>
-            V/Oct
             <Port portId='V/Oct' connections={connections} moduleId={id} portType='input'/>
-            Out:
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
-        </div>;
+        </Panel>;
     }
 }
 

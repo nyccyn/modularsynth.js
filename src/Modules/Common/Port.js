@@ -58,11 +58,15 @@ const Port = ({ portId, connections, connectModules, disconnectModule, moduleId,
         });
     };
 
-    return <div id={`${moduleId}-${portId}`}
-                className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
-                ref={elem => _elem = elem}
+    return <div className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}>
+        {portId}
+        <svg id={`${moduleId}-${portId}`} height="30" width="30" ref={elem => _elem = elem}>
+            <circle cx="15" cy="15" r="14" stroke="black" strokeWidth="1" fill="grey" />
+            <circle cx="15" cy="15" r="10" stroke="black" strokeWidth="1" fill="grey" />
+            <circle cx="15" cy="15" r="7" stroke="none" strokeWidth="0" fill="black"/>
+        </svg>
     </div>;
 };
 

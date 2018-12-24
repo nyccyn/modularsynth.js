@@ -6,6 +6,7 @@ import CablesContainer from '../../Cables/Components/CablesContainer';
 import PresetManager from './PresetManager';
 import { unsetStartingPort } from '../../Modules/actions';
 import { modifyCable, removeCable } from '../../Cables/actions';
+import './Rack.css';
 
 class Rack extends Component {
     constructor(props){
@@ -38,7 +39,7 @@ class Rack extends Component {
             <ModulePicker/>
             <PresetManager/>
             <div>
-                <div style={{ display: 'flex', userSelect: 'none' }}>
+                <div className='rack'>
                     { modules.map(({ Module, id }) => <Module id={id} key={id} audioContext={this._audioContext}/>) }
                 </div>
                 <CablesContainer/>

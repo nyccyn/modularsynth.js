@@ -3,10 +3,18 @@ import * as R from 'ramda';
 import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerOutputs } from '../actions';
-import Port from './Port';
+import Port from '../Common/Port';
+import Panel from '../Common/Panel';
 
 const KEY_CODES_NOTES = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188];
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C'];
+const BLACK_KEYS_GRID_ROW = {
+  'C#': '1/4',
+  'D#': '3/6',
+  'F#': '6/9',
+  'G#': '8/11',
+  'A#': '10/13'
+};
 
 // The ground oscillation frequency is 440, so we want to send 0 volts when keyboard is in A4
 const calculateNoteVolt = (noteIndex, octave) => octave - 5 + (noteIndex + 3) / 12;
@@ -79,13 +87,8 @@ class Keyboard extends Component {
 
     render() {
         const { id, connections, octave } = this.props;
-        return <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span>{id}</span>
-            CV:
-            <Port portId='CV' connections={connections} moduleId={id} portType='output'/>
-            Gate:
-            <Port portId='Gate' connections={connections} moduleId={id} portType='output'/>
-            Octave:
+        return <Panel header='&#181;Keyboard'>
+            Octave
             <select value={octave} onChange={this.handleOctaveChange}>
                 <option value={2}>-2</option>
                 <option value={3}>-1</option>
@@ -93,14 +96,31 @@ class Keyboard extends Component {
                 <option value={5}>+1</option>
                 <option value={6}>+2</option>
             </select>
-            <div style={{ display: 'flex' }} tabIndex={0}>
+            <div style={{ display: 'grid' }}>
                 {
-                    NOTES.map((note, i) =>
-                        <button key={`${note}${i}`} onMouseDown={() => this.handleKeyDown(calculateNoteVolt(i, octave))} onMouseUp={this.handleKeyUp}>{note}</button>
+                    NOTES.map((note, i) => {
+                            const isBlackKey = note.endsWith('#');
+                            const gridRow = isBlackKey ? BLACK_KEYS_GRID_ROW[note] : i +1;
+                            return [
+                                <div key={`TITLE_${note}${i}`} style={{ alignSelf: 'center', gridRow, gridColumn: isBlackKey ? 4 : 1 }}>{note}</div>,
+                                <button key={`${note}${i}`}
+                                        onMouseDown={() => this.handleKeyDown(calculateNoteVolt(i, octave))}
+                                        onMouseUp={this.handleKeyUp}
+                                        style={{ height:20, width:20,
+                                            gridRow,
+                                            alignSelf: 'center',
+                                            gridColumn: isBlackKey ? 3 : 2,
+                                            backgroundColor: isBlackKey ? 'black' : 'white' }}/>
+                            ];
+                        }
                     )
                 }
             </div>
-        </div>;
+            <div style={{ display: 'flex', flex: 1 }}>
+                <Port portId='CV' connections={connections} moduleId={id} portType='output'/>
+                <Port portId='Gate' connections={connections} moduleId={id} portType='output'/>
+            </div>
+        </Panel>;
     }
 }
 

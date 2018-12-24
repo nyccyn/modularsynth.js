@@ -1,0 +1,13 @@
+.port {    
+    margin: auto;
+    display: grid;
+}
+
+.port:hover:not(.disabled) {
+    cursor: pointer;
+}
+
+.port.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}

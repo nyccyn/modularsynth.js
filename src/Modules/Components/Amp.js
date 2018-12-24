@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
-import Port from './Port';
+import Port from '../Common/Port';
+import Panel from '../Common/Panel';
 
 class Amp extends Component {
     constructor(props) {
@@ -30,15 +31,11 @@ class Amp extends Component {
 
     render() {
         const { id, connections } = this.props;
-        return <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span>{id}</span>
-            In:
+        return <Panel header='VCA'>
             <Port portId='In' connections={connections} moduleId={id} portType='input'/>
-            CV:
             <Port portId='CV' connections={connections} moduleId={id} portType='input'/>
-            Out:
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
-        </div>;
+        </Panel>;
     }
 }
 

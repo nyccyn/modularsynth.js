@@ -1,0 +1,11 @@
+.module-panel {
+    display: flex;
+    flex-direction: column;
+    background: #E8E8E8;
+    border: black 0.2px solid;
+}
+
+.panel_edge {
+    display: flex;
+    justify-content: space-between;
+}
