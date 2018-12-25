@@ -9,9 +9,9 @@ const PanelEdge = ({ children }) => <div className='panel_edge'>
     <Screw/>
 </div>;
 
-const Panel = ({ children, setDragging, width, left }) =>
+const Panel = ({ children, dragging, setDragging, width, left }) =>
     <div className='module-panel'
-         style={{ width, left }}
+         style={{ width, left, cursor: dragging ? 'grabbing' : 'grab' }}
          onMouseDown={() => setDragging(true)} onMouseUp={() => setDragging(false)}>
         <PanelEdge/>
         <div className='panel_content'>

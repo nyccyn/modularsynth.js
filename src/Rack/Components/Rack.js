@@ -74,14 +74,17 @@ class Rack extends Component {
     }
 
     render() {
-        const { modules } = this.props;
+        const { modules, draggingModuleId } = this.props;
         return <div onMouseUp={this.handleMouseUp} onMouseMove={this.handleMouseMove}>
             <ModulePicker/>
             <PresetManager/>
             <div>
                 <div className='rack'>
                     { modules.map(({ Module, id, width, left }) =>
-                        <Panel key={id} setDragging={this.handleDragging(id)} width={width} left={left}>
+                        <Panel key={id}
+                               setDragging={this.handleDragging(id)}
+                               dragging={ id === draggingModuleId }
+                               width={width} left={left}>
                             <Module id={id} audioContext={this._audioContext}/>
                         </Panel>
                     ) }
