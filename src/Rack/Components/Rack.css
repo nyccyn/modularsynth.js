@@ -1,5 +1,5 @@
 .rack {
-    display: flex;
+    position: relative;
     user-select: none;
     background-size: contain;
     background-image: url("rack_bg.svg");

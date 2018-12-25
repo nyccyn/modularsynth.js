@@ -3,6 +3,12 @@
     flex-direction: column;
     background: #E8E8E8;
     border: black 0.2px solid;
+    position: absolute;
+    height: 100%;
+}
+
+.panel_content {
+    flex: 1;
 }
 
 .panel_edge {

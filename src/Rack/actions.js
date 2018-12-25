@@ -26,6 +26,7 @@ const tryToConnectModules = R.curry((dispatch, getState, connection) => {
         const toElem = document.getElementById(`${output.moduleId}-${output.portId}`).getBoundingClientRect();
         dispatch(modifyCable({
             portId: fromPortId,
+            toPortId: `${output.moduleId}-${output.portId}`,
             toPoint: {
                 x: toElem.x + toElem.width / 2,
                 y: toElem.y + toElem.height / 2

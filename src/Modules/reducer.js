@@ -6,7 +6,8 @@ import * as R from 'ramda';
 const initialState = {
     modules: {},
     connections: {},
-    startingPort: null
+    startingPort: null,
+    maxLeft: 20
 };
 
 const removeLastConnection = R.curry(({ moduleId, portId }, connections) => R.when(
@@ -23,9 +24,12 @@ export default handleActions({
             window.alert(`Your browser doesn't support this module: ${moduleType}`);
             return state;
         }
+
+        newModule.left = state.maxLeft;// + R.pipe(R.values, R.pluck('width'), R.sum)(state.modules);
         return R.evolve({
             modules: R.assoc(newModule.id, newModule),
-            connections: R.assoc(newModule.id, {})
+            connections: R.assoc(newModule.id, {}),
+            maxLeft: R.add(newModule.width)
         })(state);
     },
     [ActionTypes.REGISTER_INPUTS]: (state, { id, inputs }) => R.evolve({
@@ -60,5 +64,33 @@ export default handleActions({
     })(state),
     [ActionTypes.UNSET_STARTING_PORT]: (state) => R.evolve({
         startingPort: R.always(null)
-    })(state)
+    })(state),
+    [ActionTypes.MOVE_MODULE]: (state, { moduleId, x }) => {
+        const prevLeft = state.modules[moduleId].left;
+        const moduleWidth = state.modules[moduleId].width;
+        const newLeft = prevLeft + Math.floor((x - prevLeft) / 20) * 20;
+        const newRight = newLeft + moduleWidth;
+        const isSpaceInUse = R.pipe(
+            R.values,
+            R.any(
+            ({ id, left, width }) => {
+                const right = left + width;
+                return id !== moduleId &&  (
+                    (left >= newLeft && left < newRight) ||
+                    (left < newLeft && right > newLeft) ||
+                    (left === newLeft && right === newRight)
+                );
+            }
+        ))(state.modules);
+        if (isSpaceInUse) return state;
+
+        return R.evolve({
+            modules: R.evolve({
+                [moduleId]: R.evolve({
+                    left: R.always(newLeft)
+                })
+            }),
+            maxLeft: R.max(newLeft + state.modules[moduleId].width)
+        })(state);
+    }
 }, initialState);

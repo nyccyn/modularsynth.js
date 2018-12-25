@@ -37,3 +37,9 @@ export const setStartingPort = port => ({
 export const unsetStartingPort = () => ({
     type: ActionTypes.UNSET_STARTING_PORT
 });
+
+export const moveModule = (moduleId, x) => ({
+    type: ActionTypes.MOVE_MODULE,
+    moduleId,
+    x
+});

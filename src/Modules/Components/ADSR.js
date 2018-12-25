@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
-import Port from '../Common/Port';
-import Panel from '../Common/Panel';
+import Port from '../../Common/Port';
 import { listenToFirstAudioParam } from '../portHelpers';
 
 class ADSR extends Component {
@@ -55,7 +54,8 @@ class ADSR extends Component {
     render() {
         const { id, connections, attack, setAttack, decay, setDecay,
             sustain, setSustain, release, setRelease } = this.props;        
-        return <Panel header='ADSR'>
+        return <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span>ADSR</span>
             Attack:
             <input type='range' min={0.01} max={15} step={0.01} value={attack} onChange={({ target: { value }}) => setAttack(Number(value))}/>
             Decay:
@@ -66,7 +66,7 @@ class ADSR extends Component {
             <input type='range' min={0.01} max={15} step={0.01} value={release} onChange={({ target: { value }}) => setRelease(Number(value))}/>
             <Port portId='Gate' connections={connections} moduleId={id} portType='input'/>
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
-        </Panel>;
+        </div>;
     }
 }
 
@@ -76,6 +76,7 @@ const mapStateToProps = ({ modules }, ownProps) => ({
 
 export default compose(
     setStatic('isBrowserSupported', typeof ConstantSourceNode !== 'undefined'),
+    setStatic('panelWidth', 6),
     withState('attack', 'setAttack', 0.01),
     withState('decay', 'setDecay', 0.6),
     withState('sustain', 'setSustain', 0.5),

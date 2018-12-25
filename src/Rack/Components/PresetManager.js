@@ -7,8 +7,8 @@ import { loadPreset } from '../actions';
 
 const PresetManager = ({ preset, setPreset, loadPreset }) => {
 
-    const handlePresetChange = ({ target: { value }}) => {
-      setPreset(value);
+    const handlePresetChange = ({ target: { value } }) => {
+        setPreset(value);
         loadPreset(defaultPresets[value]);
     };
 

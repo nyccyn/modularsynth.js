@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
-import Port from '../Common/Port';
-import Panel from '../Common/Panel';
+import Port from '../../Common/Port';
 
 class Amp extends Component {
     constructor(props) {
@@ -31,11 +30,12 @@ class Amp extends Component {
 
     render() {
         const { id, connections } = this.props;
-        return <Panel header='VCA'>
+        return <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span>VCA</span>
             <Port portId='In' connections={connections} moduleId={id} portType='input'/>
             <Port portId='CV' connections={connections} moduleId={id} portType='input'/>
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
-        </Panel>;
+        </div>;
     }
 }
 
@@ -45,5 +45,6 @@ const mapStateToProps = ({ modules }, ownProps) => ({
 
 export default compose(
     setStatic('isBrowserSupported', typeof GainNode !== 'undefined'),
+    setStatic('panelWidth', 4),
     connect(mapStateToProps, { connectModules, registerInputs, registerOutputs })
     )(Amp);

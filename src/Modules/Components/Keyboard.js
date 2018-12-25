@@ -3,8 +3,7 @@ import * as R from 'ramda';
 import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerOutputs } from '../actions';
-import Port from '../Common/Port';
-import Panel from '../Common/Panel';
+import Port from '../../Common/Port';
 
 const KEY_CODES_NOTES = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188];
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C'];
@@ -87,7 +86,8 @@ class Keyboard extends Component {
 
     render() {
         const { id, connections, octave } = this.props;
-        return <Panel header='&#181;Keyboard'>
+        return <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span>&#181;Keyboard</span>
             Octave
             <select value={octave} onChange={this.handleOctaveChange}>
                 <option value={2}>-2</option>
@@ -104,7 +104,10 @@ class Keyboard extends Component {
                             return [
                                 <div key={`TITLE_${note}${i}`} style={{ alignSelf: 'center', gridRow, gridColumn: isBlackKey ? 4 : 1 }}>{note}</div>,
                                 <button key={`${note}${i}`}
-                                        onMouseDown={() => this.handleKeyDown(calculateNoteVolt(i, octave))}
+                                        onMouseDown={e => {
+                                            e.stopPropagation();
+                                            this.handleKeyDown(calculateNoteVolt(i, octave));
+                                        }}
                                         onMouseUp={this.handleKeyUp}
                                         style={{ height:20, width:20,
                                             gridRow,
@@ -120,7 +123,7 @@ class Keyboard extends Component {
                 <Port portId='CV' connections={connections} moduleId={id} portType='output'/>
                 <Port portId='Gate' connections={connections} moduleId={id} portType='output'/>
             </div>
-        </Panel>;
+        </div>;
     }
 }
 
@@ -130,6 +133,7 @@ const mapStateToProps = ({ modules }, ownProps) => ({
 
 export default compose(
     setStatic('isBrowserSupported', true),
+    setStatic('panelWidth', 6),
     withState('octave', 'setOctave', 4),
     connect(mapStateToProps, { connectModules, registerOutputs })
 )(Keyboard);

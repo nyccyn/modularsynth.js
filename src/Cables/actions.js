@@ -7,13 +7,20 @@ export const addCable = ({ portId, fromPoint, color }) => ({
     color
 });
 
-export const modifyCable = ({ portId, toPoint }) => ({
+export const modifyCable = ({ portId, toPoint, toPortId }) => ({
     type: ActionTypes.MODIFY_CABLE,
     portId,
-    toPoint
+    toPoint,
+    toPortId
 });
 
 export const removeCable = portId => ({
     type: ActionTypes.REMOVE_CABLE,
     portId
+});
+
+export const modifyModuleCables = ({ moduleId, diff }) => ({
+    type: ActionTypes.MODIFY_MODULE_CABLES,
+    moduleId,
+    diff
 });

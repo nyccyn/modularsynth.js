@@ -7,7 +7,7 @@ const calculateMidpoint = (fromPoint, toPoint) => {
     let distance = 0.5 + Math.log(1 + Math.abs((toPoint.y - fromPoint.y) / (toPoint.x - fromPoint.x))) / (3 * Math.log(2));
     distance = lowestPoint.x < highestPoint.x ? 1 - distance : distance;
     const direction = fromPoint.x < toPoint.x ? 1 : -1;
-    const midpointX = direction * distance * Math.abs(fromPoint.x - toPoint.x);
+    const midpointX = direction * distance * Math.abs(fromPoint.x - toPoint.x) || fromPoint.x;
     return `${midpointX} ${midpointY}`;
 };
 

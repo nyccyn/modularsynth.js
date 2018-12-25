@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { connectModules, disconnectModule, setStartingPort, unsetStartingPort } from '../actions';
-import { addCable, removeCable, modifyCable } from '../../Cables/actions';
+import { connectModules, disconnectModule, setStartingPort, unsetStartingPort } from '../Modules/actions';
+import { addCable, removeCable, modifyCable } from '../Cables/actions';
 import cx from 'classnames';
 import randomColor from 'randomcolor';
 import './Port.css';
 
 const Port = ({ portId, connections, connectModules, disconnectModule, moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable }) => {
     let _elem;
-    const handleMouseDown = () => {
+    const handleMouseDown = e => {
+        e.stopPropagation();
         const port = { portId, portType, moduleId };
         if (connections[portId]) {
             disconnectModule({
@@ -47,7 +48,8 @@ const Port = ({ portId, connections, connectModules, disconnectModule, moduleId,
 
         modifyCable({
             portId: `${startingPort.moduleId}-${startingPort.portId}`,
-            toPoint: { x: x + width / 2 , y: y + height / 2 }
+            toPoint: { x: x + width / 2 , y: y + height / 2 },
+            toPortId: `${moduleId}-${portId}`
         });
         connectModules({
             [startingPort.portType]: startingPort,

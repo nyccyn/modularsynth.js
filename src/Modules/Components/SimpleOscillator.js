@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { compose, withState, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
-import Port from '../Common/Port';
-import Panel from '../Common/Panel';
+import Port from '../../Common/Port';
 import { listenToFirstAudioParam } from '../portHelpers';
 
 class SimpleOscillator extends Component {
@@ -59,7 +58,8 @@ class SimpleOscillator extends Component {
     
     render() {
         const { id, type, frequency, connections } = this.props;
-        return <Panel header='VCO'>
+        return <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span>VCO</span>
             Shape:
             <select value={type} onChange={this.handleTypeChange}>
                 <option value='sine'>Sine</option>
@@ -71,7 +71,7 @@ class SimpleOscillator extends Component {
             <input type='range' min={-2} max={2} step={0.001} value={frequency} onChange={({ target: { value }}) => this.handleFrequencyChange(value)}/>
             <Port portId='V/Oct' connections={connections} moduleId={id} portType='input'/>
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
-        </Panel>;
+        </div>;
     }
 }
 
@@ -81,6 +81,7 @@ const mapStateToProps = ({ modules }, ownProps) => ({
 
 export default compose(
     setStatic('isBrowserSupported', typeof OscillatorNode !== 'undefined'),
+    setStatic('panelWidth', 6),
     withState('type', 'setType', 'sine'),
     withState('frequency', 'setFrequency', 0),
     withState('vOct', 'setVOct', 0),
