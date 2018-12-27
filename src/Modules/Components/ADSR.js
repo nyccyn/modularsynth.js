@@ -3,6 +3,7 @@ import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
 import Port from '../../Common/Port';
+import Knob from '../../Common/Knob';
 import { listenToFirstAudioParam } from '../portHelpers';
 
 class ADSR extends Component {
@@ -57,13 +58,13 @@ class ADSR extends Component {
         return <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span>ADSR</span>
             Attack:
-            <input type='range' min={0.01} max={15} step={0.01} value={attack} onChange={({ target: { value }}) => setAttack(Number(value))}/>
+            <Knob min={0.01} max={15} step={0.01} value={attack} onChange={value => setAttack(Number(value))} width={30} height={30}/>
             Decay:
-            <input type='range' min={0.01} max={15} step={0.01} value={decay} onChange={({ target: { value }}) => setDecay(Number(value))}/>
+            <Knob min={0.01} max={15} step={0.01} value={decay} onChange={value => setDecay(Number(value))} width={30} height={30}/>
             Sustain:
-            <input type='range' min={0} max={1} step={0.01} value={sustain} onChange={({ target: { value }}) => setSustain(Number(value))}/>
+            <Knob min={0} max={1} step={0.01} value={sustain} onChange={value => setSustain(Number(value))} width={30} height={30}/>
             Release:
-            <input type='range' min={0.01} max={15} step={0.01} value={release} onChange={({ target: { value }}) => setRelease(Number(value))}/>
+            <Knob min={0.01} max={15} step={0.01} value={release} onChange={value => setRelease(Number(value))} width={30} height={30}/>
             <Port portId='Gate' connections={connections} moduleId={id} portType='input'/>
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
         </div>;
