@@ -1,6 +1,7 @@
-.port {    
-    margin: auto;
-    display: grid;
+.port {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .port:hover:not(.disabled) {

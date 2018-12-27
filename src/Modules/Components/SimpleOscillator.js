@@ -3,6 +3,7 @@ import { compose, withState, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
 import Port from '../../Common/Port';
+import Knob from '../../Common/Knob';
 import { listenToFirstAudioParam } from '../portHelpers';
 
 class SimpleOscillator extends Component {
@@ -68,7 +69,7 @@ class SimpleOscillator extends Component {
                 <option value='triangle'>Triangle</option>
             </select>
             Freq:
-            <input type='range' min={-2} max={2} step={0.001} value={frequency} onChange={({ target: { value }}) => this.handleFrequencyChange(value)}/>
+            <Knob min={-2} max={2} step={0.001} value={frequency} onChange={value => this.handleFrequencyChange(value)}/>
             <Port portId='V/Oct' connections={connections} moduleId={id} portType='input'/>
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
         </div>;
