@@ -3,7 +3,7 @@ import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
 import Port from '../../Common/Port';
-import { listenToFirstAudioParam } from '../portHelpers';
+import Knob from '../../Common/Knob';
 
 var QUAL_MUL = 30;
 
@@ -17,10 +17,7 @@ class VCF extends Component {
         this.handleFrequencyChange = this.handleFrequencyChange.bind(this);
         this.setPitch = this.setPitch.bind(this);
         this.handleQChange = this.handleQChange.bind(this);
-        this.setQuality = this.setQuality.bind(this);
-        //this._vcf.offset.value = -1;
-        //this._vcf.start();
-        //this.handleGateInChange = this.handleGateInChange.bind(this);        
+        this.setQuality = this.setQuality.bind(this);       
     }
 
     componentWillMount() {
@@ -70,9 +67,9 @@ class VCF extends Component {
         return <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span>VCF</span>
             Frequency:
-            <input type='range' min={0} max={1} step={0.01} value={frequency} onChange={({ target: { value }}) => this.handleFrequencyChange(value)}/>
+            <Knob min={0} max={1} step={0.01} value={frequency} onChange={value => this.handleFrequencyChange(value)}/>
             Q:
-            <input type='range' min={0} max={30} step={1} value={q} onChange={({ target: { value }}) => this.handleQChange(value)}/>
+            <Knob min={0} max={1} step={0.01} value={q} onChange={value => this.handleQChange(value)}/>
             <Port portId='Input' connections={connections} moduleId={id} portType='input'/>
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
         </div>;
