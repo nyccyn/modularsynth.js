@@ -5,6 +5,7 @@ import MonoAudioInterface from './Components/MonoAudioInterface';
 import Keyboard from './Components/Keyboard';
 import ADSR from './Components/ADSR';
 import Amp from './Components/Amp';
+import VCF from './Components/VCF';
 
 export const MODULE_TYPE = {
     OSCILLATOR: 'OSCILLATOR',
@@ -12,6 +13,7 @@ export const MODULE_TYPE = {
     MONO_AUDIO_INTERFACE: 'MONO_AUDIO_INTERFACE',
     KEYBOARD: 'KEYBOARD',
     ADSR: 'ADSR',
+    VCF: 'VCF',
     AMP: 'AMP'
 };
 
@@ -36,6 +38,9 @@ export const createModule = ({ type, id = undefined }) => {
             break;
         case MODULE_TYPE.ADSR:
             module.Module = ADSR;
+            break;
+        case MODULE_TYPE.VCF:
+            module.Module = VCF;
             break;
         case MODULE_TYPE.AMP:
             module.Module = Amp;
