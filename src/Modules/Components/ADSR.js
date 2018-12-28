@@ -6,6 +6,8 @@ import Port from '../../Common/Port';
 import Knob from '../../Common/Knob';
 import { listenToFirstAudioParam } from '../portHelpers';
 
+const convertKnobValueToTime = value => Math.pow(value, 4) * 15 + 0.001;
+
 class ADSR extends Component {
     constructor(props) {
         super(props);
@@ -36,7 +38,10 @@ class ADSR extends Component {
     }
 
     handleGateInChange(value) {    
-        const { attack, decay, sustain, release, audioContext } = this.props;
+        const { sustain, audioContext } = this.props;
+        const attack = convertKnobValueToTime(this.props.attack);
+        const decay = convertKnobValueToTime(this.props.decay);
+        const release = convertKnobValueToTime(this.props.release);       
         const now = audioContext.currentTime;
         const offset = this._adsr.offset;
 
@@ -58,13 +63,13 @@ class ADSR extends Component {
         return <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span>ADSR</span>
             Attack:
-            <Knob min={0.01} max={15} step={0.01} value={attack} onChange={value => setAttack(Number(value))} width={30} height={30}/>
+            <Knob min={0} max={1} step={0.001} value={attack} onChange={value => setAttack(value)} width={30} height={30}/>
             Decay:
-            <Knob min={0.01} max={15} step={0.01} value={decay} onChange={value => setDecay(Number(value))} width={30} height={30}/>
+            <Knob min={0} max={1} step={0.001} value={decay} onChange={value => setDecay(value)} width={30} height={30}/>
             Sustain:
             <Knob min={0} max={1} step={0.01} value={sustain} onChange={value => setSustain(Number(value))} width={30} height={30}/>
             Release:
-            <Knob min={0.01} max={15} step={0.01} value={release} onChange={value => setRelease(Number(value))} width={30} height={30}/>
+            <Knob min={0} max={1} step={0.001} value={release} onChange={value => setRelease(Number(value))} width={30} height={30}/>
             <Port portId='Gate' connections={connections} moduleId={id} portType='input'/>
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
         </div>;
@@ -78,8 +83,8 @@ const mapStateToProps = ({ modules }, ownProps) => ({
 export default compose(
     setStatic('isBrowserSupported', typeof ConstantSourceNode !== 'undefined'),
     setStatic('panelWidth', 6),
-    withState('attack', 'setAttack', 0.01),
-    withState('decay', 'setDecay', 0.6),
+    withState('attack', 'setAttack', 0.5),
+    withState('decay', 'setDecay', 0.5),
     withState('sustain', 'setSustain', 0.5),
     withState('release', 'setRelease', 0.5),
     connect(mapStateToProps, { connectModules, registerInputs, registerOutputs })
