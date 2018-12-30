@@ -15,6 +15,7 @@ class VCF extends Component {
         this._vcf = props.audioContext.createBiquadFilter();  
         this._vcf.type = "lowpass";
         this.handleFrequencyChange = this.handleFrequencyChange.bind(this);
+        this.handleTypeChange = this.handleTypeChange.bind(this);
         this.setPitch = this.setPitch.bind(this);
         this.handleQChange = this.handleQChange.bind(this);
         this.setQuality = this.setQuality.bind(this);       
@@ -56,6 +57,11 @@ class VCF extends Component {
         this.props.setQ(Number(value), this.setQuality);
     }
 
+    handleTypeChange({ target: { value }}) {
+        this.props.setType(value);
+        this._vcf.type = value;
+    }
+
     setQuality()
     {
         const { q } = this.props;
@@ -63,10 +69,15 @@ class VCF extends Component {
     }
 
     render() {
-        const { id, connections, frequency, q, setQ } = this.props;        
+        const { id, connections, type, frequency, q, setQ } = this.props;        
         return <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span>VCF</span>
-            Frequency:
+            Shape:
+            <select value={type} onChange={this.handleTypeChange}>
+                <option value='lowpass'>Low Pass</option>
+                <option value='highpass'>High Pass</option>
+            </select>
+            Frequency:m
             <Knob min={0} max={1} step={0.01} value={frequency} onChange={value => this.handleFrequencyChange(value)}/>
             Q:
             <Knob min={0} max={1} step={0.01} value={q} onChange={value => this.handleQChange(value)}/>
@@ -83,6 +94,7 @@ const mapStateToProps = ({ modules }, ownProps) => ({
 export default compose(
     setStatic('isBrowserSupported', typeof ConstantSourceNode !== 'undefined'),
     setStatic('panelWidth', 6),
+    withState('type', 'setType', 'lowpass'),
     withState('frequency', 'setFrequency', 0.1),
     withState('q', 'setQ', 15),
     connect(mapStateToProps, { connectModules, registerInputs, registerOutputs })
