@@ -2,11 +2,13 @@
   "name": "modularsynthjs",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://nyccyn.github.io/modularsynth.js/",
   "engines": {
     "node": "11.x"
   },
   "dependencies": {
     "classnames": "^2.2.6",
+    "gh-pages": "^2.0.1",
     "ramda": "^0.26.1",
     "randomcolor": "^0.5.3",
     "react": "^16.6.3",
@@ -20,6 +22,8 @@
     "reselect": "^4.0.0"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
