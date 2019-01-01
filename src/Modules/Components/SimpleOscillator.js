@@ -44,7 +44,7 @@ class SimpleOscillator extends Component {
     }
 
     handleFrequencyChange(value) {
-        this.props.setFrequency(Number(value), this.setPitch);
+        this.props.setFrequency(value, this.setPitch);
     }
 
     handleVOctChange(value) {
