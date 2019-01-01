@@ -5,7 +5,7 @@ import { connectModules, registerInputs, registerOutputs } from '../actions';
 import Port from '../../Common/Port';
 import Knob from '../../Common/Knob';
 
-var QUAL_MUL = 30;
+const QUAL_MUL = 30;
 
 class VCF extends Component {
     constructor(props) {
@@ -13,7 +13,7 @@ class VCF extends Component {
         if (!props.audioContext) throw new Error("audioContext property must be provided");
 
         this._vcf = props.audioContext.createBiquadFilter();  
-        this._vcf.type = "lowpass";
+        this._vcf.type = "lowpass";        
         this.handleFrequencyChange = this.handleFrequencyChange.bind(this);
         this.handleTypeChange = this.handleTypeChange.bind(this);
         this.setPitch = this.setPitch.bind(this);
@@ -43,14 +43,15 @@ class VCF extends Component {
         const { frequency, audioContext } = this.props;
         // Clamp the frequency between the minimum value (40 Hz) and half of the
         // sampling rate.
-        var minValue = 40;
-        var maxValue = audioContext.sampleRate / 2;
+        const minValue = 40;
+        const maxValue = audioContext.sampleRate / 2;
         // Logarithm (base 2) to compute how many octaves fall in the range.
-        var numberOfOctaves = Math.log(maxValue / minValue) / Math.LN2;
+        const numberOfOctaves = Math.log(maxValue / minValue) / Math.LN2;
         // Compute a multiplier from 0 to 1 based on an exponential scale.
-        var multiplier = Math.pow(2, numberOfOctaves * (frequency - 1.0));
+        const multiplier = Math.pow(2, numberOfOctaves * (frequency - 1.0));
         // Get back to the frequency value between min and max.
-        this._vcf.frequency.value = maxValue * multiplier;
+        const now = audioContext.currentTime;
+        this._vcf.frequency.setValueAtTime(maxValue * multiplier, audioContext.currentTime);
     }
 
     handleQChange(value) {
@@ -69,7 +70,7 @@ class VCF extends Component {
     }
 
     render() {
-        const { id, connections, type, frequency, q, setQ } = this.props;        
+        const { id, connections, type, frequency, q } = this.props;        
         return <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span>VCF</span>
             Shape:
@@ -92,7 +93,7 @@ const mapStateToProps = ({ modules }, ownProps) => ({
 });
 
 export default compose(
-    setStatic('isBrowserSupported', typeof ConstantSourceNode !== 'undefined'),
+    setStatic('isBrowserSupported', typeof BiquadFilterNode !== 'undefined'),
     setStatic('panelWidth', 6),
     withState('type', 'setType', 'lowpass'),
     withState('frequency', 'setFrequency', 0.1),
