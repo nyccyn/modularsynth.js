@@ -107,7 +107,7 @@ class VCO extends Component {
             Tune:
             <Knob min={-0.5} max={0.5} step={0.001} value={tune} width={30} height={30} onChange={this.handleTuneChange}/>
             PW:
-            <Knob min={0} max={0.75} step={0.001} value={pw} width={30} height={30} onChange={this.handlePwChange}/>
+            <Knob min={-0.5} max={0.5} step={0.001} value={pw} width={30} height={30} onChange={this.handlePwChange}/>
             <Port portId='V/Oct' moduleId={id} portType='input'/>
             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <Port title='|\' portId='Sawtooth' moduleId={id} portType='output'/>

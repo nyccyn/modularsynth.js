@@ -65,7 +65,7 @@ const Port = ({ title, portId, connections, connectModules, disconnectModule, mo
                 onMouseUp={handleMouseUp}>
         {title || portId}
         <img id={`${moduleId}-${portId}`} height="30" width="30" ref={elem => _elem = elem}
-             src={require('./port.svg')} alt={`${moduleId}-${portId}`}/>
+             onMouseDown={e => e.preventDefault()} src={require('./port.svg')} alt={`${moduleId}-${portId}`}/>
     </div>;
 };
 
