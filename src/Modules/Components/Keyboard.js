@@ -119,7 +119,7 @@ class Keyboard extends Component {
                     )
                 }
             </div>
-            <div style={{ display: 'flex', flex: 1 }}>
+            <div style={{ display: 'flex', flex: 1, justifyContent: 'space-around' }}>
                 <Port portId='CV' connections={connections} moduleId={id} portType='output'/>
                 <Port portId='Gate' connections={connections} moduleId={id} portType='output'/>
             </div>
