@@ -13,14 +13,13 @@ class ADSR extends Component {
         super(props);
         if (!props.audioContext) throw new Error("audioContext property must be provided");
 
-        this._adsr = props.audioContext.createConstantSource();        
-        this._adsr.offset.value = -1;
-        this._adsr.start();
+        this._adsr = props.audioContext.createConstantSource();
         this.handleGateInChange = this.handleGateInChange.bind(this);        
     }
 
     componentWillMount() {
-        const { id, registerInputs, registerOutputs } = this.props;        
+        const { id, registerInputs, registerOutputs } = this.props;
+        this._adsr.start();
         registerInputs(id, {
             Gate: {
                 connect: audioNode => this._gateInterval = listenToFirstAudioParam(audioNode, this.handleGateInChange),
@@ -37,7 +36,7 @@ class ADSR extends Component {
         });
     }
 
-    handleGateInChange(value) {    
+    handleGateInChange(value) {
         const { sustain, audioContext } = this.props;
         const attack = convertKnobValueToTime(this.props.attack);
         const decay = convertKnobValueToTime(this.props.decay);
@@ -47,13 +46,13 @@ class ADSR extends Component {
 
         if (value === 1) {
             offset.cancelScheduledValues(0);
-            offset.linearRampToValueAtTime(-1, now + 0.01);
-            offset.linearRampToValueAtTime(0, now + attack);
-            offset.linearRampToValueAtTime(sustain - 1, now + attack + decay);
+            offset.linearRampToValueAtTime(0, now + 0.01);
+            offset.linearRampToValueAtTime(1, now + attack);
+            offset.linearRampToValueAtTime(sustain, now + attack + decay);
         } else if (value === 0) {
             offset.cancelScheduledValues(0);
             offset.setValueAtTime(offset.value, now);
-            offset.linearRampToValueAtTime(-1, now + release);
+            offset.linearRampToValueAtTime(0, now + release);
         }
     }
 

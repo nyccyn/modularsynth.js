@@ -12,15 +12,21 @@ class Amp extends Component {
     }
 
     componentWillMount() {
-        const { id, registerInputs, registerOutputs, audioContext } = this.props;        
+        const { id, registerInputs, registerOutputs } = this.props;
         registerInputs(id, {
             In: {
                 connect: audioNode => audioNode.connect(this._gain),
                 disconnect: audioNode => audioNode.disconnect(this._gain)
             },
             CV: {
-                connect: audioNode => audioNode.connect(this._gain.gain),
-                disconnect: audioNode => audioNode.disconnect(this._gain.gain)
+                connect: audioNode => {
+                    this._gain.gain.value = 0;
+                    audioNode.connect(this._gain.gain);
+                },
+                disconnect: audioNode => {
+                    this._gain.gain.value = 1;
+                    audioNode.disconnect(this._gain.gain);
+                }
             }
         });
         registerOutputs(id, {

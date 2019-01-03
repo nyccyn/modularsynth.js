@@ -6,7 +6,7 @@ import cx from 'classnames';
 import randomColor from 'randomcolor';
 import './Port.css';
 
-const Port = ({ portId, connections, connectModules, disconnectModule, moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable }) => {
+const Port = ({ title, portId, connections, connectModules, disconnectModule, moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable }) => {
     let _elem;
     const handleMouseDown = e => {
         e.stopPropagation();
@@ -63,17 +63,15 @@ const Port = ({ portId, connections, connectModules, disconnectModule, moduleId,
     return <div className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}>
-        {portId}
-        <svg id={`${moduleId}-${portId}`} height="30" width="30" ref={elem => _elem = elem}>
-            <circle cx="15" cy="15" r="14" stroke="black" strokeWidth="1" fill="grey" />
-            <circle cx="15" cy="15" r="10" stroke="black" strokeWidth="1" fill="grey" />
-            <circle cx="15" cy="15" r="7" stroke="none" strokeWidth="0" fill="black"/>
-        </svg>
+        {title || portId}
+        <img id={`${moduleId}-${portId}`} height="30" width="30" ref={elem => _elem = elem}
+             src={require('./port.svg')} alt={`${moduleId}-${portId}`}/>
     </div>;
 };
 
-const mapStateToProps = ({ modules }) => ({
-    startingPort: modules.startingPort
+const mapStateToProps = ({ modules }, ownProps) => ({
+    startingPort: modules.startingPort,
+    connections: modules.connections[ownProps.moduleId]
 });
 
 export default connect(mapStateToProps, { connectModules, disconnectModule, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable })(Port);
