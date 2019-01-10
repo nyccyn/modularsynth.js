@@ -61,11 +61,14 @@ class Knob extends Component {
     }
 
     render() {
-        const { height = 50, width = 50 } = this.props;
-        return <img ref={elem => { this._elem = elem; } }
-                    style={{ cursor: 'pointer', margin: 'auto', transform: `rotate(${this.calculateValueAngle()}deg)` }}
-                    onMouseDown={this.handleMouseDown}
-                    alt='knob' src={require('./knob.svg')} height={height} width={width}/>;
+        const { label, height = 50, width = 50 } = this.props;
+        return <div style={{ display: 'flex', flexDirection: 'column' }}>
+            { label }
+            <img ref={elem => { this._elem = elem; } }
+                 style={{ cursor: 'pointer', margin: 'auto', transform: `rotate(${this.calculateValueAngle()}deg)` }}
+                 onMouseDown={this.handleMouseDown}
+                 alt='knob' src={require('./knob.svg')} height={height} width={width}/>
+        </div>
     }
 }
 

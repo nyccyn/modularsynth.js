@@ -9,47 +9,8 @@ import { unsetStartingPort, moveModule } from '../../Modules/actions';
 import { modifyCable, removeCable, modifyModuleCables } from '../../Cables/actions';
 import './Rack.css';
 import Panel from "../../Common/Panel";
+import createPulseOscillator from '../helpers/createPulseOscillator';
 
-// Pulse oscillator from Andy Harman
-// https://github.com/pendragon-andyh/WebAudio-PulseOscillator
-const pulseCurve = new Float32Array(256);
-for(let i = 0; i < 128; i++) {
-    pulseCurve[i] = -1;
-    pulseCurve[i + 128] = 1;
-}
-const constantOneCurve = new Float32Array(2);
-constantOneCurve[0] = 1;
-constantOneCurve[1] = 1;
-function createPulseOscillator() {
-    const node = this.createOscillator();
-    node.type = "sawtooth";
-
-    const pulseShaper = this.createWaveShaper();
-    pulseShaper.curve = pulseCurve;
-    node.connect(pulseShaper);
-    const widthGain = this.createGain();
-    widthGain.gain.value = 0;
-    node.width = widthGain.gain;
-    node.widthGain = widthGain;
-    widthGain.connect(pulseShaper);
-
-    const constantOneShaper = this.createWaveShaper();
-    constantOneShaper.curve = constantOneCurve;
-    node.connect(constantOneShaper);
-    constantOneShaper.connect(widthGain);
-
-    node.connect = function() {
-        pulseShaper.connect.apply(pulseShaper, arguments);
-        return node;
-    };
-
-    node.disconnect = function() {
-        pulseShaper.disconnect.apply(pulseShaper, arguments);
-        return node;
-    };
-
-    return node;
-}
 
 class Rack extends Component {
     constructor(props){
@@ -61,6 +22,64 @@ class Rack extends Component {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleDragging = this.handleDragging.bind(this);
+
+        //temp
+        this._analyser = this._audioContext.createAnalyser();
+        window.analyser = this._analyser;
+        window.visuallize = this.visuallize = this.visuallize.bind(this);
+    }
+
+    visuallize()
+    {
+        const canvas = this._canvas;
+        const canvasCtx = canvas.getContext("2d");
+        const analyser = this._analyser;
+
+        analyser.fftSize = 1024;
+        const dataArray = new Float32Array(analyser.frequencyBinCount);
+        canvas.width = dataArray.length;
+        canvas.height = 200;
+        const WIDTH = canvas.width;
+        const HEIGHT = canvas.height;
+
+        canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+        function draw()
+        {
+            setTimeout(() => window.v = requestAnimationFrame(draw), 300);
+
+            analyser.getFloatTimeDomainData(dataArray);
+
+            canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+            canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+
+            canvasCtx.beginPath();
+
+            let x = 0;
+
+            for (let i = 0; i < dataArray.length; i++)
+            {
+
+                x = i;
+                const y = (0.5 + dataArray[i] / 2) * HEIGHT;
+
+                if (i === 0)
+                {
+                    canvasCtx.moveTo(x, y);
+                }
+                else
+                {
+                    canvasCtx.lineTo(x, y);
+                }
+            }
+
+            canvasCtx.stroke();
+        }
+
+        draw();
     }
 
     componentDidUpdate(prevProps) {
@@ -134,6 +153,7 @@ class Rack extends Component {
                 </div>
                 <CablesContainer/>
             </div>
+            <canvas ref={ref => this._canvas = ref} className="visualizer" width="640" height="100"/>
         </div>;
     }
 }

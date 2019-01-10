@@ -14,6 +14,7 @@ class ADSR extends Component {
         if (!props.audioContext) throw new Error("audioContext property must be provided");
 
         this._adsr = props.audioContext.createConstantSource();
+        window.adsr = this._adsr;
         this.handleGateInChange = this.handleGateInChange.bind(this);        
     }
 
