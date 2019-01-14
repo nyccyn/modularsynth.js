@@ -3,18 +3,9 @@ import { compose, withState, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import * as R from 'ramda';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
-import Port from '../../Common/Port';
+import Port, { LABEL_POSITIONS } from '../../Common/Port';
 import Knob from '../../Common/Knob';
 
-const createVoltToFreqExpCurve = () => {
-    const BUFFER_LENGTH = 8192;
-    const curve = new Float32Array(BUFFER_LENGTH);
-    for (let i = 0; i < BUFFER_LENGTH; i++) {
-        const normalized = (i / (BUFFER_LENGTH - 1)) * 4 - 2;
-        curve[i] = 440 * Math.pow(2, normalized);
-    }
-    return curve;
-};
 
 const createOscillator = (audioContext, type) => {
     const oscillator = audioContext.createOscillator();
@@ -33,35 +24,29 @@ class VCO extends Component {
         pulse.frequency.value = 0;
         pulse.width.value = 0;
         this._oscillators = {
-            sine: createOscillator(audioContext, 'sine'),
-            sawtooth: createOscillator(audioContext, 'sawtooth'),
-            pulse,
-            triangle: createOscillator(audioContext, 'triangle')
+            Sawtooth: createOscillator(audioContext, 'sawtooth'),
+            Pulse: pulse,
+            Triangle: createOscillator(audioContext, 'triangle'),
+            Sine: createOscillator(audioContext, 'sine'),
         };
-        window.pulse = this._oscillators.pulse;
-        window['sine' + props.id] = this._oscillators.sine;
+        window.pulse = this._oscillators.Pulse;
+        window['sine' + props.id] = this._oscillators.Sine;
 
 
-        this._frequencyControl = audioContext.createConstantSource();
+        this._frequencyControl = audioContext.createVoltToHzConverter(440, 2);
         this._detuneControl = audioContext.createConstantSource();
-        this._frequencyControl.offset.value = 0;
+        this._frequencyControl.volt.value = 0;
         this._detuneControl.offset.value = 0;
 
-        const voltToFreqWaveshaper = audioContext.createWaveShaper();
-        const voltScale = audioContext.createGain();
         this._fmGain = audioContext.createGain();
-        voltScale.gain.value = 0.5;
         this._fmGain.gain.value = 0;
-        voltToFreqWaveshaper.curve = createVoltToFreqExpCurve();
-        window.shaper = voltToFreqWaveshaper;
-        this._frequencyControl.connect(voltScale).connect(voltToFreqWaveshaper);
-        this._fmGain.connect(this._frequencyControl.offset);
-        R.forEachObjIndexed(o => voltToFreqWaveshaper.connect(o.frequency))(this._oscillators);
+        this._fmGain.connect(this._frequencyControl.volt);
+        R.forEachObjIndexed(o => this._frequencyControl.connect(o.frequency))(this._oscillators);
         R.forEachObjIndexed(o => this._detuneControl.connect(o.detune))(this._oscillators);
 
         this._pwCvGain = audioContext.createGain();
         this._pwCvGain.gain.value = 0;
-        this._pwCvGain.connect(this._oscillators.pulse.width);
+        this._pwCvGain.connect(this._oscillators.Pulse.width);
         window.pwm = this._pwCvGain;
 
         this.handleFrequencyChange = this.handleFrequencyChange.bind(this);
@@ -76,8 +61,8 @@ class VCO extends Component {
         this.startNodes();
         registerInputs(id, {
             'V/Oct': {
-                connect: audioNode => audioNode.connect(this._frequencyControl.offset),
-                disconnect: audioNode => audioNode.disconnect(this._frequencyControl.offset)
+                connect: audioNode => audioNode.connect(this._frequencyControl.volt),
+                disconnect: audioNode => audioNode.disconnect(this._frequencyControl.volt)
             },
             'PWM': {
                 connect: audioNode => audioNode.connect(this._pwCvGain),
@@ -89,10 +74,10 @@ class VCO extends Component {
             }
         });
         registerOutputs(id, {
-            Sawtooth: this._oscillators.sawtooth,
-            Pulse: this._oscillators.pulse,
-            Triangle: this._oscillators.triangle,
-            Sine: this._oscillators.sine
+            Sawtooth: this._oscillators.Sawtooth,
+            Pulse: this._oscillators.Pulse,
+            Triangle: this._oscillators.Triangle,
+            Sine: this._oscillators.Sine
         });
     }
 
@@ -108,7 +93,7 @@ class VCO extends Component {
 
     handlePwChange(value) {
         this.props.setPw(value);
-        this._oscillators.pulse.width.value = value;
+        this._oscillators.Pulse.width.value = value;
     }
 
     handlePwmCvChange(value) {
@@ -129,7 +114,7 @@ class VCO extends Component {
     
     render() {
         const { id, frequency, tune, pw, pwmCv, fmCv } = this.props;
-        return <div style={{ display: 'flex', flexDirection: 'column' }}>
+        return <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
             <span>VCO</span>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
@@ -146,10 +131,14 @@ class VCO extends Component {
                 </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                <Port title='|\' portId='Sawtooth' moduleId={id} portType='output'/>
-                <Port title='|-|_' portId='Pulse' moduleId={id} portType='output'/>
-                <Port title='/\' portId='Triangle' moduleId={id} portType='output'/>
-                <Port title='§' portId='Sine' moduleId={id} portType='output'/>
+                {
+                    R.pipe(
+                        R.keys,
+                        R.map(osc =>
+                            <Port key={osc} label={<img width={25} src={require(`./${osc.toLowerCase()}.svg`)} alt={osc}/>}
+                                  labelPosition={LABEL_POSITIONS.BELOW} portId={osc} moduleId={id} portType='output'/>)
+                    )(this._oscillators)
+                }
             </div>
         </div>;
     }

@@ -10,7 +10,7 @@ import { modifyCable, removeCable, modifyModuleCables } from '../../Cables/actio
 import './Rack.css';
 import Panel from "../../Common/Panel";
 import createPulseOscillator from '../helpers/createPulseOscillator';
-
+import createVoltToHzConverter from '../helpers/createVoltToHzConverter';
 
 class Rack extends Component {
     constructor(props){
@@ -18,6 +18,7 @@ class Rack extends Component {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         this._audioContext = new AudioContext();
         this._audioContext.createPulseOscillator = createPulseOscillator;
+        this._audioContext.createVoltToHzConverter = createVoltToHzConverter;
 
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);

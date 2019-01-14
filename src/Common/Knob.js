@@ -18,7 +18,7 @@ class Knob extends Component {
     }
 
     handleMouseMove(e) {
-        const { isMoving, onChange, value, max, min, step } = this.props;
+        const { isMoving, onChange, max, min, step } = this.props;
         if (!isMoving) return;
 
         e.stopPropagation();

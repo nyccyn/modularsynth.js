@@ -6,7 +6,12 @@ import cx from 'classnames';
 import randomColor from 'randomcolor';
 import './Port.css';
 
-const Port = ({ title, portId, connections, connectModules, disconnectModule, moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable }) => {
+export const LABEL_POSITIONS = {
+    ABOVE: 'ABOVE',
+    BELOW: 'BELOW'
+}
+
+const Port = ({ label, labelPosition=LABEL_POSITIONS.ABOVE, portId, connections, connectModules, disconnectModule, moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable }) => {
     let _elem;
     const handleMouseDown = e => {
         e.stopPropagation();
@@ -60,12 +65,14 @@ const Port = ({ title, portId, connections, connectModules, disconnectModule, mo
         });
     };
 
+    const portLabel = label || portId;
     return <div className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}>
-        {title || portId}
+        { labelPosition === LABEL_POSITIONS.ABOVE && portLabel }
         <img id={`${moduleId}-${portId}`} height="30" width="30" ref={elem => _elem = elem}
              onMouseDown={e => e.preventDefault()} src={require('./port.svg')} alt={`${moduleId}-${portId}`}/>
+        { labelPosition === LABEL_POSITIONS.BELOW && portLabel }
     </div>;
 };
 
