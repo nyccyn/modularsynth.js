@@ -5,7 +5,7 @@ import * as R from 'ramda';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
 import Port, { LABEL_POSITIONS } from '../../Common/Port';
 import Knob from '../../Common/Knob';
-
+import styles from './styles';
 
 const createOscillator = (audioContext, type) => {
     const oscillator = audioContext.createOscillator();
@@ -114,38 +114,40 @@ class VCO extends Component {
     
     render() {
         const { id, frequency, tune, pw, pwmCv, fmCv } = this.props;
-        return <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+        return <div style={styles.container}>
             <span>VCO</span>
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-                    <Port portId='V/Oct' moduleId={id} portType='input'/>
-                    <Port portId='FM' moduleId={id} portType='input'/>
-                    <Port portId='PWM' moduleId={id} portType='input'/>
+            <div style={{ ...styles.body, justifyContent: 'space-between' }}>
+                <div style={styles.spaceAround}>
+                    <div style={{ ...styles.spaceAround, flexDirection: 'column' }}>
+                        <Port portId='V/Oct' moduleId={id} portType='input'/>
+                        <Port portId='FM' moduleId={id} portType='input'/>
+                        <Port portId='PWM' moduleId={id} portType='input'/>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <Knob label='Range' min={-2} max={2} step={0.001} value={frequency} width={30} height={30} onChange={this.handleFrequencyChange}/>
+                        <Knob label='Tune' min={-600} max={600} step={1} value={tune} width={30} height={30} onChange={this.handleTuneChange}/>
+                        <Knob label='FM CV' min={0} max={1} step={0.005} value={fmCv} width={30} height={30} onChange={this.handleFmCvChange}/>
+                        <Knob label='PW' min={-1} max={1} step={0.001} value={pw} width={30} height={30} onChange={this.handlePwChange}/>
+                        <Knob label='PWM CV' min={0} max={1} step={0.005} value={pwmCv} width={30} height={30} onChange={this.handlePwmCvChange}/>
+                    </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <Knob label='Range' min={-2} max={2} step={0.001} value={frequency} width={30} height={30} onChange={this.handleFrequencyChange}/>
-                    <Knob label='Tune' min={-600} max={600} step={1} value={tune} width={30} height={30} onChange={this.handleTuneChange}/>
-                    <Knob label='FM CV' min={0} max={1} step={0.005} value={fmCv} width={30} height={30} onChange={this.handleFmCvChange}/>
-                    <Knob label='PW' min={-1} max={1} step={0.001} value={pw} width={30} height={30} onChange={this.handlePwChange}/>
-                    <Knob label='PWM CV' min={0} max={1} step={0.005} value={pwmCv} width={30} height={30} onChange={this.handlePwmCvChange}/>
+                <div style={styles.spaceAround}>
+                    {
+                        R.pipe(
+                            R.keys,
+                            R.map(osc =>
+                                <Port key={osc} label={<img width={25} src={require(`./${osc.toLowerCase()}.svg`)} alt={osc}/>}
+                                      labelPosition={LABEL_POSITIONS.BELOW} portId={osc} moduleId={id} portType='output'/>)
+                        )(this._oscillators)
+                    }
                 </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                {
-                    R.pipe(
-                        R.keys,
-                        R.map(osc =>
-                            <Port key={osc} label={<img width={25} src={require(`./${osc.toLowerCase()}.svg`)} alt={osc}/>}
-                                  labelPosition={LABEL_POSITIONS.BELOW} portId={osc} moduleId={id} portType='output'/>)
-                    )(this._oscillators)
-                }
             </div>
         </div>;
     }
 }
 
 export default compose(
-    setStatic('isBrowserSupported', typeof OscillatorNode !== 'undefined'),
+    setStatic('isBrowserSupported', typeof OscillatorNode !== 'undefined' && typeof ConstantSourceNode !== 'undefined'),
     setStatic('panelWidth', 8),
     withState('frequency', 'setFrequency', 0),
     withState('tune', 'setTune', 0),

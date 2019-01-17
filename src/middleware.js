@@ -23,7 +23,10 @@ const middleware = ({ getState }) => next => action => {
                 ))
             )(connections);
 
-            input.connect(output);
+            if (input && output)
+            {
+                input.connect(output);
+            }
             break;
         }
         case actionType.DISCONNECT_MODULE: {

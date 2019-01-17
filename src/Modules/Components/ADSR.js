@@ -5,6 +5,7 @@ import { connectModules, registerInputs, registerOutputs } from '../actions';
 import Port from '../../Common/Port';
 import Knob from '../../Common/Knob';
 import { listenToFirstAudioParam } from '../portHelpers';
+import styles from './styles';
 
 const convertKnobValueToTime = value => Math.pow(value, 4) * 15 + 0.001;
 
@@ -14,7 +15,7 @@ class ADSR extends Component {
         if (!props.audioContext) throw new Error("audioContext property must be provided");
 
         this._adsr = props.audioContext.createConstantSource();
-        window.adsr = this._adsr;
+        this._adsr.offset.value = 0;
         this.handleGateInChange = this.handleGateInChange.bind(this);        
     }
 
@@ -59,19 +60,27 @@ class ADSR extends Component {
 
     render() {
         const { id, connections, attack, setAttack, decay, setDecay,
-            sustain, setSustain, release, setRelease } = this.props;        
-        return <div style={{ display: 'flex', flexDirection: 'column' }}>
+            sustain, setSustain, release, setRelease } = this.props;
+        return <div style={styles.container}>
             <span>ADSR</span>
-            Attack:
-            <Knob min={0} max={1} step={0.001} value={attack} onChange={value => setAttack(value)} width={30} height={30}/>
-            Decay:
-            <Knob min={0} max={1} step={0.001} value={decay} onChange={value => setDecay(value)} width={30} height={30}/>
-            Sustain:
-            <Knob min={0} max={1} step={0.01} value={sustain} onChange={value => setSustain(Number(value))} width={30} height={30}/>
-            Release:
-            <Knob min={0} max={1} step={0.001} value={release} onChange={value => setRelease(Number(value))} width={30} height={30}/>
-            <Port portId='Gate' connections={connections} moduleId={id} portType='input'/>
-            <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
+            <div style={styles.body}>
+                Attack:
+                <Knob min={0} max={1} step={0.001} value={attack} onChange={value => setAttack(value)} width={30}
+                      height={30}/>
+                Decay:
+                <Knob min={0} max={1} step={0.001} value={decay} onChange={value => setDecay(value)} width={30}
+                      height={30}/>
+                Sustain:
+                <Knob min={0} max={1} step={0.01} value={sustain} onChange={value => setSustain(Number(value))}
+                      width={30} height={30}/>
+                Release:
+                <Knob min={0} max={1} step={0.001} value={release} onChange={value => setRelease(Number(value))}
+                      width={30} height={30}/>
+                <div style={styles.spaceAround}>
+                    <Port portId='Gate' connections={connections} moduleId={id} portType='input'/>
+                    <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
+                </div>
+            </div>
         </div>;
     }
 }

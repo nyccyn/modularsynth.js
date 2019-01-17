@@ -11,7 +11,7 @@ export const LABEL_POSITIONS = {
     BELOW: 'BELOW'
 }
 
-const Port = ({ label, labelPosition=LABEL_POSITIONS.ABOVE, portId, connections, connectModules, disconnectModule, moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable }) => {
+const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connections, connectModules, disconnectModule, moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable }) => {
     let _elem;
     const handleMouseDown = e => {
         e.stopPropagation();
