@@ -50,7 +50,6 @@ class VCF extends Component {
         // Compute a multiplier from 0 to 1 based on an exponential scale.
         const multiplier = Math.pow(2, numberOfOctaves * (frequency - 1.0));
         // Get back to the frequency value between min and max.
-        const now = audioContext.currentTime;
         this._vcf.frequency.setValueAtTime(maxValue * multiplier, audioContext.currentTime);
     }
 
@@ -82,7 +81,7 @@ class VCF extends Component {
             <Knob min={0} max={1} step={0.01} value={frequency} onChange={value => this.handleFrequencyChange(value)}/>
             Q:
             <Knob min={0} max={1} step={0.01} value={q} onChange={value => this.handleQChange(value)}/>
-            <Port portId='Input' connections={connections} moduleId={id} portType='input'/>
+            <Port portId='In' connections={connections} moduleId={id} portType='input'/>
             <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
         </div>;
     }
@@ -97,6 +96,6 @@ export default compose(
     setStatic('panelWidth', 6),
     withState('type', 'setType', 'lowpass'),
     withState('frequency', 'setFrequency', 0.1),
-    withState('q', 'setQ', 15),
+    withState('q', 'setQ', 0.5),
     connect(mapStateToProps, { connectModules, registerInputs, registerOutputs })
 )(VCF);
