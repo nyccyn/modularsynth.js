@@ -13,7 +13,8 @@ class VCF extends Component {
         if (!props.audioContext) throw new Error("audioContext property must be provided");
 
         this._vcf = props.audioContext.createBiquadFilter();  
-        this._vcf.type = "lowpass";        
+        this._vcf.type = "lowpass";
+        this._vcf.Q.value = 0.5;
         this.handleFrequencyChange = this.handleFrequencyChange.bind(this);
         this.handleTypeChange = this.handleTypeChange.bind(this);
         this.setPitch = this.setPitch.bind(this);

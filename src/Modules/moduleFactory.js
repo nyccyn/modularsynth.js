@@ -5,6 +5,7 @@ import MonoAudioInterface from './Components/MonoAudioInterface';
 import Keyboard from './Components/Keyboard';
 import ADSR from './Components/ADSR';
 import VCA from './Components/VCA';
+import VCF from './Components/VCF';
 
 export const MODULE_TYPE = {
     VCO: 'VCO',
@@ -12,7 +13,8 @@ export const MODULE_TYPE = {
     MONO_AUDIO_INTERFACE: 'MONO_AUDIO_INTERFACE',
     KEYBOARD: 'KEYBOARD',
     ADSR: 'ADSR',
-    VCA: 'VCA'
+    VCA: 'VCA',
+    VCF: 'VCF'
 };
 
 const moduleCounters = R.map(R.always(1))(MODULE_TYPE);
@@ -36,6 +38,9 @@ export const createModule = ({ type, id = undefined }) => {
             break;
         case MODULE_TYPE.ADSR:
             module.Module = ADSR;
+            break;
+        case MODULE_TYPE.VCF:
+            module.Module = VCF;
             break;
         case MODULE_TYPE.VCA:
             module.Module = VCA;
