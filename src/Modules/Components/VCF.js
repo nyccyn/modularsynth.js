@@ -24,7 +24,7 @@ class VCF extends Component {
     componentWillMount() {
         const { id, registerInputs, registerOutputs } = this.props;        
         registerInputs(id, {
-            Input: {
+            In: {
                 connect: audioNode => audioNode.connect(this._vcf),
                 disconnect: audioNode => audioNode.disconnect(this._vcf)
             },
@@ -77,7 +77,7 @@ class VCF extends Component {
                 <option value='lowpass'>Low Pass</option>
                 <option value='highpass'>High Pass</option>
             </select>
-            Frequency:m
+            Frequency:
             <Knob min={0} max={1} step={0.01} value={frequency} onChange={value => this.handleFrequencyChange(value)}/>
             Q:
             <Knob min={0} max={1} step={0.01} value={q} onChange={value => this.handleQChange(value)}/>
