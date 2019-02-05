@@ -1,9 +1,9 @@
 {
   "main.css": "/modularsynth.js/static/css/main.d01924ff.chunk.css",
-  "main.js": "/modularsynth.js/static/js/main.a168cb39.chunk.js",
-  "main.js.map": "/modularsynth.js/static/js/main.a168cb39.chunk.js.map",
-  "static/js/1.28cafc53.chunk.js": "/modularsynth.js/static/js/1.28cafc53.chunk.js",
-  "static/js/1.28cafc53.chunk.js.map": "/modularsynth.js/static/js/1.28cafc53.chunk.js.map",
+  "main.js": "/modularsynth.js/static/js/main.de310183.chunk.js",
+  "main.js.map": "/modularsynth.js/static/js/main.de310183.chunk.js.map",
+  "static/js/1.5f325180.chunk.js": "/modularsynth.js/static/js/1.5f325180.chunk.js",
+  "static/js/1.5f325180.chunk.js.map": "/modularsynth.js/static/js/1.5f325180.chunk.js.map",
   "runtime~main.js": "/modularsynth.js/static/js/runtime~main.27b00394.js",
   "runtime~main.js.map": "/modularsynth.js/static/js/runtime~main.27b00394.js.map",
   "static/css/main.d01924ff.chunk.css.map": "/modularsynth.js/static/css/main.d01924ff.chunk.css.map",
@@ -11,6 +11,6 @@
   "static/media/screw_header.svg": "/modularsynth.js/static/media/screw_header.2c2805d6.svg",
   "static/media/Rack.css": "/modularsynth.js/static/media/rack_bg.cd50a535.svg",
   "index.html": "/modularsynth.js/index.html",
-  "precache-manifest.ef096dd7b673057e194e2ed1a3eca9be.js": "/modularsynth.js/precache-manifest.ef096dd7b673057e194e2ed1a3eca9be.js",
+  "precache-manifest.789350f887342f2ed447415a9f77de4d.js": "/modularsynth.js/precache-manifest.789350f887342f2ed447415a9f77de4d.js",
   "service-worker.js": "/modularsynth.js/service-worker.js"
 }

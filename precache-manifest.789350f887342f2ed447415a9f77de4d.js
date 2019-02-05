@@ -16,19 +16,19 @@ self.__precacheManifest = [
     "url": "/modularsynth.js/static/js/runtime~main.27b00394.js"
   },
   {
-    "revision": "a168cb39e713c1b9c658",
-    "url": "/modularsynth.js/static/js/main.a168cb39.chunk.js"
+    "revision": "de31018369f3dbd1f03c",
+    "url": "/modularsynth.js/static/js/main.de310183.chunk.js"
   },
   {
-    "revision": "28cafc53238b38da8300",
-    "url": "/modularsynth.js/static/js/1.28cafc53.chunk.js"
+    "revision": "5f3251809c09a3869fa2",
+    "url": "/modularsynth.js/static/js/1.5f325180.chunk.js"
   },
   {
-    "revision": "a168cb39e713c1b9c658",
+    "revision": "de31018369f3dbd1f03c",
     "url": "/modularsynth.js/static/css/main.d01924ff.chunk.css"
   },
   {
-    "revision": "064d5daa5da5c8653b9e79f5385c2b3d",
+    "revision": "3a445990805530a00db0567c67d53a52",
     "url": "/modularsynth.js/index.html"
   }
 ];
