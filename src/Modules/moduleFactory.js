@@ -1,20 +1,20 @@
 import * as R from 'ramda';
-import SimpleOscillator from './Components/SimpleOscillator';
+import VCO from './Components/VCO';
 import StereoAudioInterface from './Components/StereoAudioInterface';
 import MonoAudioInterface from './Components/MonoAudioInterface';
 import Keyboard from './Components/Keyboard';
 import ADSR from './Components/ADSR';
-import Amp from './Components/Amp';
+import VCA from './Components/VCA';
 import VCF from './Components/VCF';
 
 export const MODULE_TYPE = {
-    OSCILLATOR: 'OSCILLATOR',
+    VCO: 'VCO',
     STEREO_AUDIO_INTERFACE: 'STEREO_AUDIO_INTERFACE',
     MONO_AUDIO_INTERFACE: 'MONO_AUDIO_INTERFACE',
     KEYBOARD: 'KEYBOARD',
     ADSR: 'ADSR',
-    VCF: 'VCF',
-    AMP: 'AMP'
+    VCA: 'VCA',
+    VCF: 'VCF'
 };
 
 const moduleCounters = R.map(R.always(1))(MODULE_TYPE);
@@ -24,8 +24,8 @@ const ONE_HP_IN_PIXELS = 20;
 export const createModule = ({ type, id = undefined }) => {
     const module = { id: id || `${type}${moduleCounters[type]}` };
     switch (type){
-        case MODULE_TYPE.OSCILLATOR:
-            module.Module = SimpleOscillator;
+        case MODULE_TYPE.VCO:
+            module.Module = VCO;
             break;
         case MODULE_TYPE.STEREO_AUDIO_INTERFACE:
             module.Module = StereoAudioInterface;
@@ -42,8 +42,8 @@ export const createModule = ({ type, id = undefined }) => {
         case MODULE_TYPE.VCF:
             module.Module = VCF;
             break;
-        case MODULE_TYPE.AMP:
-            module.Module = Amp;
+        case MODULE_TYPE.VCA:
+            module.Module = VCA;
             break;
         default:
             throw new Error(`Cannot create module of type: ${type}`)

@@ -4,6 +4,7 @@ import { compose, setStatic, withState } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerOutputs } from '../actions';
 import Port from '../../Common/Port';
+import styles from './styles';
 
 const KEY_CODES_NOTES = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188];
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C'];
@@ -86,42 +87,44 @@ class Keyboard extends Component {
 
     render() {
         const { id, connections, octave } = this.props;
-        return <div style={{ display: 'flex', flexDirection: 'column' }}>
+        return <div style={styles.container}>
             <span>&#181;Keyboard</span>
-            Octave
-            <select value={octave} onChange={this.handleOctaveChange}>
-                <option value={2}>-2</option>
-                <option value={3}>-1</option>
-                <option value={4}>0</option>
-                <option value={5}>+1</option>
-                <option value={6}>+2</option>
-            </select>
-            <div style={{ display: 'grid' }}>
-                {
-                    NOTES.map((note, i) => {
-                            const isBlackKey = note.endsWith('#');
-                            const gridRow = isBlackKey ? BLACK_KEYS_GRID_ROW[note] : i +1;
-                            return [
-                                <div key={`TITLE_${note}${i}`} style={{ alignSelf: 'center', gridRow, gridColumn: isBlackKey ? 4 : 1 }}>{note}</div>,
-                                <button key={`${note}${i}`}
-                                        onMouseDown={e => {
-                                            e.stopPropagation();
-                                            this.handleKeyDown(calculateNoteVolt(i, octave));
-                                        }}
-                                        onMouseUp={this.handleKeyUp}
-                                        style={{ height:20, width:20,
-                                            gridRow,
-                                            alignSelf: 'center',
-                                            gridColumn: isBlackKey ? 3 : 2,
-                                            backgroundColor: isBlackKey ? 'black' : 'white' }}/>
-                            ];
-                        }
-                    )
-                }
-            </div>
-            <div style={{ display: 'flex', flex: 1 }}>
-                <Port portId='CV' connections={connections} moduleId={id} portType='output'/>
-                <Port portId='Gate' connections={connections} moduleId={id} portType='output'/>
+            <div style={styles.body}>
+                Octave
+                <select value={octave} onChange={this.handleOctaveChange}>
+                    <option value={2}>-2</option>
+                    <option value={3}>-1</option>
+                    <option value={4}>0</option>
+                    <option value={5}>+1</option>
+                    <option value={6}>+2</option>
+                </select>
+                <div style={{ display: 'grid', flex: 1 }}>
+                    {
+                        NOTES.map((note, i) => {
+                                const isBlackKey = note.endsWith('#');
+                                const gridRow = isBlackKey ? BLACK_KEYS_GRID_ROW[note] : i +1;
+                                return [
+                                    <div key={`TITLE_${note}${i}`} style={{ alignSelf: 'center', gridRow, gridColumn: isBlackKey ? 4 : 1 }}>{note}</div>,
+                                    <button key={`${note}${i}`}
+                                            onMouseDown={e => {
+                                                e.stopPropagation();
+                                                this.handleKeyDown(calculateNoteVolt(i, octave));
+                                            }}
+                                            onMouseUp={this.handleKeyUp}
+                                            style={{ height:20, width:20,
+                                                gridRow,
+                                                alignSelf: 'center',
+                                                gridColumn: isBlackKey ? 3 : 2,
+                                                backgroundColor: isBlackKey ? 'black' : 'white' }}/>
+                                ];
+                            }
+                        )
+                    }
+                </div>
+                <div style={styles.spaceAround}>
+                    <Port portId='CV' connections={connections} moduleId={id} portType='output'/>
+                    <Port portId='Gate' connections={connections} moduleId={id} portType='output'/>
+                </div>
             </div>
         </div>;
     }
@@ -132,7 +135,7 @@ const mapStateToProps = ({ modules }, ownProps) => ({
 });
 
 export default compose(
-    setStatic('isBrowserSupported', true),
+    setStatic('isBrowserSupported', typeof ConstantSourceNode !== 'undefined'),
     setStatic('panelWidth', 6),
     withState('octave', 'setOctave', 4),
     connect(mapStateToProps, { connectModules, registerOutputs })

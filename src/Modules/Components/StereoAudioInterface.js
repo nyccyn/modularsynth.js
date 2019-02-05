@@ -3,6 +3,7 @@ import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs } from '../actions';
 import Port from '../../Common/Port';
+import styles from './styles';
 
 class StereoAudioInterface extends Component {
     constructor(props){
@@ -31,10 +32,12 @@ class StereoAudioInterface extends Component {
 
     render(){
         const { id, connections } = this.props;
-        return <div style={{ display: 'flex', flexDirection: 'column' }}>
+        return <div style={styles.container}>
             <span>Stereo</span>
-            <Port portId='Left' connections={connections} moduleId={id} portType='input'/>
-            <Port portId='Right' connections={connections} moduleId={id} portType='input'/>
+            <div style={styles.body}>
+                <Port portId='Left' connections={connections} moduleId={id} portType='input'/>
+                <Port portId='Right' connections={connections} moduleId={id} portType='input'/>
+            </div>
         </div>;
     }
 }

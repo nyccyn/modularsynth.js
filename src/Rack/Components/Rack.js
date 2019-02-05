@@ -9,15 +9,78 @@ import { unsetStartingPort, moveModule } from '../../Modules/actions';
 import { modifyCable, removeCable, modifyModuleCables } from '../../Cables/actions';
 import './Rack.css';
 import Panel from "../../Common/Panel";
+import createPulseOscillator from '../helpers/createPulseOscillator';
+import createVoltToHzConverter from '../helpers/createVoltToHzConverter';
 
 class Rack extends Component {
     constructor(props){
         super(props);
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         this._audioContext = new AudioContext();
+        this._audioContext.createPulseOscillator = createPulseOscillator;
+        this._audioContext.createVoltToHzConverter = createVoltToHzConverter;
+
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleDragging = this.handleDragging.bind(this);
+
+        //temp
+        this._analyser = this._audioContext.createAnalyser();
+        window.analyser = this._analyser;
+        window.visuallize = this.visuallize = this.visuallize.bind(this);
+    }
+
+    visuallize()
+    {
+        const canvas = this._canvas;
+        const canvasCtx = canvas.getContext("2d");
+        const analyser = this._analyser;
+
+        analyser.fftSize = 1024;
+        const dataArray = new Float32Array(analyser.frequencyBinCount);
+        canvas.width = dataArray.length;
+        canvas.height = 200;
+        const WIDTH = canvas.width;
+        const HEIGHT = canvas.height;
+
+        canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+        function draw()
+        {
+            setTimeout(() => window.v = requestAnimationFrame(draw), 300);
+
+            analyser.getFloatTimeDomainData(dataArray);
+
+            canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+            canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+
+            canvasCtx.beginPath();
+
+            let x = 0;
+
+            for (let i = 0; i < dataArray.length; i++)
+            {
+
+                x = i;
+                const y = (0.5 + dataArray[i] / 2) * HEIGHT;
+
+                if (i === 0)
+                {
+                    canvasCtx.moveTo(x, y);
+                }
+                else
+                {
+                    canvasCtx.lineTo(x, y);
+                }
+            }
+
+            canvasCtx.stroke();
+        }
+
+        draw();
     }
 
     componentDidUpdate(prevProps) {
@@ -91,6 +154,7 @@ class Rack extends Component {
                 </div>
                 <CablesContainer/>
             </div>
+            <canvas ref={ref => this._canvas = ref} className="visualizer" width="640" height="100"/>
         </div>;
     }
 }
