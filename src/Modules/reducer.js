@@ -25,23 +25,26 @@ export default handleActions({
             return state;
         }
 
-        newModule.left = state.maxLeft;// + R.pipe(R.values, R.pluck('width'), R.sum)(state.modules);
+        newModule.left = state.maxLeft;
         return R.evolve({
             modules: R.assoc(newModule.id, newModule),
             connections: R.assoc(newModule.id, {}),
             maxLeft: R.add(newModule.width)
         })(state);
     },
+
     [ActionTypes.REGISTER_INPUTS]: (state, { id, inputs }) => R.evolve({
         modules: R.evolve({
             [id]: R.assoc('inputs', inputs)
         })
     })(state),
+
     [ActionTypes.REGISTER_OUTPUTS]: (state, { id, outputs }) => R.evolve({
         modules: R.evolve({
             [id]: R.assoc('outputs', outputs)
         })
     })(state),
+
     [ActionTypes.CONNECT_MODULES]: (state, { input, output }) => R.evolve({
         connections: R.pipe(
             removeLastConnection(output),
@@ -51,6 +54,7 @@ export default handleActions({
                 [output.moduleId]: R.assoc(output.portId, { moduleId: input.moduleId, portId: input.portId })
             }))
     })(state),
+
     [ActionTypes.DISCONNECT_MODULE]: (state, { port }) => R.evolve({
         connections: R.pipe(
             removeLastConnection(port),
@@ -59,12 +63,15 @@ export default handleActions({
             })
         )
     })(state),
+
     [ActionTypes.SET_STARTING_PORT]: (state, { port }) => R.evolve({
         startingPort: R.always(port)
     })(state),
+
     [ActionTypes.UNSET_STARTING_PORT]: (state) => R.evolve({
         startingPort: R.always(null)
     })(state),
+
     [ActionTypes.MOVE_MODULE]: (state, { moduleId, x }) => {
         const prevLeft = state.modules[moduleId].left;
         const moduleWidth = state.modules[moduleId].width;
@@ -91,6 +98,15 @@ export default handleActions({
                 })
             }),
             maxLeft: R.max(newLeft + state.modules[moduleId].width)
+        })(state);
+    },
+
+    [ActionTypes.REMOVE_MODULE]: (state, { moduleId }) => {
+        const removedModule = state.modules[moduleId];
+
+        return R.evolve({
+            modules: R.dissoc(moduleId),
+            maxLeft: lastValue => removedModule.left + removedModule.width === lastValue ? removedModule.left : lastValue
         })(state);
     }
 }, initialState);
