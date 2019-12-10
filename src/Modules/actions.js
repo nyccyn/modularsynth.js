@@ -47,6 +47,7 @@ export const moveModule = (moduleId, x) => ({
 });
 
 export const removeModule = moduleId => (dispatch, getState) => {
+    console.log("remove module", moduleId);
     const { modules: { modules, connections }, cables: { cables } } = getState();
     const removedModule = modules[moduleId];
     if (!removedModule) return;
@@ -82,4 +83,13 @@ export const removeModule = moduleId => (dispatch, getState) => {
         type: ActionTypes.REMOVE_MODULE,
         moduleId
     })
+};
+
+export const removeAllModules = () => (dispatch, getState) => {
+    console.log("remove all modules");
+    R.pipe(
+        R.keys,
+        R.map(moduleId => dispatch(removeModule(moduleId)))
+    )(getState().modules.modules);
+    dispatch({ type: ActionTypes.REMOVE_ALL_MODULES });
 };
