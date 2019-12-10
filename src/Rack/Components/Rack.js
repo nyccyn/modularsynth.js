@@ -145,6 +145,7 @@ class Rack extends Component {
                 <div className='rack'>
                     { modules.map(({ Module, id, width, left }) =>
                         <Panel key={id}
+                               moduleId={id}
                                setDragging={this.handleDragging(id)}
                                dragging={ id === draggingModuleId }
                                width={width} left={left}>

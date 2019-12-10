@@ -11,6 +11,20 @@
     flex: 1;
 }
 
+.btn_delete_module {
+    visibility: hidden;
+    color: gray;
+    cursor: pointer;
+}
+
+.btn_delete_module:hover {
+    color: black;
+}
+
+.module-panel:hover .btn_delete_module {
+    visibility: visible;
+}
+
 .panel_edge {
     display: flex;
     justify-content: space-between;

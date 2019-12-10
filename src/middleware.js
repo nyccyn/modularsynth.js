@@ -47,7 +47,10 @@ const middleware = ({ getState }) => next => action => {
                     input => input.disconnect(output)
                 )(connections);
             }
+            break;
         }
+        default:
+            break;        
     }
 
     return next(action);
