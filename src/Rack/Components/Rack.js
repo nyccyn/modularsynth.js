@@ -23,6 +23,7 @@ class Rack extends Component {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleDragging = this.handleDragging.bind(this);
+        this.handleRackScroll = this.handleRackScroll.bind(this);
 
         //temp
         this._analyser = this._audioContext.createAnalyser();
@@ -136,13 +137,17 @@ class Rack extends Component {
         }
     }
 
+    handleRackScroll() {    
+        this.props.setScrollLeft(document.getElementById('rack').scrollLeft);    
+    }
+
     render() {
-        const { modules, draggingModuleId } = this.props;
-        return <div onMouseUp={this.handleMouseUp} onMouseMove={this.handleMouseMove}>
+        const { modules, draggingModuleId, scrollLeft } = this.props;
+        return <div onMouseUp={this.handleMouseUp} onMouseMove={this.handleMouseMove} onScroll={this.handleRackScroll}>
             <ModulePicker/>
             <PresetManager/>
             <div>
-                <div className='rack'>
+                <div id="rack" className='rack'>
                     { modules.map(({ Module, id, width, left }) =>
                         <Panel key={id}
                                moduleId={id}
@@ -153,7 +158,7 @@ class Rack extends Component {
                         </Panel>
                     ) }
                 </div>
-                <CablesContainer/>
+                <CablesContainer scrollLeft={scrollLeft}/>
             </div>
             <canvas ref={ref => this._canvas = ref} className="visualizer" width="640" height="100"/>
         </div>;
@@ -166,5 +171,6 @@ const mapStateToProps = state => ({
 });
 export default compose(
     withState('draggingModuleId', 'setDraggingModuleId', null),
+    withState('scrollLeft', 'setScrollLeft', 0),
     connect(mapStateToProps, { modifyCable, removeCable, unsetStartingPort, moveModule, modifyModuleCables })
 )(Rack);

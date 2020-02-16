@@ -4,4 +4,5 @@
     background-size: contain;
     background-image: url("rack_bg.svg");
     height: 370px;
+    overflow-x: scroll;
 }

@@ -77,6 +77,9 @@ export default handleActions({
         const moduleWidth = state.modules[moduleId].width;
         const newLeft = prevLeft + Math.floor((x - prevLeft) / 20) * 20;
         const newRight = newLeft + moduleWidth;
+
+        if (newRight > window.innerWidth) return state;
+        
         const isSpaceInUse = R.pipe(
             R.values,
             R.any(
