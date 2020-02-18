@@ -22,7 +22,7 @@ class VCF extends Component {
         this.setQuality = this.setQuality.bind(this);       
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const { id, registerInputs, registerOutputs } = this.props;        
         registerInputs(id, {
             In: {

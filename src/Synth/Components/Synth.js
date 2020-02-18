@@ -6,14 +6,14 @@ import ModulePicker from '../../Modules/Components/ModulePicker';
 import CablesContainer from '../../Cables/Components/CablesContainer';
 import PresetManager from './PresetManager';
 import { unsetStartingPort, moveModule } from '../../Modules/actions';
-import { modifyCable, removeCable, modifyModuleCables } from '../../Cables/actions';
+import { modifyCable, removeCable } from '../../Cables/actions';
 import './Rack.css';
 import Panel from "../../Common/Panel";
 import createPulseOscillator from '../helpers/createPulseOscillator';
 import createVoltToHzConverter from '../helpers/createVoltToHzConverter';
 
-class Rack extends Component {
-    constructor(props){
+class Synth extends Component {
+    constructor(props) {
         super(props);
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         this._audioContext = new AudioContext();
@@ -25,14 +25,15 @@ class Rack extends Component {
         this.handleDragging = this.handleDragging.bind(this);
         this.handleRackScroll = this.handleRackScroll.bind(this);
 
+        window.onscroll = e => console.log(props.setScrollTop(window.scrollY));
+
         //temp
         this._analyser = this._audioContext.createAnalyser();
         window.analyser = this._analyser;
         window.visuallize = this.visuallize = this.visuallize.bind(this);
     }
 
-    visuallize()
-    {
+    visuallize() {
         const canvas = this._canvas;
         const canvasCtx = canvas.getContext("2d");
         const analyser = this._analyser;
@@ -46,8 +47,7 @@ class Rack extends Component {
 
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
-        function draw()
-        {
+        function draw() {
             setTimeout(() => window.v = requestAnimationFrame(draw), 300);
 
             analyser.getFloatTimeDomainData(dataArray);
@@ -62,18 +62,15 @@ class Rack extends Component {
 
             let x = 0;
 
-            for (let i = 0; i < dataArray.length; i++)
-            {
+            for (let i = 0; i < dataArray.length; i++) {
 
                 x = i;
                 const y = (0.5 + dataArray[i] / 2) * HEIGHT;
 
-                if (i === 0)
-                {
+                if (i === 0) {
                     canvasCtx.moveTo(x, y);
                 }
-                else
-                {
+                else {
                     canvasCtx.lineTo(x, y);
                 }
             }
@@ -82,26 +79,6 @@ class Rack extends Component {
         }
 
         draw();
-    }
-
-    componentDidUpdate(prevProps) {
-        const { modules, modifyModuleCables } = this.props;
-        let prevModule;
-        const movedModule = R.find(
-            ({ id, left }) => {
-                prevModule = R.find(R.where({
-                    id: R.equals(id),
-                    left: R.complement(R.equals(left))
-                }))(prevProps.modules)
-                return !R.isNil(prevModule)
-            }
-        )(modules);
-        if (movedModule) {
-            modifyModuleCables({
-                moduleId: movedModule.id,
-                diff: movedModule.left - prevModule.left
-            })
-        }
     }
 
     handleMouseUp() {
@@ -126,9 +103,9 @@ class Rack extends Component {
     }
 
     dragModule(e) {
-        const { draggingModuleId, moveModule } = this.props;
+        const { draggingModuleId, moveModule, activeRackId } = this.props;
         if (!draggingModuleId) return;
-        moveModule(draggingModuleId, e.clientX);
+        moveModule(draggingModuleId, e.clientX, activeRackId);
     }
 
     handleDragging(moduleId) {
@@ -137,40 +114,53 @@ class Rack extends Component {
         }
     }
 
-    handleRackScroll() {    
-        this.props.setScrollLeft(document.getElementById('rack').scrollLeft);    
+    handleRackScroll(e) {        
+        this.props.setScrollLeft(e.target.scrollLeft);
     }
 
     render() {
-        const { modules, draggingModuleId, scrollLeft } = this.props;
+        const { racks, modules, draggingModuleId, scrollLeft, scrollTop, setActiveRackId } = this.props;
         return <div onMouseUp={this.handleMouseUp} onMouseMove={this.handleMouseMove} onScroll={this.handleRackScroll}>
-            <ModulePicker/>
-            <PresetManager/>
+            <ModulePicker />
+            <PresetManager />
             <div>
-                <div id="rack" className='rack'>
-                    { modules.map(({ Module, id, width, left }) =>
-                        <Panel key={id}
-                               moduleId={id}
-                               setDragging={this.handleDragging(id)}
-                               dragging={ id === draggingModuleId }
-                               width={width} left={left}>
-                            <Module id={id} audioContext={this._audioContext}/>
-                        </Panel>
-                    ) }
+                <div style={{ overflowX: 'scroll' }}>
+                    {
+                        racks.map((moduleIds, rackId) =>
+                            <div key={rackId} className='rack' style={{ width: `calc(100% + ${scrollLeft}px)` }} onMouseEnter={() => setActiveRackId(rackId)}>
+                                {
+                                    moduleIds.map(id => {
+                                        const { Module, width, left } = modules[id];
+                                        return <Panel key={id}
+                                            rackId={rackId}
+                                            moduleId={id}
+                                            setDragging={this.handleDragging(id)}
+                                            dragging={id === draggingModuleId}
+                                            width={width} left={left}>
+                                            <Module id={id} audioContext={this._audioContext} />
+                                        </Panel>;
+                                    })
+                                }
+                            </div>
+                        )
+                    }
                 </div>
-                <CablesContainer scrollLeft={scrollLeft}/>
+                <CablesContainer scrollLeft={scrollLeft} scrollTop={scrollTop}/>
             </div>
-            <canvas ref={ref => this._canvas = ref} className="visualizer" width="640" height="100"/>
+            <canvas ref={ref => this._canvas = ref} className="visualizer" width="640" height="100" />
         </div>;
     }
 }
 
-const mapStateToProps = state => ({
-    modules: R.values(state.modules.modules),
-    startingPort: state.modules.startingPort
+const mapStateToProps = ({ modules }) => ({
+    modules: modules.modules,
+    racks: modules.racks,
+    startingPort: modules.startingPort
 });
 export default compose(
     withState('draggingModuleId', 'setDraggingModuleId', null),
     withState('scrollLeft', 'setScrollLeft', 0),
-    connect(mapStateToProps, { modifyCable, removeCable, unsetStartingPort, moveModule, modifyModuleCables })
-)(Rack);
+    withState('scrollTop', 'setScrollTop', 0),
+    withState('activeRackId', 'setActiveRackId', 0),
+    connect(mapStateToProps, { modifyCable, removeCable, unsetStartingPort, moveModule })
+)(Synth);

@@ -2,10 +2,11 @@ import * as ActionTypes from '../actionTypes';
 import * as R from 'ramda';
 import { removeCable } from "../Cables/actions";
 
-export const addModule = (moduleType, id) => ({
+export const addModule = (moduleType, id, rackId) => ({
     type: ActionTypes.ADD_MODULE,
     moduleType,
-    id
+    id,
+    rackId
 });
 
 export const connectModules = ({ output, input }) => ({
@@ -40,10 +41,11 @@ export const unsetStartingPort = () => ({
     type: ActionTypes.UNSET_STARTING_PORT
 });
 
-export const moveModule = (moduleId, x) => ({
+export const moveModule = (moduleId, x, rackId) => ({
     type: ActionTypes.MOVE_MODULE,
     moduleId,
-    x
+    x,
+    rackId
 });
 
 export const removeModule = moduleId => (dispatch, getState) => {

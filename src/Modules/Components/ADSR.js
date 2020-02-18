@@ -19,7 +19,7 @@ class ADSR extends Component {
         this.handleGateInChange = this.handleGateInChange.bind(this);        
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const { id, registerInputs, registerOutputs } = this.props;
         this._adsr.start();
         registerInputs(id, {

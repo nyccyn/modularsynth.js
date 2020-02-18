@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import * as R from 'ramda';
 import { connect } from 'react-redux';
 import { connectModules, disconnectModule, setStartingPort, unsetStartingPort } from '../Modules/actions';
 import { addCable, removeCable, modifyCable } from '../Cables/actions';
@@ -11,24 +12,46 @@ export const LABEL_POSITIONS = {
     BELOW: 'BELOW'
 }
 
-const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connections, connectModules, disconnectModule, moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable }) => {
+const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection, connectModules, disconnectModule,
+    moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable, cables }) => {
+    useEffect(() => {
+        const fromPortCable = R.find(R.whereEq({ portId: `${moduleId}-${portId}` }), cables);
+        if (fromPortCable) {
+            const { x, y, width, height } = _elem.getBoundingClientRect();
+            modifyCable({
+                portId: fromPortCable.portId,
+                fromPoint: { x: x + width / 2, y: y + height / 2 },
+            });
+        }
+        else {
+            const toPortCable = R.find(R.whereEq({ toPortId: `${moduleId}-${portId}` }), cables);
+            if (toPortCable) {
+                const { x, y, width, height } = _elem.getBoundingClientRect();
+                modifyCable({
+                    portId: toPortCable.portId,
+                    toPoint: { x: x + width / 2, y: y + height / 2 },
+                });
+            }
+        }
+    }, [connection]);
+
     let _elem;
     const handleMouseDown = e => {
         e.stopPropagation();
         const port = { portId, portType, moduleId };
-        if (connections[portId]) {
+        if (connection) {
             disconnectModule({
                 moduleId,
                 portId
             });
-            removeCable(`${connections[portId].moduleId}-${connections[portId].portId}`);
+            removeCable(`${connection.moduleId}-${connection.portId}`);
         }
 
         setStartingPort(port);
         const { x, y, width, height } = _elem.getBoundingClientRect();
         addCable({
             portId: `${moduleId}-${portId}`,
-            fromPoint: { x: x + width / 2 , y: y + height / 2 },
+            fromPoint: { x: x + width / 2, y: y + height / 2 },
             color: randomColor({ luminosity: 'dark' })
         });
     };
@@ -37,23 +60,22 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection
         unsetStartingPort();
         if (!startingPort ||
             (startingPort.portType === portType) ||
-            (startingPort.moduleId === moduleId && startingPort.id === portId))
-        {
+            (startingPort.moduleId === moduleId && startingPort.id === portId)) {
             return;
         }
 
         e.stopPropagation();
         const { x, y, width, height } = _elem.getBoundingClientRect();
 
-        if (connections[portId] &&
-            (connections[portId].moduleId !== startingPort.moduleId || connections[portId].portId !== startingPort.portId)) {
-            removeCable(`${connections[portId].moduleId}-${connections[portId].portId}`);
+        if (connection &&
+            (connection.moduleId !== startingPort.moduleId || connection.portId !== startingPort.portId)) {
+            removeCable(`${connection.moduleId}-${connection.portId}`);
             removeCable(`${moduleId}-${portId}`);
         }
 
         modifyCable({
             portId: `${startingPort.moduleId}-${startingPort.portId}`,
-            toPoint: { x: x + width / 2 , y: y + height / 2 },
+            toPoint: { x: x + width / 2, y: y + height / 2 },
             toPortId: `${moduleId}-${portId}`
         });
         connectModules({
@@ -67,18 +89,19 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection
 
     const portLabel = label || portId;
     return <div className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
-                onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}>
-        { labelPosition === LABEL_POSITIONS.ABOVE && portLabel }
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}>
+        {labelPosition === LABEL_POSITIONS.ABOVE && portLabel}
         <img id={`${moduleId}-${portId}`} height="30" width="30" ref={elem => _elem = elem}
-             onMouseDown={e => e.preventDefault()} src={require('./port.svg')} alt={`${moduleId}-${portId}`}/>
-        { labelPosition === LABEL_POSITIONS.BELOW && portLabel }
+            onMouseDown={e => e.preventDefault()} src={require('./port.svg')} alt={`${moduleId}-${portId}`} />
+        {labelPosition === LABEL_POSITIONS.BELOW && portLabel}
     </div>;
 };
 
-const mapStateToProps = ({ modules }, ownProps) => ({
+const mapStateToProps = ({ modules, cables }, ownProps) => ({
     startingPort: modules.startingPort,
-    connections: modules.connections[ownProps.moduleId]
+    connection: modules.connections[ownProps.moduleId][ownProps.portId],
+    cables: R.values(cables.cables)
 });
 
 export default connect(mapStateToProps, { connectModules, disconnectModule, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable })(Port);

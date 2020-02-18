@@ -16,7 +16,7 @@ class StereoAudioInterface extends Component {
         this._rightPanner.connect(props.audioContext.destination);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const { id, registerInputs } = this.props;
         registerInputs(id, {
             Left: {

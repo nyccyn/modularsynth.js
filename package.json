@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://nyccyn.github.io/modularsynth.js/",
-  "engines": {
-    "node": "11.x"
-  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.14",
     "@fortawesome/free-solid-svg-icons": "^5.7.1",

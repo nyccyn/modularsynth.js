@@ -12,7 +12,7 @@ class VCA extends Component {
         this._gain = props.audioContext.createGain();
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const { id, registerInputs, registerOutputs, audioContext } = this.props;
 
         registerInputs(id, {

@@ -56,7 +56,7 @@ class VCO extends Component {
         this.handleFmCvChange = this.handleFmCvChange.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const { id, registerInputs, registerOutputs } = this.props;
         this.startNodes();
         registerInputs(id, {

@@ -40,7 +40,7 @@ class Keyboard extends Component {
         this._keyboardDown = false;
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const { id, registerOutputs } = this.props;        
         registerOutputs(id, {
             CV: this._cv,

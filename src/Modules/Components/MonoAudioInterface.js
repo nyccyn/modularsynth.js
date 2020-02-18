@@ -11,7 +11,7 @@ class StereoAudioInterface extends Component {
         if (!props.audioContext) throw new Error('audioContext property must be provided');
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const { id, registerInputs } = this.props;
         registerInputs(id, {
             In: {

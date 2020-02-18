@@ -12,7 +12,7 @@ class Knob extends Component {
         this.calculateValueAngle = this.calculateValueAngle.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         document.addEventListener('mouseup', this.handleMouseUp);
         document.addEventListener('mousemove', this.handleMouseMove);
     }
