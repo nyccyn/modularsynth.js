@@ -1,15 +1,15 @@
 self.__precacheManifest = [
   {
-    "revision": "78159c305c4f7c446225",
-    "url": "/modularsynth.js/static/css/main.ba51fd0c.chunk.css"
+    "revision": "3d3a819d282cb39a2ecc",
+    "url": "/modularsynth.js/static/css/main.ac961d90.chunk.css"
   },
   {
-    "revision": "78159c305c4f7c446225",
-    "url": "/modularsynth.js/static/js/main.78159c30.chunk.js"
+    "revision": "3d3a819d282cb39a2ecc",
+    "url": "/modularsynth.js/static/js/main.3d3a819d.chunk.js"
   },
   {
-    "revision": "470dafe6e397ed65e345",
-    "url": "/modularsynth.js/static/js/1.470dafe6.chunk.js"
+    "revision": "6005394f73ed99705d58",
+    "url": "/modularsynth.js/static/js/1.6005394f.chunk.js"
   },
   {
     "revision": "27b00394f8973a9621db",
@@ -48,7 +48,7 @@ self.__precacheManifest = [
     "url": "/modularsynth.js/static/media/screw_header.2c2805d6.svg"
   },
   {
-    "revision": "f5cf805b970025287a011ed7e6fac48d",
+    "revision": "da653d238b8908f9d3b7bee11069c064",
     "url": "/modularsynth.js/index.html"
   }
 ];
