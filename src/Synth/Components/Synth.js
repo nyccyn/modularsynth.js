@@ -25,7 +25,7 @@ class Synth extends Component {
         this.handleDragging = this.handleDragging.bind(this);
         this.handleRackScroll = this.handleRackScroll.bind(this);
 
-        window.onscroll = e => console.log(props.setScrollTop(window.scrollY));
+        window.onscroll = e => props.setScrollTop(window.scrollY);
 
         //temp
         this._analyser = this._audioContext.createAnalyser();
@@ -94,11 +94,11 @@ class Synth extends Component {
     }
 
     moveCable(e) {
-        const { modifyCable, startingPort } = this.props;
+        const { modifyCable, startingPort, scrollTop } = this.props;
         if (!startingPort) return;
         modifyCable({
             portId: `${startingPort.moduleId}-${startingPort.portId}`,
-            toPoint: { x: e.clientX, y: e.clientY }
+            toPoint: { x: e.clientX, y: e.clientY + scrollTop }
         });
     }
 
@@ -145,7 +145,7 @@ class Synth extends Component {
                         )
                     }
                 </div>
-                <CablesContainer scrollLeft={scrollLeft} scrollTop={scrollTop}/>
+                <CablesContainer scrollLeft={scrollLeft} scrollTop={scrollTop} height={racks.length * 1.5 * 370}/>
             </div>
             <canvas ref={ref => this._canvas = ref} className="visualizer" width="640" height="100" />
         </div>;

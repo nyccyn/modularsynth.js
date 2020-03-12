@@ -14,13 +14,13 @@ export const LABEL_POSITIONS = {
 
 const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection, connectModules, disconnectModule,
     moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable, cables }) => {
-    useEffect(() => {
+    useEffect(() => {        
         const fromPortCable = R.find(R.whereEq({ portId: `${moduleId}-${portId}` }), cables);
         if (fromPortCable) {
             const { x, y, width, height } = _elem.getBoundingClientRect();
             modifyCable({
                 portId: fromPortCable.portId,
-                fromPoint: { x: x + width / 2, y: y + height / 2 },
+                fromPoint: { x: x + width / 2, y: y + window.scrollY + height / 2 },
             });
         }
         else {
@@ -29,7 +29,7 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection
                 const { x, y, width, height } = _elem.getBoundingClientRect();
                 modifyCable({
                     portId: toPortCable.portId,
-                    toPoint: { x: x + width / 2, y: y + height / 2 },
+                    toPoint: { x: x + width / 2, y: y + window.scrollY + height / 2 },
                 });
             }
         }
@@ -49,9 +49,10 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection
 
         setStartingPort(port);
         const { x, y, width, height } = _elem.getBoundingClientRect();
+        
         addCable({
             portId: `${moduleId}-${portId}`,
-            fromPoint: { x: x + width / 2, y: y + height / 2 },
+            fromPoint: { x: x + width / 2, y: y + window.scrollY + height / 2 },
             color: randomColor({ luminosity: 'dark' })
         });
     };
@@ -71,7 +72,7 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection
             (connection.moduleId !== startingPort.moduleId || connection.portId !== startingPort.portId)) {
             removeCable(`${connection.moduleId}-${connection.portId}`);
             removeCable(`${moduleId}-${portId}`);
-        }
+        }        
 
         modifyCable({
             portId: `${startingPort.moduleId}-${startingPort.portId}`,
