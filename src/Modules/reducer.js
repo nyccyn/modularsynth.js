@@ -4,6 +4,7 @@ import { createModule } from './moduleFactory';
 import * as R from 'ramda';
 
 const initialState = {
+    audioContextInitiliazed: false,
     modules: {},
     connections: {},
     startingPort: null,
@@ -28,6 +29,7 @@ export default handleActions({
 
         newModule.left = state.maxLeft;
         return R.evolve({
+            audioContextInitiliazed: R.T,
             modules: R.assoc(newModule.id, newModule),
             connections: R.assoc(newModule.id, {}),
             maxLeft: R.add(newModule.width),

@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import * as R from 'ramda';
-import { compose, setStatic, withState } from 'recompose';
+import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerOutputs } from '../actions';
 import Port from '../../Common/Port';
 import styles from './styles';
+import { useModule } from '../lib';
 
 const KEY_CODES_NOTES = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188];
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C'];
@@ -19,79 +20,76 @@ const BLACK_KEYS_GRID_ROW = {
 // The ground oscillation frequency is 440, so we want to send 0 volts when keyboard is in A4
 const calculateNoteVolt = (noteIndex, octave) => octave - 5 + (noteIndex + 3) / 12;
 
+const Keyboard = ({ id, audioContext, registerOutputs, connections }) => {
 
-class Keyboard extends Component {
-    constructor(props) {
-        super(props);
-        if (!props.audioContext) throw new Error("audioContext property must be provided");
+    const [octave, setOctave] = useState(4);
+    const [cv, setCv] = useState(0);
+    const [keyboardDown, setKeyboardDown] = useState(false);
 
-        this._gate = props.audioContext.createConstantSource();
-        this._gate.offset.value = 0;
-        this._gate.start();
-        this._cv = props.audioContext.createConstantSource();
-        this._cv.offset.value = 0;
-        this._cv.start();
+    const moduleFactory = useCallback(() => {
+        const gate = audioContext.createConstantSource();
+        gate.offset.value = 0;
+        gate.start();
+        const cv = audioContext.createConstantSource();
+        cv.offset.value = 0;
+        cv.start();
 
-        this.handleKeyDown = this.handleKeyDown.bind(this);
-        this.handleKeyUp = this.handleKeyUp.bind(this);
-        this.handleOctaveChange = this.handleOctaveChange.bind(this);
-        this.handleKeyboardDown = this.handleKeyboardDown.bind(this);
-        this.handleKeyboardUp = this.handleKeyboardUp.bind(this);
-        this._keyboardDown = false;
-    }
+        return { gate, cv };
+    }, [audioContext]);
+    const module = useModule(id, moduleFactory);
 
-    componentDidMount() {
-        const { id, registerOutputs } = this.props;        
+    useEffect(() => {
+        if (!module) return;
+
         registerOutputs(id, {
-            CV: this._cv,
-            Gate: this._gate
+            CV: module.cv,
+            Gate: module.gate
         });
+    }, [id, module, registerOutputs]);
 
-        document.addEventListener('keydown', this.handleKeyboardDown);
-        document.addEventListener('keyup', this.handleKeyboardUp);
-    }
+    useEffect(() => {
+        if (module) module.cv.offset.value = cv;
+    }, [module, cv]);
 
-    handleKeyboardDown(event) {
+    const handleKeyDown = useCallback((cv) => {        
+        setCv(cv);
+        module.gate.offset.value = 1;
+    }, [module]);
+
+    const handleKeyUp = useCallback(() => {
+        module.gate.offset.value = 0;
+    }, [module]);
+    
+    const handleKeyboardDown = useCallback((event) => {    
         const keyCodeIndex = R.indexOf(event.keyCode, KEY_CODES_NOTES);
-        if (!this._keyboardDown && keyCodeIndex !== -1) {
-            this._keyboardDown = true;
-            this.handleKeyDown(calculateNoteVolt(keyCodeIndex, this.props.octave));
+        if (!keyboardDown && keyCodeIndex !== -1) {
+            setKeyboardDown(false);
+            handleKeyDown(calculateNoteVolt(keyCodeIndex, octave));
         }
-    }
+    }, [keyboardDown, handleKeyDown, octave]);
 
-    handleKeyboardUp() {
-        this._keyboardDown = false;
-        this.handleKeyUp();
-    }
+    const handleKeyboardUp = useCallback(() => {
+        setKeyboardDown(false);
+        handleKeyUp();
+    }, [handleKeyUp]);
 
-    handleKeyDown(cv) {
-        this.changeFrequency(cv);
-        this._gate.offset.value = 1;
-    }
+    useEffect(() => {
+        document.onkeydown = handleKeyboardDown;
+        document.onkeyup = handleKeyboardUp;
+    }, [handleKeyboardDown, handleKeyboardUp]);
 
-    handleKeyUp() {
-        this._gate.offset.value = 0;
-    }
-
-    handleOctaveChange({ target: { value }}) {
-        const { setOctave, octave } = this.props;
+    const handleOctaveChange = useCallback(({ target: { value }}) => {
         const newOctave = Number(value);
-        const cv = this._cv.offset.value;
-        this.changeFrequency(cv + newOctave - octave);
+        const cv = module.cv.offset.value;
+        setCv(cv + newOctave - octave);
         setOctave(newOctave);
-    }
+    }, [module, octave]);
 
-    changeFrequency(cv) {
-        this._cv.offset.value = cv;
-    }
-
-    render() {
-        const { id, connections, octave } = this.props;
-        return <div style={styles.container}>
+    return <div style={styles.container}>
             <span>&#181;Keyboard</span>
             <div style={styles.body}>
                 Octave
-                <select value={octave} onChange={this.handleOctaveChange}>
+                <select value={octave} onChange={handleOctaveChange}>
                     <option value={2}>-2</option>
                     <option value={3}>-1</option>
                     <option value={4}>0</option>
@@ -108,9 +106,9 @@ class Keyboard extends Component {
                                     <button key={`${note}${i}`}
                                             onMouseDown={e => {
                                                 e.stopPropagation();
-                                                this.handleKeyDown(calculateNoteVolt(i, octave));
+                                                handleKeyDown(calculateNoteVolt(i, octave));
                                             }}
-                                            onMouseUp={this.handleKeyUp}
+                                            onMouseUp={handleKeyUp}
                                             style={{ height:20, width:20,
                                                 gridRow,
                                                 alignSelf: 'center',
@@ -127,8 +125,7 @@ class Keyboard extends Component {
                 </div>
             </div>
         </div>;
-    }
-}
+};
 
 const mapStateToProps = ({ modules }, ownProps) => ({
     connections: modules.connections[ownProps.id]
@@ -137,6 +134,5 @@ const mapStateToProps = ({ modules }, ownProps) => ({
 export default compose(
     setStatic('isBrowserSupported', typeof ConstantSourceNode !== 'undefined'),
     setStatic('panelWidth', 6),
-    withState('octave', 'setOctave', 4),
     connect(mapStateToProps, { connectModules, registerOutputs })
 )(Keyboard);

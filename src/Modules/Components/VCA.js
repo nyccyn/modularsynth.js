@@ -1,67 +1,61 @@
-import React, { Component } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
 import Port from '../../Common/Port';
 import styles from './styles';
+import { useModule } from '../lib';
 
-class VCA extends Component {
-    constructor(props) {
-        super(props);
-        if (!props.audioContext) throw new Error("audioContext property must be provided");
-        this._gain = props.audioContext.createGain();
-    }
+const VCA = ({ id, registerInputs, registerOutputs, audioContext, connections }) => {    
+    const moduleFactory = useCallback(() => ({ gain: audioContext.createGain() }), [audioContext]);
+    const module = useModule(id, moduleFactory);
 
-    componentDidMount() {
-        const { id, registerInputs, registerOutputs, audioContext } = this.props;
+    useEffect(() => {
+        if (!module) return;
 
         registerInputs(id, {
             In: {
-                connect: audioNode => audioNode.connect(this._gain),
-                disconnect: audioNode => audioNode.disconnect(this._gain)
+                connect: audioNode => audioNode.connect(module.gain),            
+                disconnect: audioNode => audioNode.disconnect(module.gain)
             },
             CV: {
                 connect: audioNode => {
-                    this._gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.01);
-                    audioNode.connect(this._gain.gain);
+                    module.gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.01);
+                    return audioNode.connect(module.gain.gain);
                 },
-                disconnect: audioNode => {
-                    this._gain.gain.linearRampToValueAtTime(1, audioContext.currentTime + 0.01);
-                    audioNode.disconnect(this._gain.gain);
+                disconnect: audioNode => {                
+                    module.gain.gain.linearRampToValueAtTime(1, audioContext.currentTime + 0.01);
+                    audioNode.disconnect(module.gain.gain);
 
                     // Workaround:
                     // If the connected audio node is being disconnected before finishing its changes (etc. linearRampToValueAtTime in release phase) it won't effect any more
-                    if (audioNode.offset)
-                    {
+                    if (audioNode.offset) {
                         audioNode.offset.value = 0;
                     }
                 }
             }
         });
         registerOutputs(id, {
-           Out: this._gain
+            Out: module.gain
         });
-    }
+    }, [module, id, registerInputs, registerOutputs, audioContext]);
 
-    render() {
-        const { id, connections } = this.props;
-        return <div style={styles.container}>
-            <span>VCA</span>
-            <div style={styles.body}>
-                <Port portId='In' connections={connections} moduleId={id} portType='input'/>
-                <Port portId='CV' connections={connections} moduleId={id} portType='input'/>
-                <Port portId='Out' connections={connections} moduleId={id} portType='output'/>
-            </div>
-        </div>;
-    }
-}
+    return <div style={styles.container}>
+        <span>VCA</span>
+        <div style={styles.body}>
+            <Port portId='In' connections={connections} moduleId={id} portType='input' />
+            <Port portId='CV' connections={connections} moduleId={id} portType='input' />
+            <Port portId='Out' connections={connections} moduleId={id} portType='output' />
+        </div>
+    </div>;
+};
 
 const mapStateToProps = ({ modules }, ownProps) => ({
-    connections: modules.connections[ownProps.id]    
+    connections: modules.connections[ownProps.id]
 });
 
 export default compose(
     setStatic('isBrowserSupported', typeof GainNode !== 'undefined'),
     setStatic('panelWidth', 4),
     connect(mapStateToProps, { connectModules, registerInputs, registerOutputs })
-    )(VCA);
+)(VCA);

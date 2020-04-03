@@ -1,46 +1,45 @@
-import React, { Component } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs } from '../actions';
 import Port from '../../Common/Port';
 import styles from './styles';
+import { useModule } from "../lib";
 
-class StereoAudioInterface extends Component {
-    constructor(props){
-        super(props);
-        if (!props.audioContext) throw new Error('audioContext property must be provided');
+const StereoAudioInterface = ({ id, audioContext, registerInputs, connections }) => {
+    const moduleFactory = useCallback(() => {
+        const leftPanner = new StereoPannerNode(audioContext, { pan: -1 });
+        const rightPanner = new StereoPannerNode(audioContext, { pan: 1 });
+        leftPanner.connect(audioContext.destination);
+        rightPanner.connect(audioContext.destination);
+        return { leftPanner, rightPanner };
+    }, [audioContext])
 
-        this._leftPanner = new StereoPannerNode(props.audioContext, { pan: -1 });
-        this._rightPanner = new StereoPannerNode(props.audioContext, { pan: 1 });
-        this._leftPanner.connect(props.audioContext.destination);
-        this._rightPanner.connect(props.audioContext.destination);
-    }
+    const module = useModule(id, moduleFactory);
 
-    componentDidMount() {
-        const { id, registerInputs } = this.props;
+    useEffect(() => {
+        if (!module) return;
+
         registerInputs(id, {
             Left: {
-                connect: audioNode => audioNode.connect(this._leftPanner),
-                disconnect: audioNode => audioNode.disconnect(this._leftPanner)
+                connect: audioNode => audioNode.connect(module.leftPanner),
+                disconnect: audioNode => audioNode.disconnect(module.leftPanner)
             },
             Right: {
-                connect: audioNode => audioNode.connect(this._rightPanner),
-                disconnect: audioNode => audioNode.disconnect(this._rightPanner)
+                connect: audioNode => audioNode.connect(module.rightPanner),
+                disconnect: audioNode => audioNode.disconnect(module.rightPanner)
             }
-        })
-    }
+        });
+    }, [module, id, registerInputs]);
 
-    render(){
-        const { id, connections } = this.props;
-        return <div style={styles.container}>
+    return <div style={styles.container}>
             <span>Stereo</span>
             <div style={styles.body}>
                 <Port portId='Left' connections={connections} moduleId={id} portType='input'/>
                 <Port portId='Right' connections={connections} moduleId={id} portType='input'/>
             </div>
         </div>;
-    }
-}
+};
 
 const mapStateToProps = ({ modules }, ownProps) => ({
     connections: modules.connections[ownProps.id]

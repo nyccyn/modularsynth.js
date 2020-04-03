@@ -1,67 +1,74 @@
-import React, { Component } from 'react';
-import { compose, setStatic, withState } from 'recompose';
+import React, { useState, useEffect, useCallback } from 'react';
+import { compose, setStatic } from 'recompose';
 import { connect } from 'react-redux';
 import { connectModules, registerInputs, registerOutputs } from '../actions';
 import Port from '../../Common/Port';
 import Knob from '../../Common/Knob';
-import { listenToFirstAudioParam } from '../portHelpers';
+import { useModule, useListenToFirstAudioParam } from '../lib';
 import styles from './styles';
 
 const convertKnobValueToTime = value => Math.pow(value, 4) * 15 + 0.001;
 
-class ADSR extends Component {
-    constructor(props) {
-        super(props);
-        if (!props.audioContext) throw new Error("audioContext property must be provided");
+const ADSR = ({ id, audioContext, registerInputs, registerOutputs, connections }) => {
 
-        this._adsr = props.audioContext.createConstantSource();
-        this._adsr.offset.value = 0;
-        this.handleGateInChange = this.handleGateInChange.bind(this);        
-    }
+    const [gateAudioNode, setGateAudioNode] = useState(null);
+    const [attack, setAttack] = useState(0.5);
+    const [decay, setDecay] = useState(0.5);
+    const [sustain, setSustain] = useState(0.5);
+    const [release, setRelease] = useState(0.5);
 
-    componentDidMount() {
-        const { id, registerInputs, registerOutputs } = this.props;
-        this._adsr.start();
+    const moduleFactory = useCallback(() => {
+        const adsr = audioContext.createConstantSource();
+        adsr.offset.value = 0;
+        adsr.start();
+        return { adsr };
+    }, [audioContext]);
+
+    const module = useModule(id, moduleFactory);
+
+    const handleGateInChange = useCallback((value) => {
+        if (!module) return;
+
+        const convAttack = convertKnobValueToTime(attack);
+        const convDecay = convertKnobValueToTime(decay);
+        const convRelease = convertKnobValueToTime(release);       
+        const now = audioContext.currentTime;
+        const offset = module.adsr.offset;
+
+        if (value === 1) {
+            offset.cancelScheduledValues(0);
+            offset.linearRampToValueAtTime(0, now + 0.01);
+            offset.linearRampToValueAtTime(1, now + convAttack);
+            offset.linearRampToValueAtTime(sustain, now + convAttack + convDecay);
+        } else if (value === 0) {
+            offset.cancelScheduledValues(0);
+            offset.setValueAtTime(offset.value, now);
+            offset.linearRampToValueAtTime(0, now + convRelease);
+        }
+    }, [module, attack, decay, sustain, release, audioContext.currentTime]);
+
+    const gateInterval = useListenToFirstAudioParam(gateAudioNode, handleGateInChange);
+
+    useEffect(() => {    
+        if (!module) return;
+
         registerInputs(id, {
             Gate: {
-                connect: audioNode => this._gateInterval = listenToFirstAudioParam(audioNode, this.handleGateInChange),
+                connect: setGateAudioNode,
                 disconnect: () => {
-                    if (this._gateInterval) {
-                        clearInterval((this._gateInterval));
-                        this._gateInterval = null;
+                    setGateAudioNode(null);
+                    if (gateInterval) {
+                        clearInterval(gateInterval);
                     }
                 }
             }
         });
         registerOutputs(id, {
-           Out: this._adsr
+           Out: module.adsr
         });
-    }
+    }, [module, gateInterval, registerInputs, registerOutputs, id]);
 
-    handleGateInChange(value) {
-        const { sustain, audioContext } = this.props;
-        const attack = convertKnobValueToTime(this.props.attack);
-        const decay = convertKnobValueToTime(this.props.decay);
-        const release = convertKnobValueToTime(this.props.release);       
-        const now = audioContext.currentTime;
-        const offset = this._adsr.offset;
-
-        if (value === 1) {
-            offset.cancelScheduledValues(0);
-            offset.linearRampToValueAtTime(0, now + 0.01);
-            offset.linearRampToValueAtTime(1, now + attack);
-            offset.linearRampToValueAtTime(sustain, now + attack + decay);
-        } else if (value === 0) {
-            offset.cancelScheduledValues(0);
-            offset.setValueAtTime(offset.value, now);
-            offset.linearRampToValueAtTime(0, now + release);
-        }
-    }
-
-    render() {
-        const { id, connections, attack, setAttack, decay, setDecay,
-            sustain, setSustain, release, setRelease } = this.props;
-        return <div style={styles.container}>
+    return <div style={styles.container}>
             <span>ADSR</span>
             <div style={styles.body}>
                 Attack:
@@ -82,8 +89,7 @@ class ADSR extends Component {
                 </div>
             </div>
         </div>;
-    }
-}
+};
 
 const mapStateToProps = ({ modules }, ownProps) => ({
     connections: modules.connections[ownProps.id]
@@ -92,9 +98,5 @@ const mapStateToProps = ({ modules }, ownProps) => ({
 export default compose(
     setStatic('isBrowserSupported', typeof ConstantSourceNode !== 'undefined'),
     setStatic('panelWidth', 6),
-    withState('attack', 'setAttack', 0.5),
-    withState('decay', 'setDecay', 0.5),
-    withState('sustain', 'setSustain', 0.5),
-    withState('release', 'setRelease', 0.5),
     connect(mapStateToProps, { connectModules, registerInputs, registerOutputs })
 )(ADSR);

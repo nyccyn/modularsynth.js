@@ -14,7 +14,12 @@ class Knob extends Component {
 
     componentDidMount() {
         document.addEventListener('mouseup', this.handleMouseUp);
-        document.addEventListener('mousemove', this.handleMouseMove);
+        document.addEventListener('mousemove', this.handleMouseMove);        
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('mouseup', this.handleMouseUp);
+        document.removeEventListener('mousemove', this.handleMouseMove);        
     }
 
     handleMouseMove(e) {

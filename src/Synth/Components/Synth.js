@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose, withState } from 'recompose';
-import * as R from 'ramda';
 import ModulePicker from '../../Modules/Components/ModulePicker';
 import CablesContainer from '../../Cables/Components/CablesContainer';
 import PresetManager from './PresetManager';
@@ -14,11 +13,7 @@ import createVoltToHzConverter from '../helpers/createVoltToHzConverter';
 
 class Synth extends Component {
     constructor(props) {
-        super(props);
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        this._audioContext = new AudioContext();
-        this._audioContext.createPulseOscillator = createPulseOscillator;
-        this._audioContext.createVoltToHzConverter = createVoltToHzConverter;
+        super(props);        
 
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -28,9 +23,22 @@ class Synth extends Component {
         window.onscroll = e => props.setScrollTop(window.scrollY);
 
         //temp
-        this._analyser = this._audioContext.createAnalyser();
-        window.analyser = this._analyser;
-        window.visuallize = this.visuallize = this.visuallize.bind(this);
+        // this._analyser = this._audioContext.createAnalyser();
+        // window.analyser = this._analyser;
+        // window.visuallize = this.visuallize = this.visuallize.bind(this);
+    }
+
+    componentDidUpdate(prevProps)
+    {        
+        if (!prevProps.audioContextInitiliazed && this.props.audioContextInitiliazed)
+        {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const audioContext = new AudioContext();
+            window.audioContext = audioContext;
+            audioContext.createPulseOscillator = createPulseOscillator;
+            audioContext.createVoltToHzConverter = createVoltToHzConverter;
+            this.props.setAudioContext(audioContext);
+        }
     }
 
     visuallize() {
@@ -119,7 +127,7 @@ class Synth extends Component {
     }
 
     render() {
-        const { racks, modules, draggingModuleId, scrollLeft, scrollTop, setActiveRackId } = this.props;
+        const { racks, modules, draggingModuleId, scrollLeft, scrollTop, setActiveRackId, audioContext } = this.props;
         return <div onMouseUp={this.handleMouseUp} onMouseMove={this.handleMouseMove} onScroll={this.handleRackScroll}>
             <ModulePicker />
             <PresetManager />
@@ -129,7 +137,7 @@ class Synth extends Component {
                         racks.map((moduleIds, rackId) =>
                             <div key={rackId} className='rack' style={{ width: `calc(100% + ${scrollLeft}px)` }} onMouseEnter={() => setActiveRackId(rackId)}>
                                 {
-                                    moduleIds.map(id => {
+                                    audioContext && moduleIds.map(id => {
                                         const { Module, width, left } = modules[id];
                                         return <Panel key={id}
                                             rackId={rackId}
@@ -137,7 +145,7 @@ class Synth extends Component {
                                             setDragging={this.handleDragging(id)}
                                             dragging={id === draggingModuleId}
                                             width={width} left={left}>
-                                            <Module id={id} audioContext={this._audioContext} />
+                                            <Module id={id} audioContext={audioContext} />
                                         </Panel>;
                                     })
                                 }
@@ -155,12 +163,14 @@ class Synth extends Component {
 const mapStateToProps = ({ modules }) => ({
     modules: modules.modules,
     racks: modules.racks,
-    startingPort: modules.startingPort
+    startingPort: modules.startingPort,
+    audioContextInitiliazed: modules.audioContextInitiliazed
 });
 export default compose(
     withState('draggingModuleId', 'setDraggingModuleId', null),
     withState('scrollLeft', 'setScrollLeft', 0),
     withState('scrollTop', 'setScrollTop', 0),
     withState('activeRackId', 'setActiveRackId', 0),
+    withState('audioContext', 'setAudioContext', null),
     connect(mapStateToProps, { modifyCable, removeCable, unsetStartingPort, moveModule })
 )(Synth);

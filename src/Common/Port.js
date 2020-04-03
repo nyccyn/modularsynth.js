@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as R from 'ramda';
 import { connect } from 'react-redux';
 import { connectModules, disconnectModule, setStartingPort, unsetStartingPort } from '../Modules/actions';
@@ -14,10 +14,13 @@ export const LABEL_POSITIONS = {
 
 const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection, connectModules, disconnectModule,
     moduleId, portType, startingPort, setStartingPort, unsetStartingPort, addCable, removeCable, modifyCable, cables }) => {
+
+        const imgElem = useRef(null);
+
     useEffect(() => {        
         const fromPortCable = R.find(R.whereEq({ portId: `${moduleId}-${portId}` }), cables);
         if (fromPortCable) {
-            const { x, y, width, height } = _elem.getBoundingClientRect();
+            const { x, y, width, height } = imgElem.current.getBoundingClientRect();
             modifyCable({
                 portId: fromPortCable.portId,
                 fromPoint: { x: x + width / 2, y: y + window.scrollY + height / 2 },
@@ -26,7 +29,7 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection
         else {
             const toPortCable = R.find(R.whereEq({ toPortId: `${moduleId}-${portId}` }), cables);
             if (toPortCable) {
-                const { x, y, width, height } = _elem.getBoundingClientRect();
+                const { x, y, width, height } = imgElem.current.getBoundingClientRect();
                 modifyCable({
                     portId: toPortCable.portId,
                     toPoint: { x: x + width / 2, y: y + window.scrollY + height / 2 },
@@ -34,8 +37,7 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection
             }
         }
     }, [connection]);
-
-    let _elem;
+    
     const handleMouseDown = e => {
         e.stopPropagation();
         const port = { portId, portType, moduleId };
@@ -48,7 +50,7 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection
         }
 
         setStartingPort(port);
-        const { x, y, width, height } = _elem.getBoundingClientRect();
+        const { x, y, width, height } = imgElem.current.getBoundingClientRect();
         
         addCable({
             portId: `${moduleId}-${portId}`,
@@ -66,7 +68,7 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection
         }
 
         e.stopPropagation();
-        const { x, y, width, height } = _elem.getBoundingClientRect();
+        const { x, y, width, height } = imgElem.current.getBoundingClientRect();
 
         if (connection &&
             (connection.moduleId !== startingPort.moduleId || connection.portId !== startingPort.portId)) {
@@ -93,7 +95,7 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, connection
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}>
         {labelPosition === LABEL_POSITIONS.ABOVE && portLabel}
-        <img id={`${moduleId}-${portId}`} height="30" width="30" ref={elem => _elem = elem}
+        <img id={`${moduleId}-${portId}`} height="30" width="30" ref={imgElem}
             onMouseDown={e => e.preventDefault()} src={require('./port.svg')} alt={`${moduleId}-${portId}`} />
         {labelPosition === LABEL_POSITIONS.BELOW && portLabel}
     </div>;
