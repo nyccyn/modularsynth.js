@@ -1,12 +1,14 @@
 import React, { useEffect, useCallback } from 'react';
-import { compose, setStatic } from 'recompose';
-import { connect } from 'react-redux';
-import { connectModules, registerInputs } from '../actions';
 import Port from '../../Common/Port';
 import styles from './styles';
-import { useModule } from "../lib";
+import * as actions from '../actions';
+import { useModule, useConnections } from '../lib';
+import { useAction } from '../../storeHelpers';
 
-const StereoAudioInterface = ({ id, audioContext, registerInputs, connections }) => {
+const StereoAudioInterface = ({ id, audioContext }) => {
+    const connections = useConnections(id);
+    const registerInputs = useAction(actions.registerInputs);    
+
     const moduleFactory = useCallback(() => {
         const leftPanner = new StereoPannerNode(audioContext, { pan: -1 });
         const rightPanner = new StereoPannerNode(audioContext, { pan: 1 });
@@ -41,12 +43,7 @@ const StereoAudioInterface = ({ id, audioContext, registerInputs, connections })
         </div>;
 };
 
-const mapStateToProps = ({ modules }, ownProps) => ({
-    connections: modules.connections[ownProps.id]
-});
+StereoAudioInterface.isBrowserSupported = typeof StereoPannerNode !== 'undefined';
+StereoAudioInterface.panelWidth = 4;
 
-export default compose(
-    setStatic('isBrowserSupported', typeof StereoPannerNode !== 'undefined'),
-    setStatic('panelWidth', 4),
-    connect(mapStateToProps, { connectModules, registerInputs })
-)(StereoAudioInterface);
+export default StereoAudioInterface;

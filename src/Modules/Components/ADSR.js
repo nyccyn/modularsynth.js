@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { compose, setStatic } from 'recompose';
-import { connect } from 'react-redux';
-import { connectModules, registerInputs, registerOutputs } from '../actions';
+import * as actions from '../actions';
 import Port from '../../Common/Port';
 import Knob from '../../Common/Knob';
-import { useModule, useListenToFirstAudioParam } from '../lib';
+import { useModule, useListenToFirstAudioParam, useConnections } from '../lib';
 import styles from './styles';
+import { useAction } from '../../storeHelpers';
 
 const convertKnobValueToTime = value => Math.pow(value, 4) * 15 + 0.001;
 
-const ADSR = ({ id, audioContext, registerInputs, registerOutputs, connections }) => {
+const ADSR = ({ id, audioContext }) => {
+    const connections = useConnections(id);
+    const registerInputs = useAction(actions.registerInputs);
+    const registerOutputs = useAction(actions.registerOutputs);
 
     const [gateAudioNode, setGateAudioNode] = useState(null);
     const [attack, setAttack] = useState(0.5);
@@ -91,12 +93,7 @@ const ADSR = ({ id, audioContext, registerInputs, registerOutputs, connections }
         </div>;
 };
 
-const mapStateToProps = ({ modules }, ownProps) => ({
-    connections: modules.connections[ownProps.id]
-});
+ADSR.isBrowserSupported = typeof ConstantSourceNode !== 'undefined';
+ADSR.panelWidth = 6;
 
-export default compose(
-    setStatic('isBrowserSupported', typeof ConstantSourceNode !== 'undefined'),
-    setStatic('panelWidth', 6),
-    connect(mapStateToProps, { connectModules, registerInputs, registerOutputs })
-)(ADSR);
+export default ADSR;

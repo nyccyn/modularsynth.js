@@ -1,38 +1,33 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import * as R from 'ramda';
-import { compose, withState } from 'recompose';
 import defaultPresets from '../defaultPresets';
-import { connect } from 'react-redux';
-import { loadPreset } from '../actions';
+import { useSelector } from 'react-redux';
+import * as actions from '../actions';
+import { useAction } from '../../storeHelpers';
 
-class PresetManager extends Component {
-    constructor(props)
-    {
-        super(props);
-        this.handlePresetChange = this.handlePresetChange.bind(this);
-    }
+const PresetManager = () => {
+    const isDirty = useSelector(R.path(['rack', 'isDirty']));
+    const presetLoading = useSelector(R.path(['rack', 'presetLoading']));
 
-    componentDidUpdate(prevProps)
-    {
-        const { isDirty, setPreset, presetLoading } = this.props;
-        if (!presetLoading && isDirty && !prevProps.isDirty)
+    const loadPreset = useAction(actions.loadPreset);
+
+    const [preset, setPreset] = useState('');
+
+    useEffect(() => {
+        if (!presetLoading && isDirty)
         {
             setPreset('');
         }
-    }
+    }, [isDirty, presetLoading]);
 
-    handlePresetChange({ target: { value } })
-    {
-        const { loadPreset, setPreset } = this.props;
+    const handlePresetChange = useCallback(({ target: { value } }) =>
+    {        
         setPreset(value);
         loadPreset(defaultPresets[value]);
-    }
+    }, [loadPreset])
 
-    render()
-    {
-        const { preset } = this.props;
-        return <div>
-            <select value={preset} onChange={this.handlePresetChange}>
+    return <div>
+            <select value={preset} onChange={handlePresetChange}>
                 {
                     preset === '' && <option value=''>Select Preset</option>
                 }
@@ -42,15 +37,6 @@ class PresetManager extends Component {
                 )(defaultPresets) }
             </select>
         </div>;
-    }
-}
+};
 
-const mapStateToProps = ({ rack }) => ({
-    isDirty: rack.isDirty,
-    presetLoading: rack.presetLoading
-});
-
-export default compose(
-    withState('preset', 'setPreset', ''),
-    connect(mapStateToProps, { loadPreset })
-)(PresetManager);
+export default PresetManager;

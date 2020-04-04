@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import * as R from 'ramda';
 
 const modules = {};
@@ -48,4 +49,8 @@ export function useListenToFirstAudioParam(audioNode, callback)
         }
     }, [audioNode]);    
     return intervalId;
+}
+
+export function useConnections(id) {
+    return useSelector(R.path(['modules', 'connections', id]));    
 }

@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import * as R from 'ramda';
-import { compose, setStatic } from 'recompose';
-import { connect } from 'react-redux';
-import { connectModules, registerOutputs } from '../actions';
+import * as actions from '../actions';
 import Port from '../../Common/Port';
 import styles from './styles';
-import { useModule } from '../lib';
+import { useModule, useConnections } from '../lib';
+import { useAction } from '../../storeHelpers';
 
 const KEY_CODES_NOTES = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188];
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C'];
@@ -20,7 +19,9 @@ const BLACK_KEYS_GRID_ROW = {
 // The ground oscillation frequency is 440, so we want to send 0 volts when keyboard is in A4
 const calculateNoteVolt = (noteIndex, octave) => octave - 5 + (noteIndex + 3) / 12;
 
-const Keyboard = ({ id, audioContext, registerOutputs, connections }) => {
+const Keyboard = ({ id, audioContext }) => {
+    const connections = useConnections(id);    
+    const registerOutputs = useAction(actions.registerOutputs);
 
     const [octave, setOctave] = useState(4);
     const [cv, setCv] = useState(0);
@@ -127,12 +128,7 @@ const Keyboard = ({ id, audioContext, registerOutputs, connections }) => {
         </div>;
 };
 
-const mapStateToProps = ({ modules }, ownProps) => ({
-    connections: modules.connections[ownProps.id]
-});
+Keyboard.isBrowserSupported = typeof ConstantSourceNode !== 'undefined';
+Keyboard.panelWidth = 6;
 
-export default compose(
-    setStatic('isBrowserSupported', typeof ConstantSourceNode !== 'undefined'),
-    setStatic('panelWidth', 6),
-    connect(mapStateToProps, { connectModules, registerOutputs })
-)(Keyboard);
+export default Keyboard;

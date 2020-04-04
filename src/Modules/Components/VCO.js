@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { compose, setStatic } from 'recompose';
-import { connect } from 'react-redux';
 import * as R from 'ramda';
-import { connectModules, registerInputs, registerOutputs } from '../actions';
+import * as actions from '../actions';
 import Port, { LABEL_POSITIONS } from '../../Common/Port';
 import Knob from '../../Common/Knob';
 import styles from './styles';
 import { useModule } from '../lib';
+import { useAction } from '../../storeHelpers';
 
 const createOscillator = (audioContext, type) => {
     const oscillator = audioContext.createOscillator();
@@ -15,7 +14,10 @@ const createOscillator = (audioContext, type) => {
     return oscillator;
 };
 
-const VCO = ({ id, audioContext, registerInputs, registerOutputs }) => {
+const VCO = ({ id, audioContext }) => {
+    const registerInputs = useAction(actions.registerInputs);
+    const registerOutputs = useAction(actions.registerOutputs);
+
     const [frequency, setFrequency] = useState(0);
     const [tune, setTune] = useState(0);
     const [pw, setPw] = useState(0);
@@ -138,8 +140,7 @@ const VCO = ({ id, audioContext, registerInputs, registerOutputs }) => {
         </div>;
 };
 
-export default compose(
-    setStatic('isBrowserSupported', typeof OscillatorNode !== 'undefined' && typeof ConstantSourceNode !== 'undefined'),
-    setStatic('panelWidth', 8),
-    connect(null, { connectModules, registerInputs, registerOutputs })
-)(VCO);
+VCO.isBrowserSupported = typeof OscillatorNode !== 'undefined' && typeof ConstantSourceNode !== 'undefined';
+VCO.panelWidth = 8;
+
+export default VCO;

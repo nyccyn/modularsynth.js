@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
-import { compose, setStatic } from 'recompose';
-import { connect } from 'react-redux';
-import { connectModules, registerInputs } from '../actions';
+import * as actions from '../actions';
 import Port from '../../Common/Port';
 import styles from './styles';
+import { useConnections } from '../lib';
+import { useAction } from '../../storeHelpers';
 
-const MonoAudioInterface = ({ id, audioContext, registerInputs, connections }) => {
+const MonoAudioInterface = ({ id, audioContext }) => {
+    const connections = useConnections(id);
+    const registerInputs = useAction(actions.registerInputs);    
+
     useEffect(() => {
         registerInputs(id, {
             In: {
@@ -23,12 +26,7 @@ const MonoAudioInterface = ({ id, audioContext, registerInputs, connections }) =
         </div>;
 };
 
-const mapStateToProps = ({ modules }, ownProps) => ({
-    connections: modules.connections[ownProps.id]
-});
+MonoAudioInterface.isBrowserSupported = true;
+MonoAudioInterface.panelWidth = 4;
 
-export default compose(
-    setStatic('isBrowserSupported', true),
-    setStatic('panelWidth', 4),
-    connect(mapStateToProps, { connectModules, registerInputs })
-)(MonoAudioInterface);
+export default MonoAudioInterface;

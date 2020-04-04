@@ -2,7 +2,7 @@ import * as R from 'ramda';
 import { addModule, connectModules, removeAllModules } from '../Modules/actions';
 import { addCable, modifyCable } from '../Cables/actions';
 import randomColor from 'randomcolor';
-import { LOAD_PRESET_START, LOAD_PRESET_FINISH } from "../actionTypes";
+import { LOAD_PRESET_START, LOAD_PRESET_FINISH } from '../actionTypes';
 
 const connectModulesAndCables = R.curry((dispatch, connection) => {
     const { input, output } = connection;

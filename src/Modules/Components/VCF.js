@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { compose, setStatic } from 'recompose';
-import { connect } from 'react-redux';
-import { connectModules, registerInputs, registerOutputs } from '../actions';
+import * as actions from '../actions';
 import Port from '../../Common/Port';
 import Knob from '../../Common/Knob';
-import { useModule } from '../lib';
+import { useModule, useConnections } from '../lib';
+import { useAction } from '../../storeHelpers';
 
 const QUAL_MUL = 30;
 
-const VCF = ({ id, audioContext, registerInputs, registerOutputs, connections }) => {
+const VCF = ({ id, audioContext }) => {
+    const connections = useConnections(id);
+    const registerInputs = useAction(actions.registerInputs);
+    const registerOutputs = useAction(actions.registerOutputs);
+
     const [type, setType] =  useState('lowpass');
     const [frequency, setFrequency] =  useState(0.5);
     const [q, setQ] =  useState(0.1);
     
     const moduleFactory = useCallback(() => {
         const vcf = audioContext.createBiquadFilter();  
-        vcf.type = "lowpass";
+        vcf.type = 'lowpass';
         vcf.Q.value = 0.5;
         return { vcf };
     }, [audioContext]);
@@ -82,12 +85,7 @@ const VCF = ({ id, audioContext, registerInputs, registerOutputs, connections })
         </div>;
 };
 
-const mapStateToProps = ({ modules }, ownProps) => ({
-    connections: modules.connections[ownProps.id]
-});
+VCF.isBrowserSupported = typeof BiquadFilterNode !== 'undefined';
+VCF.panelWidth = 6;
 
-export default compose(
-    setStatic('isBrowserSupported', typeof BiquadFilterNode !== 'undefined'),
-    setStatic('panelWidth', 6),
-    connect(mapStateToProps, { connectModules, registerInputs, registerOutputs })
-)(VCF);
+export default VCF;

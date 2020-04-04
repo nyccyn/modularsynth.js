@@ -1,12 +1,15 @@
 import React, { useEffect, useCallback } from 'react';
-import { compose, setStatic } from 'recompose';
-import { connect } from 'react-redux';
-import { connectModules, registerInputs, registerOutputs } from '../actions';
+import * as actions from '../actions';
 import Port from '../../Common/Port';
 import styles from './styles';
-import { useModule } from '../lib';
+import { useModule, useConnections } from '../lib';
+import { useAction } from '../../storeHelpers';
 
-const VCA = ({ id, registerInputs, registerOutputs, audioContext, connections }) => {    
+const VCA = ({ id, audioContext }) => {    
+    const connections = useConnections(id);
+    const registerInputs = useAction(actions.registerInputs);
+    const registerOutputs = useAction(actions.registerOutputs);
+
     const moduleFactory = useCallback(() => ({ gain: audioContext.createGain() }), [audioContext]);
     const module = useModule(id, moduleFactory);
 
@@ -50,12 +53,7 @@ const VCA = ({ id, registerInputs, registerOutputs, audioContext, connections })
     </div>;
 };
 
-const mapStateToProps = ({ modules }, ownProps) => ({
-    connections: modules.connections[ownProps.id]
-});
+VCA.isBrowserSupported = typeof GainNode !== 'undefined';
+VCA.panelWidth = 4;
 
-export default compose(
-    setStatic('isBrowserSupported', typeof GainNode !== 'undefined'),
-    setStatic('panelWidth', 4),
-    connect(mapStateToProps, { connectModules, registerInputs, registerOutputs })
-)(VCA);
+export default VCA;

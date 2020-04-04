@@ -10,7 +10,7 @@ constantOneCurve[0] = 1;
 constantOneCurve[1] = 1;
 export default function createPulseOscillator() {
     const node = this.createOscillator();
-    node.type = "sawtooth";
+    node.type = 'sawtooth';
 
     const pulseShaper = this.createWaveShaper();
     pulseShaper.curve = pulseCurve;
