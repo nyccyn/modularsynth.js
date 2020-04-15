@@ -61,7 +61,7 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, 
                 moduleId,
                 portId
             });
-            removeCable(fullPortId);
+            removeCable(`${connection.moduleId}-${connection.portId}`);
         }
 
         setStartingPort(port);
