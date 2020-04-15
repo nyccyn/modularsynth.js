@@ -5,7 +5,8 @@ import MonoAudioInterface from './Components/MonoAudioInterface';
 import Keyboard from './Components/Keyboard';
 import ADSR from './Components/ADSR';
 import VCA from './Components/VCA';
-import VCF from './Components/VCF';
+import VCFLowPass from './Components/VCFLowPass';
+import Multiples from './Components/Multiples';
 
 export const MODULE_TYPE = {
     VCO: 'VCO',
@@ -14,7 +15,8 @@ export const MODULE_TYPE = {
     KEYBOARD: 'KEYBOARD',
     ADSR: 'ADSR',
     VCA: 'VCA',
-    VCF: 'VCF'
+    VCF_LOW_PASS: 'VCF_LOW_ASS',
+    MULTIPLES: 'MULTIPLES'
 };
 
 const moduleCounters = R.map(R.always(1))(MODULE_TYPE);
@@ -39,11 +41,14 @@ export const createModule = ({ type, id = undefined }) => {
         case MODULE_TYPE.ADSR:
             module.Module = ADSR;
             break;
-        case MODULE_TYPE.VCF:
-            module.Module = VCF;
+        case MODULE_TYPE.VCF_LOW_PASS:
+            module.Module = VCFLowPass;
             break;
         case MODULE_TYPE.VCA:
             module.Module = VCA;
+            break;
+        case MODULE_TYPE.MULTIPLES:
+            module.Module = Multiples;
             break;
         default:
             throw new Error(`Cannot create module of type: ${type}`)

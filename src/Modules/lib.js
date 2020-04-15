@@ -24,6 +24,16 @@ export function useModule(id, moduleFactory)
     return module;
 }
 
+export function getFirstAudioParam(audioNode)
+{
+    for (let p in audioNode) {
+        if (audioNode[p] instanceof AudioParam) {
+            return audioNode[p];
+        }
+    }
+    return null;
+}
+
 export function useListenToFirstAudioParam(audioNode, callback)
 {
     const savedCallback = useRef(callback);
@@ -32,21 +42,18 @@ export function useListenToFirstAudioParam(audioNode, callback)
     useEffect(() => savedCallback.current = callback, [callback]);
 
     useEffect(() => {
-        if (!audioNode) return;
-
-        for (let p in audioNode) {
-            if (audioNode[p] instanceof AudioParam) {
-                let lastValue = audioNode[p].value;
-                savedCallback.current(lastValue);
-                setIntervalId(setInterval(() => {
-                    if (lastValue !== audioNode[p].value) {
-                        lastValue = audioNode[p].value;
-                        savedCallback.current(lastValue);
-                    }
-                }, 0));
-                break;
-            }
-        }
+        if (!audioNode) return;        
+        const audioParam = getFirstAudioParam(audioNode);
+        if (audioParam) {
+            let lastValue = audioParam.value;
+            savedCallback.current(lastValue);
+            setIntervalId(setInterval(() => {                
+                if (lastValue !== audioParam.value) {
+                    lastValue = audioParam.value;
+                    savedCallback.current(lastValue);
+                }
+            }, 0));
+        }        
     }, [audioNode]);    
     return intervalId;
 }

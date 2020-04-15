@@ -19,3 +19,8 @@ export const removeCable = portId => ({
     type: ActionTypes.REMOVE_CABLE,
     portId
 });
+
+export const changeOverPort = portId => ({
+    type: ActionTypes.CHANGE_OVER_PORT,
+    portId
+});

@@ -5,9 +5,10 @@ import Cable from './Cable';
 
 const CablesContainer = ({ scrollLeft, height, scrollTop }) => {
     const cables = useSelector(R.pipe(R.path(['cables', 'cables']), R.values));
+    const overPort = useSelector(R.path(['cables', 'overPort']));
 
     return <svg style={{ position: 'fixed', left: -scrollLeft, top: -scrollTop, width: `calc(100% + ${scrollLeft}px)`, height, pointerEvents: 'none' }}>
-        {cables.map(({ portId, fromPoint, toPoint, color }) => <Cable key={portId} fromPoint={fromPoint} toPoint={toPoint} color={color} />)}
+        {cables.map((cable) => <Cable key={cable.portId} {...cable} overPort={overPort}/>)}
     </svg>;;
 }
 

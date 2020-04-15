@@ -22,7 +22,7 @@ const ADSR = ({ id, audioContext }) => {
     const moduleFactory = useCallback(() => {
         const adsr = audioContext.createConstantSource();
         adsr.offset.value = 0;
-        adsr.start();
+        adsr.start();    
         return { adsr };
     }, [audioContext]);
 
@@ -35,11 +35,11 @@ const ADSR = ({ id, audioContext }) => {
         const convDecay = convertKnobValueToTime(decay);
         const convRelease = convertKnobValueToTime(release);       
         const now = audioContext.currentTime;
-        const offset = module.adsr.offset;
+        const offset = module.adsr.offset;    
 
         if (value === 1) {
-            offset.cancelScheduledValues(0);
-            offset.linearRampToValueAtTime(0, now + 0.01);
+            offset.cancelScheduledValues(now);
+            // offset.linearRampToValueAtTime(0, now + 0.01);
             offset.linearRampToValueAtTime(1, now + convAttack);
             offset.linearRampToValueAtTime(sustain, now + convAttack + convDecay);
         } else if (value === 0) {
@@ -56,7 +56,7 @@ const ADSR = ({ id, audioContext }) => {
 
         registerInputs(id, {
             Gate: {
-                connect: setGateAudioNode,
+                connect: setGateAudioNode,                
                 disconnect: () => {
                     setGateAudioNode(null);
                     if (gateInterval) {

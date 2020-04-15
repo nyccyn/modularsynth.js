@@ -3,7 +3,8 @@ import * as ActionTypes from '../actionTypes';
 import * as R from 'ramda';
 
 const initialState = {
-    cables: {}
+    cables: {},
+    overPort: null
 };
 
 export default handleActions({
@@ -20,6 +21,11 @@ export default handleActions({
 
     [ActionTypes.REMOVE_CABLE]: (state, { portId }) => R.evolve({
         cables: R.dissoc(portId)
-    })(state)
+    })(state),
+
+    [ActionTypes.CHANGE_OVER_PORT]: (state, { portId }) => ({
+        ...state,
+        overPort: portId
+    })
 
 }, initialState);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import * as R from 'ramda';
 import { useSelector } from 'react-redux';
 import * as modulesActions from '../Modules/actions';
@@ -9,6 +9,7 @@ import './Port.css';
 import { useAction } from '../storeHelpers';
 
 export const LABEL_POSITIONS = {
+    HIDE: 'HIDE',
     ABOVE: 'ABOVE',
     BELOW: 'BELOW'
 }
@@ -25,11 +26,14 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, 
     const addCable = useAction(cablesActions.addCable);
     const removeCable = useAction(cablesActions.removeCable);
     const modifyCable = useAction(cablesActions.modifyCable);
+    const changeOverPort = useAction(cablesActions.changeOverPort);
+
+    const fullPortId = useMemo(() => `${moduleId}-${portId}`, [moduleId, portId]);
 
     const imgElem = useRef(null);
 
     useEffect(() => {
-        const fromPortCable = R.find(R.whereEq({ portId: `${moduleId}-${portId}` }), cables);
+        const fromPortCable = R.find(R.whereEq({ portId: fullPortId }), cables);
         if (fromPortCable) {
             const { x, y, width, height } = imgElem.current.getBoundingClientRect();
             modifyCable({
@@ -38,7 +42,7 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, 
             });
         }
         else {
-            const toPortCable = R.find(R.whereEq({ toPortId: `${moduleId}-${portId}` }), cables);
+            const toPortCable = R.find(R.whereEq({ toPortId: fullPortId }), cables);
             if (toPortCable) {
                 const { x, y, width, height } = imgElem.current.getBoundingClientRect();
                 modifyCable({
@@ -57,14 +61,14 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, 
                 moduleId,
                 portId
             });
-            removeCable(`${connection.moduleId}-${connection.portId}`);
+            removeCable(fullPortId);
         }
 
         setStartingPort(port);
         const { x, y, width, height } = imgElem.current.getBoundingClientRect();
 
         addCable({
-            portId: `${moduleId}-${portId}`,
+            portId: fullPortId,
             fromPoint: { x: x + width / 2, y: y + window.scrollY + height / 2 },
             color: randomColor({ luminosity: 'dark' })
         });
@@ -84,13 +88,13 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, 
         if (connection &&
             (connection.moduleId !== startingPort.moduleId || connection.portId !== startingPort.portId)) {
             removeCable(`${connection.moduleId}-${connection.portId}`);
-            removeCable(`${moduleId}-${portId}`);
+            removeCable(fullPortId);
         }
 
         modifyCable({
             portId: `${startingPort.moduleId}-${startingPort.portId}`,
             toPoint: { x: x + width / 2, y: y + height / 2 },
-            toPortId: `${moduleId}-${portId}`
+            toPortId: fullPortId
         });
         connectModules({
             [startingPort.portType]: startingPort,
@@ -104,10 +108,13 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, 
     const portLabel = label || portId;
     return <div className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
         onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}>
+        onMouseUp={handleMouseUp}
+    >
         {labelPosition === LABEL_POSITIONS.ABOVE && portLabel}
-        <img id={`${moduleId}-${portId}`} height="30" width="30" ref={imgElem}
-            onMouseDown={e => e.preventDefault()} src={require('./port.svg')} alt={`${moduleId}-${portId}`} />
+        <img id={fullPortId} height="30" width="30" ref={imgElem}
+            onMouseEnter={() => changeOverPort(fullPortId)}
+            onMouseLeave={() => changeOverPort(null)}
+            onMouseDown={e => e.preventDefault()} src={require('./port.svg')} alt={fullPortId} />
         {labelPosition === LABEL_POSITIONS.BELOW && portLabel}
     </div>;
 };

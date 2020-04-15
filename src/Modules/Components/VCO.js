@@ -86,7 +86,7 @@ const VCO = ({ id, audioContext }) => {
 
     const handleFrequencyChange = useCallback((value) => {
         setFrequency(value);
-        module.frequencyControl.offset.value = value;
+        module.frequencyControl.volt.value = value;
     }, [module]);
 
     const handleTuneChange = useCallback((value) => {

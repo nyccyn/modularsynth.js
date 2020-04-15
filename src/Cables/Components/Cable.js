@@ -11,8 +11,8 @@ const calculateMidpoint = (fromPoint, toPoint) => {
     return `${midpointX} ${midpointY}`;
 };
 
-const Cable = ({ fromPoint, toPoint, color }) =>
+const Cable = ({ fromPoint, toPoint, color, overPort, portId, toPortId }) =>
     <path
         d={`M${fromPoint.x} ${fromPoint.y} q ${calculateMidpoint(fromPoint, toPoint)} ${toPoint.x - fromPoint.x} ${toPoint.y - fromPoint.y}`}
-        opacity={0.6} stroke={color} fill='transparent' strokeWidth={6}/>;
+        opacity={(overPort === portId || overPort === toPortId) ? 0.9 : 0.6} stroke={color} fill='transparent' strokeWidth={6}/>;
 export default Cable;
