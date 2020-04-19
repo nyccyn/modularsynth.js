@@ -6,7 +6,19 @@ const modules = {};
 
 export function useModule(id, moduleFactory)
 {        
-    const [module, setModule] = useState(null);    
+    const [module, setModule] = useState(null);
+    const moduleIds = useSelector(R.pipe(R.path(['modules', 'modules']), R.keys));
+    
+    useEffect(() => {        
+        R.pipe(
+            R.converge(R.without,[
+                R.always(moduleIds),
+                R.keys
+            ]),
+            R.forEach(id => delete modules[id])
+        )(modules);        
+    }, [moduleIds]);
+
     useEffect(() => {
         console.debug(`useModule rendered for ${id}`);
         const memoizedModule = modules[id];        

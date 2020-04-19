@@ -45,7 +45,17 @@ export default handleActions({
 
     [ActionTypes.REGISTER_OUTPUTS]: (state, { id, outputs }) => R.evolve({
         modules: R.evolve({
-            [id]: R.assoc('outputs', outputs)
+            [id]: module => {
+                R.mapObjIndexed(
+                    (audioNode, output) => {                        
+                        if (typeof audioNode === "function")
+                        {                                               
+                            Object.defineProperty(outputs, output, { get: audioNode });                            
+                        }                        
+                    }
+                )(outputs);                
+                return {...module, outputs };
+            }
         })
     })(state),
 

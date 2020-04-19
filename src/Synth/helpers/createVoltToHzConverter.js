@@ -1,19 +1,21 @@
-const createVoltToFreqExpCurve = baseFrequency => {
+import { memoizeWith, identity } from 'ramda';
+
+const createVoltToFreqExpCurve = memoizeWith(identity, (baseFrequency, octaves) => {
     const BUFFER_LENGTH = 8192;
     const curve = new Float32Array(BUFFER_LENGTH);
     for (let i = 0; i < BUFFER_LENGTH; i++) {
         const normalized = (i / (BUFFER_LENGTH - 1)) * 4 - 2;
-        curve[i] = baseFrequency * Math.pow(2, normalized);
+        curve[i] = baseFrequency * Math.pow(octaves, normalized);
     }
     return curve;
-};
+});
 
 export default function createVoltToHzConverter(baseFrequency, octaves) {
     const node = this.createConstantSource();
     node.volt = node.offset;
     const voltToFreqWaveshaper = this.createWaveShaper();
     const voltScale = this.createGain();
-    voltToFreqWaveshaper.curve = createVoltToFreqExpCurve(baseFrequency);
+    voltToFreqWaveshaper.curve = createVoltToFreqExpCurve(baseFrequency, octaves);
     voltScale.gain.value = 1 / octaves;
     node.connect(voltScale).connect(voltToFreqWaveshaper);
 

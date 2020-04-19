@@ -35,7 +35,7 @@ const VCO = ({ id, audioContext }) => {
             Sine: createOscillator(audioContext, 'sine'),
         };
 
-        const frequencyControl = audioContext.createVoltToHzConverter(440, 2);
+        const frequencyControl = audioContext.createVoltToHzConverter(440, 4);
         const detuneControl = audioContext.createConstantSource();
         frequencyControl.volt.value = 0;
         detuneControl.offset.value = 0;
@@ -119,7 +119,7 @@ const VCO = ({ id, audioContext }) => {
                         <Port portId='PWM' moduleId={id} portType='input'/>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Knob label='Range' min={-2} max={2} step={0.001} value={frequency} width={30} height={30} onChange={handleFrequencyChange}/>
+                        <Knob label='Range' min={-4} max={4} step={0.001} value={frequency} width={30} height={30} onChange={handleFrequencyChange}/>
                         <Knob label='Tune' min={-600} max={600} step={1} value={tune} width={30} height={30} onChange={handleTuneChange}/>
                         <Knob label='FM CV' min={0} max={1} step={0.005} value={fmCv} width={30} height={30} onChange={handleFmCvChange}/>
                         <Knob label='PW' min={-1} max={1} step={0.001} value={pw} width={30} height={30} onChange={handlePwChange}/>

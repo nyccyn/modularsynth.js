@@ -31,19 +31,19 @@ const ADSR = ({ id, audioContext }) => {
     const handleGateInChange = useCallback((value) => {
         if (!module) return;
 
-        const convAttack = convertKnobValueToTime(attack);
+        const convAttack = convertKnobValueToTime(attack) + 0.01;
         const convDecay = convertKnobValueToTime(decay);
         const convRelease = convertKnobValueToTime(release);       
         const now = audioContext.currentTime;
         const offset = module.adsr.offset;    
 
         if (value === 1) {
-            offset.cancelScheduledValues(now);
-            // offset.linearRampToValueAtTime(0, now + 0.01);
+            offset.cancelScheduledValues(now);            
+            offset.setValueAtTime(offset.value, now);
             offset.linearRampToValueAtTime(1, now + convAttack);
             offset.linearRampToValueAtTime(sustain, now + convAttack + convDecay);
         } else if (value === 0) {
-            offset.cancelScheduledValues(0);
+            offset.cancelScheduledValues(now);
             offset.setValueAtTime(offset.value, now);
             offset.linearRampToValueAtTime(0, now + convRelease);
         }

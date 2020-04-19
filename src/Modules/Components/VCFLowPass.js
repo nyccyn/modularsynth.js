@@ -86,10 +86,6 @@ const VCFLowPass = ({ id, audioContext }) => {
         const multiplier = Math.pow(2, numberOfOctaves * (frequency - 1.0));
         // Get back to the frequency value between min and max.
         module.vcf.frequency.setValueAtTime(maxValue * multiplier, audioContext.currentTime);
-        // var nyquist = audioContext.sampleRate / 2;
-        // var freq = Math.pow(frequency, 4) * nyquist;
-        // module.vcf.frequency.setValueAtTime(freq > 10 ? freq : 10, audioContext.currentTime);
-        // module.vcf2.frequency.setValueAtTime(freq > 10 ? freq : 10, audioContext.currentTime);
     }, [module, frequency, audioContext]);
 
     const handleFrequencyChange = useCallback((value) => {
