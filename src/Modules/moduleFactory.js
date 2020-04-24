@@ -7,6 +7,7 @@ import ADSR from './Components/ADSR';
 import VCA from './Components/VCA';
 import VCFLowPass from './Components/VCFLowPass';
 import Multiples from './Components/Multiples';
+import LFO from './Components/LFO';
 
 export const MODULE_TYPE = {
     VCO: 'VCO',
@@ -16,7 +17,8 @@ export const MODULE_TYPE = {
     ADSR: 'ADSR',
     VCA: 'VCA',
     VCF_LOW_PASS: 'VCF_LOW_ASS',
-    MULTIPLES: 'MULTIPLES'
+    MULTIPLES: 'MULTIPLES',
+    LFO: 'LFO'
 };
 
 const moduleCounters = R.map(R.always(1))(MODULE_TYPE);
@@ -25,7 +27,7 @@ const ONE_HP_IN_PIXELS = 20;
 
 export const createModule = ({ type, id = undefined }) => {
     const module = { id: id || `${type}${moduleCounters[type]}` };
-    switch (type){
+    switch (type) {
         case MODULE_TYPE.VCO:
             module.Module = VCO;
             break;
@@ -50,6 +52,9 @@ export const createModule = ({ type, id = undefined }) => {
         case MODULE_TYPE.MULTIPLES:
             module.Module = Multiples;
             break;
+        case MODULE_TYPE.LFO:
+            module.Module = LFO;
+            break
         default:
             throw new Error(`Cannot create module of type: ${type}`)
     }

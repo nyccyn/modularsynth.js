@@ -17,7 +17,7 @@ const Multiples = ({ id, audioContext }) => {
         const groupA = { input: null, audioNode: null };
         const groupB = { input: null, audioNode: null };
         return { groupA, groupB };
-    }, [audioContext]);
+    }, []);
     const module = useModule(id, moduleFactory);
 
     useEffect(() => {
@@ -58,7 +58,7 @@ const Multiples = ({ id, audioContext }) => {
             ...createGroupOutputs('A'),
             ...createGroupOutputs('B')
         });
-    }, [module, id, registerInputs, registerOutputs]);
+    }, [module, id, registerInputs, registerOutputs, groupsInput]);
 
     const renderGroup = useCallback(group => {
         const result = [];
@@ -75,7 +75,7 @@ const Multiples = ({ id, audioContext }) => {
             result.push(<Port {...portProps} />)
         }
         return result;
-    }, [groupsInput]);
+    }, [groupsInput, connections, id]);
 
     return <div style={styles.container}>
         <span style={{ fontSize: 13 }}>Multiples</span>

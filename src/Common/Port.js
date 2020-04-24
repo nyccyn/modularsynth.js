@@ -105,7 +105,7 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, 
         });
     };
 
-    const portLabel = label || portId;
+    const portLabel = R.isNil(label) ? portId : label;
     return <div className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}

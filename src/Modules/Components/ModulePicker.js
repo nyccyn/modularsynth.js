@@ -11,6 +11,7 @@ const ModulePicker = () => {
         <button onClick={() => addModule(MODULE_TYPE.VCA)}>Add VCA</button>
         <button onClick={() => addModule(MODULE_TYPE.ADSR)}>Add ADSR</button>
         <button onClick={() => addModule(MODULE_TYPE.VCF_LOW_PASS)}>Add VCF Low Pass</button>
+        <button onClick={() => addModule(MODULE_TYPE.LFO)}>Add LFO</button>
         <button onClick={() => addModule(MODULE_TYPE.STEREO_AUDIO_INTERFACE)}>Add Stereo Audio Interface</button>
         <button onClick={() => addModule(MODULE_TYPE.MONO_AUDIO_INTERFACE)}>Add Mono Audio Interface</button>
         <button onClick={() => addModule(MODULE_TYPE.MULTIPLES)}>Add Multiples</button>

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import * as R from 'ramda';
 import * as actions from '../actions';
 import Port from '../../Common/Port';
+import Switch from '../../Common/Switch';
 import styles from './styles';
 import { useModule, useConnections } from '../lib';
 import { useAction } from '../../storeHelpers';
@@ -79,24 +80,26 @@ const Keyboard = ({ id, audioContext }) => {
         document.onkeyup = handleKeyboardUp;
     }, [handleKeyboardDown, handleKeyboardUp]);
 
-    const handleOctaveChange = useCallback(({ target: { value }}) => {
-        const newOctave = Number(value);
+    const handleOctaveChange = useCallback(value => {        
         const cv = module.cv.offset.value;
-        setCv(cv + newOctave - octave);
-        setOctave(newOctave);
+        setCv(cv + value - octave);
+        setOctave(value);
     }, [module, octave]);
 
     return <div style={styles.container}>
             <span>&#181;Keyboard</span>
             <div style={styles.body}>
                 Octave
-                <select value={octave} onChange={handleOctaveChange}>
-                    <option value={2}>-2</option>
-                    <option value={3}>-1</option>
-                    <option value={4}>0</option>
-                    <option value={5}>+1</option>
-                    <option value={6}>+2</option>
-                </select>
+                <Switch value={octave}
+                        onChange={handleOctaveChange}
+                        size={60}
+                        options={[
+                            {value: 2, label: '-2'},
+                            {value: 3, label: '-1'},
+                            {value: 4, label: '0'},
+                            {value: 5, label: '+1'},
+                            {value: 6, label: '+2'},
+                        ]}/>                
                 <div style={{ display: 'grid', flex: 1 }}>
                     {
                         NOTES.map((note, i) => {
