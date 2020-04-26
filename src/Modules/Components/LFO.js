@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import * as R from 'ramda';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DroppedSaw } from '@mohayonao/wave-tables';
 import * as actions from '../actions';
 import Port, { LABEL_POSITIONS } from '../../Common/Port';
@@ -26,7 +27,6 @@ const mapIndexed = R.addIndex(R.map);
 
 const LFO = ({ id, audioContext }) => {
     const registerOutputs = useAction(actions.registerOutputs);
-
     const [frequency, setFrequency] = useState(0);
     const [range, setRange] = useState(FREQ_RANGE.LOW);
 
@@ -86,10 +86,6 @@ const LFO = ({ id, audioContext }) => {
         module.frequencyControl.offset.value = newFreq;
     }, [module, frequency, range]);
 
-    const handleFrequencyChange = useCallback((value) => {
-        setFrequency(value);
-    }, []);
-
     return <Container>
         <span>LFO</span>
         <Grid marginTop={15}>
@@ -115,16 +111,21 @@ const LFO = ({ id, audioContext }) => {
                     R.keys,
                     R.take(4),
                     mapIndexed((osc, i) =>
-                        <GridCell key={osc} column={2} row={i + 1}>
-                            <img width={25} src={require(`./${osc.toLowerCase()}.svg`)} alt={osc} />
-                        </GridCell>
+                        [
+                            <GridCell column={2} row={i + 1}>
+                                <FontAwesomeIcon size='xs' icon='arrow-left' />
+                            </GridCell>,
+                            <GridCell key={osc} column={3} row={i + 1}>
+                                <img width={25} src={require(`./${osc.toLowerCase()}.svg`)} alt={osc} />
+                            </GridCell>
+                        ]
                     )
                 )(module.oscillators)
             }
-            <GridCell column={2} row={5}>
-                <Knob label='Frequ.' min={-4} max={4} step={0.001} value={frequency} width={30} height={30} onChange={handleFrequencyChange} />
+            <GridCell column='2/4' row={5}>
+                <Knob label='Frequ.' min={-4} max={4} step={0.001} value={frequency} width={30} height={30} onChange={setFrequency} />
             </GridCell>
-            <GridCell column='1/3' row={6}>                
+            <GridCell column='1/4' row={6}>                
                 <Switch value={range}
                         onChange={setRange}
                         options={[

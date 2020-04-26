@@ -19,6 +19,23 @@ const removeLastConnection = R.curry(({ moduleId, portId }, connections) => R.wh
         input => R.dissocPath([input.moduleId, input.portId], connections)
     ))(connections));
 
+const findFreeSpace = (modules, width) => {
+    const sortedModules = R.pipe(
+        R.values,
+        R.when(R.none(R.whereEq({ left: 20 })), R.concat([{ left: 20, width: 0 }])),
+        R.sortBy(R.prop('left'))
+    )(modules);
+
+    for (let i = 0; i < sortedModules.length; i++) {
+        const cur = sortedModules[i];
+        if (i === sortedModules.length - 1 ||
+            (sortedModules[i + 1].left - cur.left - cur.width >= width))
+        {
+            return cur.left + cur.width;            
+        }
+    }
+};
+
 export default handleActions({
     [ActionTypes.ADD_MODULE]: (state, { moduleType, id, rackId = 0 }) => {
         const newModule = createModule({ type: moduleType, id });
@@ -27,7 +44,7 @@ export default handleActions({
             return state;
         }
 
-        newModule.left = state.maxLeft;
+        newModule.left = findFreeSpace(state.modules, newModule.width);;
         return R.evolve({
             audioContextInitiliazed: R.T,
             modules: R.assoc(newModule.id, newModule),
@@ -47,14 +64,13 @@ export default handleActions({
         modules: R.evolve({
             [id]: module => {
                 R.mapObjIndexed(
-                    (audioNode, output) => {                        
-                        if (typeof audioNode === "function")
-                        {                                               
-                            Object.defineProperty(outputs, output, { get: audioNode });                            
-                        }                        
+                    (audioNode, output) => {
+                        if (typeof audioNode === "function") {
+                            Object.defineProperty(outputs, output, { get: audioNode });
+                        }
                     }
-                )(outputs);                
-                return {...module, outputs };
+                )(outputs);
+                return { ...module, outputs };
             }
         })
     })(state),
@@ -86,26 +102,26 @@ export default handleActions({
         startingPort: R.always(null)
     })(state),
 
-    [ActionTypes.MOVE_MODULE]: (state, { moduleId, x, rackId }) => {        
+    [ActionTypes.MOVE_MODULE]: (state, { moduleId, x, rackId }) => {
         const prevLeft = state.modules[moduleId].left;
         const moduleWidth = state.modules[moduleId].width;
         const newLeft = prevLeft + Math.floor((x - prevLeft) / 20) * 20;
-        const newRight = newLeft + moduleWidth;    
+        const newRight = newLeft + moduleWidth;
 
         if (newRight > window.innerWidth) return state;
-        
+
         const isSpaceInUse = R.pipe(
             R.values,
             R.any(
-            ({ id, left, width }) => {
-                const right = left + width;
-                return id !== moduleId && R.contains(id, state.racks[rackId]) && (
-                    (left >= newLeft && left < newRight) ||
-                    (left < newLeft && right > newLeft) ||
-                    (left === newLeft && right === newRight)
-                );
-            }
-        ))(state.modules);
+                ({ id, left, width }) => {
+                    const right = left + width;
+                    return id !== moduleId && R.contains(id, state.racks[rackId]) && (
+                        (left >= newLeft && left < newRight) ||
+                        (left < newLeft && right > newLeft) ||
+                        (left === newLeft && right === newRight)
+                    );
+                }
+            ))(state.modules);
         if (isSpaceInUse) return state;
 
         return R.evolve({
@@ -141,4 +157,5 @@ export default handleActions({
             maxLeft: lastValue => removedModule.left + removedModule.width === lastValue ? removedModule.left : lastValue
         })(state);
     }
+
 }, initialState);
