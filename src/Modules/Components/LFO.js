@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import * as R from 'ramda';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DroppedSaw } from '@mohayonao/wave-tables';
@@ -7,7 +7,6 @@ import Port, { LABEL_POSITIONS } from '../../Common/Port';
 import Knob from '../../Common/Knob';
 import Switch from "../../Common/Switch";
 import { Container, Grid, GridCell } from './styles';
-import { useModule } from '../lib';
 import { useAction } from '../../storeHelpers';
 
 const createOscillator = (audioContext, type) => {
@@ -30,7 +29,7 @@ const LFO = ({ id, audioContext }) => {
     const [frequency, setFrequency] = useState(0);
     const [range, setRange] = useState(FREQ_RANGE.LOW);
 
-    const moduleFactory = useCallback(() => {
+    const module = useMemo(() => {
         const pulse = audioContext.createPulseOscillator();
         pulse.frequency.value = 0;
         pulse.width.value = 0;
@@ -52,8 +51,6 @@ const LFO = ({ id, audioContext }) => {
 
         return { oscillators, frequencyControl };
     }, [audioContext]);
-
-    const module = useModule(id, moduleFactory);
 
     useEffect(() => {
         if (!module) return;

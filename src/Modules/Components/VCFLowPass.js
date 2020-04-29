@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import * as actions from '../actions';
 import Port from '../../Common/Port';
 import Knob from '../../Common/Knob';
-import { useModule, useConnections } from '../lib';
+import { useConnections } from '../lib';
 import { useAction } from '../../storeHelpers';
 import styles from './styles';
 
@@ -18,7 +18,7 @@ const VCFLowPass = ({ id, audioContext }) => {
     const [cv2Gain, setCv2Gain] = useState(0.5);
     const [cv3Gain, setCv3Gain] = useState(0.5);
 
-    const moduleFactory = useCallback(() => {
+    const module = useMemo(() => {
         const vcf = audioContext.createBiquadFilter();
         const cv = audioContext.createVoltToHzConverter(440, 2);
         const cv2 = audioContext.createVoltToHzConverter(440, 2);
@@ -46,7 +46,6 @@ const VCFLowPass = ({ id, audioContext }) => {
         vcf.Q.value = 0.5;
         return { vcf, cv, cv2, cv3, cv2Gain, cv3Gain };
     }, [audioContext]);
-    const module = useModule(id, moduleFactory);
 
     useEffect(() => {
         if (!module) return;

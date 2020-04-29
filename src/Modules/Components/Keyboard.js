@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import * as R from 'ramda';
 import * as actions from '../actions';
 import Port from '../../Common/Port';
 import Switch from '../../Common/Switch';
 import styles from './styles';
-import { useModule, useConnections } from '../lib';
+import { useConnections } from '../lib';
 import { useAction } from '../../storeHelpers';
 
 const KEY_CODES_NOTES = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188];
@@ -28,7 +28,7 @@ const Keyboard = ({ id, audioContext }) => {
     const [cv, setCv] = useState(0);
     const [keyboardDown, setKeyboardDown] = useState(false);
 
-    const moduleFactory = useCallback(() => {
+    const module = useMemo(() => {
         const gate = audioContext.createConstantSource();
         gate.offset.value = 0;
         gate.start();
@@ -38,7 +38,6 @@ const Keyboard = ({ id, audioContext }) => {
 
         return { gate, cv };
     }, [audioContext]);
-    const module = useModule(id, moduleFactory);
 
     useEffect(() => {
         if (!module) return;

@@ -1,31 +1,81 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import './Panel.css';
 import * as actions from '../Modules/actions';
 import { useAction } from '../storeHelpers';
+import styled from 'styled-components';
+import { prop } from 'ramda';
 
-const Screw = () => <img alt='screw' src={require('./screw_header.svg')} height={14} width={14} style={{ margin: 5 }} />;
+const Screw = () =>
+    <img alt='screw'
+        src={require('./screw_header.svg')}
+        height={14} width={14}
+        style={{ margin: 5 }} />;
 
-const PanelEdge = ({ children }) => <div className='panel_edge'>
-    <Screw />
-    {children}
-    <Screw />
-</div>;
+const EdgeContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    margin: -2px 0;
+`;
 
-const Panel = ({ children, dragging, setDragging, width, left, moduleId }) => {
+const PanelEdge = ({ children }) =>
+    <EdgeContainer>
+        <Screw />
+        {children}
+        <Screw />
+    </EdgeContainer>;
+
+const PanelContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    background: #E8E8E8;
+    border: black 0.2px solid;
+    position: absolute;
+    height: 100%;
+    user-select: none;
+    width: ${prop('width')}px;
+    height: ${prop('height')}px;
+    left: ${prop('left')}px;
+    top: ${prop('top')}px;
+    cursor: ${({ dragging }) => dragging ? 'grabbing' : 'grab'};
+`;
+
+const RemoveModuleButton = styled.span`
+    visibility: hidden;
+    color: gray;
+    cursor: pointer;
+
+    &:hover {
+        color: black;
+    }
+
+    ${PanelContainer}:hover & {
+        visibility: visible;
+    }
+`;
+
+const PanelContent = styled.div`
+    flex: 1;
+`;
+
+const Panel = props => {
+    const { children, setDragging, moduleId } = props;
     const removeModule = useAction(actions.removeModule);
+    const onTrashMouseDown = useCallback(e => {
+        e.stopPropagation();
+        e.preventDefault();
+    }, []);
 
-    return <div className='module-panel'
-        style={{ width, left, cursor: dragging ? 'grabbing' : 'grab' }}
-        onMouseDown={() => setDragging(true)} onMouseUp={() => setDragging(false)}>
+    return <PanelContainer {...props} onMouseDown={() => setDragging(true)} onMouseUp={() => setDragging(false)}>
         <PanelEdge>
-            <span onClick={() => removeModule(moduleId)} className="btn_delete_module"><FontAwesomeIcon size='xs' icon='trash' /></span>
+            <RemoveModuleButton onClick={() => removeModule(moduleId)} onMouseDown={onTrashMouseDown}>
+                <FontAwesomeIcon size='xs' icon='trash' />
+            </RemoveModuleButton>
         </PanelEdge>
-        <div className='panel_content'>
+        <PanelContent>
             {children}
-        </div>
+        </PanelContent>
         <PanelEdge />
-    </div>;
+    </PanelContainer>;
 }
 
 export default Panel;

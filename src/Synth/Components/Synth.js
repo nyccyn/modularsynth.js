@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import styled from 'styled-components';
 import * as R from 'ramda';
 import ModulePicker from '../../Modules/Components/ModulePicker';
 import CablesContainer from '../../Cables/Components/CablesContainer';
@@ -11,9 +12,26 @@ import Panel from '../../Common/Panel';
 import createPulseOscillator from '../helpers/createPulseOscillator';
 import createVoltToHzConverter from '../helpers/createVoltToHzConverter';
 import { useAction } from '../../storeHelpers';
+import rackBg from './rack_bg.svg';
+
+const RACK_HEIGHT = 370;
+
+const SynthContainer = styled.div`
+    overflow-x: scroll;
+    position: relative;
+`;
+
+const Rack = styled.div`
+    width: ${({ scrollLeft }) => `calc(100% + ${scrollLeft}px)`};
+    position: relative;
+    user-select: none;
+    background-size: contain;
+    background-image: url(${rackBg});
+    height: ${RACK_HEIGHT}px;    
+`;
 
 const Synth = () => {
-    const modules = useSelector(R.path(['modules', 'modules']));
+    const modules = useSelector(R.pipe(R.path(['modules', 'modules']), R.values));
     const racks = useSelector(R.path(['modules', 'racks']));
     const startingPort = useSelector(R.path(['modules', 'startingPort']));
     const audioContextInitiliazed = useSelector(R.path(['modules', 'audioContextInitiliazed']));
@@ -80,30 +98,28 @@ const Synth = () => {
     return <div onMouseUp={handleMouseUp} onMouseMove={handleMouseMove} onScroll={handleRackScroll}>
         <ModulePicker />
         <PresetManager />
-        <div>
-            <div style={{ overflowX: 'scroll' }}>
-                {
-                    racks.map((moduleIds, rackId) =>
-                        <div key={rackId} className='rack' style={{ width: `calc(100% + ${scrollLeft}px)` }} onMouseEnter={() => setActiveRackId(rackId)}>
-                            {
-                                audioContext && moduleIds.map(id => {
-                                    const { Module, width, left } = modules[id];
-                                    return <Panel key={id}
-                                        rackId={rackId}
-                                        moduleId={id}
-                                        setDragging={handleDragging(id)}
-                                        dragging={id === draggingModuleId}
-                                        width={width} left={left}>
-                                        <Module id={id} audioContext={audioContext} />
-                                    </Panel>;
-                                })
-                            }
-                        </div>
-                    )
-                }
-            </div>
-            <CablesContainer scrollLeft={scrollLeft} scrollTop={scrollTop} height={racks.length * 1.5 * 370} />
-        </div>
+        <SynthContainer>
+            {
+                R.pipe(
+                    R.range(0),
+                    R.map(rackId => <Rack key={rackId} scrollLeft={scrollLeft} onMouseEnter={() => setActiveRackId(rackId)} />)
+                )(racks)
+            }
+            {
+                audioContext && modules.map(({ Module, width, left, id, rackId }) =>
+                    <Panel key={id} top={rackId * RACK_HEIGHT}
+                        moduleId={id}
+                        setDragging={handleDragging(id)}
+                        dragging={id === draggingModuleId}
+                        width={width}
+                        height={RACK_HEIGHT}
+                        left={left}>
+                        <Module id={id} audioContext={audioContext} />
+                    </Panel>
+                )
+            }
+        </SynthContainer>
+        <CablesContainer scrollLeft={scrollLeft} scrollTop={scrollTop} height={racks * 1.5 * RACK_HEIGHT} />
     </div>;
 };
 

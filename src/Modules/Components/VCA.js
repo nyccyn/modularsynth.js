@@ -1,8 +1,8 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import * as actions from '../actions';
 import Port from '../../Common/Port';
 import styles from './styles';
-import { useModule, useConnections } from '../lib';
+import { useConnections } from '../lib';
 import { useAction } from '../../storeHelpers';
 
 const VCA = ({ id, audioContext }) => {    
@@ -10,8 +10,7 @@ const VCA = ({ id, audioContext }) => {
     const registerInputs = useAction(actions.registerInputs);
     const registerOutputs = useAction(actions.registerOutputs);
 
-    const moduleFactory = useCallback(() => ({ gain: audioContext.createGain() }), [audioContext]);
-    const module = useModule(id, moduleFactory);
+    const module = useMemo(() => ({ gain: audioContext.createGain() }), [audioContext]);    
 
     useEffect(() => {
         if (!module) return;

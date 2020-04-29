@@ -1,24 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import * as R from 'ramda';
 import * as actions from '../actions';
 import Port, { LABEL_POSITIONS } from '../../Common/Port';
 import styles from './styles';
-import { useModule, useConnections } from '../lib';
+import { useConnections } from '../lib';
 import { useAction } from '../../storeHelpers';
 
-const Multiples = ({ id, audioContext }) => {
+const Multiples = ({ id }) => {
     const connections = useConnections(id);
     const registerInputs = useAction(actions.registerInputs);
     const registerOutputs = useAction(actions.registerOutputs);
 
     const [groupsInput, setGroupsInput] = useState({ A: null, B: null });
 
-    const moduleFactory = useCallback(() => {
+    const module = useMemo(() => {
         const groupA = { input: null, audioNode: null };
         const groupB = { input: null, audioNode: null };
         return { groupA, groupB };
     }, []);
-    const module = useModule(id, moduleFactory);
 
     useEffect(() => {
         if (!module) return;

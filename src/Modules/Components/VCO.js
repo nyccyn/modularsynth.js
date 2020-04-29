@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import * as R from 'ramda';
 import * as actions from '../actions';
 import Port, { LABEL_POSITIONS } from '../../Common/Port';
 import Knob from '../../Common/Knob';
 import styles from './styles';
-import { useModule } from '../lib';
 import { useAction } from '../../storeHelpers';
 
 const createOscillator = (audioContext, type) => {
@@ -24,7 +23,7 @@ const VCO = ({ id, audioContext }) => {
     const [pwmCv, setPwmCv] = useState(0);
     const [fmCv, setFmCv] = useState(0);    
     
-    const moduleFactory = useCallback(() => {
+    const module = useMemo(() => {
         const pulse = audioContext.createPulseOscillator();
         pulse.frequency.value = 0;
         pulse.width.value = 0;
@@ -56,8 +55,6 @@ const VCO = ({ id, audioContext }) => {
 
         return { oscillators, frequencyControl, detuneControl, fmGain, pwCvGain };
     }, [audioContext]);
-
-    const module = useModule(id, moduleFactory);
 
     useEffect(() => {
         if (!module) return;

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import * as actions from '../actions';
 import Port from '../../Common/Port';
 import Knob from '../../Common/Knob';
-import { useModule, useListenToFirstAudioParam, useConnections } from '../lib';
+import { useListenToFirstAudioParam, useConnections } from '../lib';
 import styles from './styles';
 import { useAction } from '../../storeHelpers';
 
@@ -19,14 +19,12 @@ const ADSR = ({ id, audioContext }) => {
     const [sustain, setSustain] = useState(0.5);
     const [release, setRelease] = useState(0.5);
 
-    const moduleFactory = useCallback(() => {
+    const module = useMemo(() => {
         const adsr = audioContext.createConstantSource();
         adsr.offset.value = 0;
         adsr.start();    
         return { adsr };
-    }, [audioContext]);
-
-    const module = useModule(id, moduleFactory);
+    }, [audioContext]);    
 
     const handleGateInChange = useCallback((value) => {
         if (!module) return;

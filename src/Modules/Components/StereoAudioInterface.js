@@ -1,23 +1,21 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import Port from '../../Common/Port';
 import styles from './styles';
 import * as actions from '../actions';
-import { useModule, useConnections } from '../lib';
+import { useConnections } from '../lib';
 import { useAction } from '../../storeHelpers';
 
 const StereoAudioInterface = ({ id, audioContext }) => {
     const connections = useConnections(id);
     const registerInputs = useAction(actions.registerInputs);    
 
-    const moduleFactory = useCallback(() => {
+    const module = useMemo(() => {
         const leftPanner = new StereoPannerNode(audioContext, { pan: -1 });
         const rightPanner = new StereoPannerNode(audioContext, { pan: 1 });
         leftPanner.connect(audioContext.destination);
         rightPanner.connect(audioContext.destination);
         return { leftPanner, rightPanner };
     }, [audioContext])
-
-    const module = useModule(id, moduleFactory);
 
     useEffect(() => {
         if (!module) return;

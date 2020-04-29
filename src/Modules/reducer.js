@@ -9,7 +9,7 @@ const initialState = {
     connections: {},
     startingPort: null,
     maxLeft: 20,
-    racks: [[], []]
+    racks: 2
 };
 
 const removeLastConnection = R.curry(({ moduleId, portId }, connections) => R.when(
@@ -45,12 +45,12 @@ export default handleActions({
         }
 
         newModule.left = findFreeSpace(state.modules, newModule.width);;
+        newModule.rackId = rackId;
         return R.evolve({
             audioContextInitiliazed: R.T,
             modules: R.assoc(newModule.id, newModule),
             connections: R.assoc(newModule.id, {}),
-            maxLeft: R.add(newModule.width),
-            racks: R.adjust(rackId, R.append(newModule.id))
+            maxLeft: R.add(newModule.width)
         })(state);
     },
 
@@ -113,9 +113,9 @@ export default handleActions({
         const isSpaceInUse = R.pipe(
             R.values,
             R.any(
-                ({ id, left, width }) => {
-                    const right = left + width;
-                    return id !== moduleId && R.contains(id, state.racks[rackId]) && (
+                ({ id, left, width, rackId: otherRackId }) => {
+                    const right = left + width;                
+                    return id !== moduleId && rackId === otherRackId && (
                         (left >= newLeft && left < newRight) ||
                         (left < newLeft && right > newLeft) ||
                         (left === newLeft && right === newRight)
@@ -127,19 +127,12 @@ export default handleActions({
         return R.evolve({
             modules: {
                 [moduleId]: {
-                    left: R.always(newLeft)
+                    left: R.always(newLeft),
+                    rackId: R.always(rackId)
                 }
             },
             connections: {
                 [moduleId]: R.map(R.evolve({ counter: R.inc }))
-            },
-            racks: racks => {
-                const oldRackId = R.findIndex(R.contains(moduleId), racks);
-                if (oldRackId === rackId) return racks;
-                return R.pipe(
-                    R.adjust(oldRackId, R.without([moduleId])),
-                    R.adjust(rackId, R.append(moduleId))
-                )(racks);
             },
             maxLeft: R.max(newLeft + state.modules[moduleId].width)
         })(state);
@@ -150,10 +143,6 @@ export default handleActions({
 
         return R.evolve({
             modules: R.dissoc(moduleId),
-            racks: racks => {
-                const rackId = R.findIndex(R.contains(moduleId), racks);
-                return R.adjust(rackId, R.without([moduleId]))(racks);
-            },
             maxLeft: lastValue => removedModule.left + removedModule.width === lastValue ? removedModule.left : lastValue
         })(state);
     }

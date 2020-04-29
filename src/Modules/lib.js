@@ -2,40 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import * as R from 'ramda';
 
-const modules = {};
-
-export function useModule(id, moduleFactory)
-{        
-    const [module, setModule] = useState(null);
-    const moduleIds = useSelector(R.pipe(R.path(['modules', 'modules']), R.keys));
-    
-    useEffect(() => {        
-        R.pipe(
-            R.converge(R.without,[
-                R.always(moduleIds),
-                R.keys
-            ]),
-            R.forEach(id => delete modules[id])
-        )(modules);        
-    }, [moduleIds]);
-
-    useEffect(() => {
-        console.debug(`useModule rendered for ${id}`);
-        const memoizedModule = modules[id];        
-        if (!R.isNil(memoizedModule)) {
-            setModule(memoizedModule);
-        }
-        else {
-            const newModule = moduleFactory();
-            newModule.id = id;
-            modules[id] = newModule;
-            setModule(newModule);
-        }
-    }, [id, moduleFactory]);
-    
-    return module;
-}
-
 export function getFirstAudioParam(audioNode)
 {
     for (let p in audioNode) {
