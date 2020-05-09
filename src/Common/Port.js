@@ -7,12 +7,7 @@ import cx from 'classnames';
 import randomColor from 'randomcolor';
 import './Port.css';
 import { useAction } from '../storeHelpers';
-
-export const LABEL_POSITIONS = {
-    HIDE: 'HIDE',
-    ABOVE: 'ABOVE',
-    BELOW: 'BELOW'
-}
+import LABEL_POSITIONS from './LabelPositions';
 
 const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, portType }) => {
     const startingPort = useSelector(R.path(['modules', 'startingPort']));

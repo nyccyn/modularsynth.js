@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import * as R from 'ramda';
 import * as actions from '../actions';
-import Port, { LABEL_POSITIONS } from '../../Common/Port';
+import Port from 'Common/Port';
+import LABEL_POSITIONS from 'Common/LabelPositions';
 import styles from './styles';
 import { useConnections } from '../lib';
-import { useAction } from '../../storeHelpers';
+import { useAction } from 'storeHelpers';
 
 const Multiples = ({ id }) => {
     const connections = useConnections(id);
@@ -90,5 +91,5 @@ const Multiples = ({ id }) => {
 }
 
 Multiples.isBrowserSupported = typeof ConstantSourceNode !== 'undefined';
-Multiples.panelWidth = 3;
+Multiples.panelWidth = 4;
 export default Multiples;

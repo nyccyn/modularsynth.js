@@ -3,7 +3,7 @@ import * as R from 'ramda';
 import defaultPresets from '../defaultPresets';
 import { useSelector } from 'react-redux';
 import * as actions from '../actions';
-import { useAction } from '../../storeHelpers';
+import { useAction } from 'storeHelpers';
 
 const PresetManager = () => {
     const isDirty = useSelector(R.path(['rack', 'isDirty']));

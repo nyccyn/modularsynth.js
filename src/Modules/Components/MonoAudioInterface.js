@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import * as actions from '../actions';
-import Port from '../../Common/Port';
+import Port from 'Common/Port';
 import styles from './styles';
 import { useConnections } from '../lib';
-import { useAction } from '../../storeHelpers';
+import { useAction } from 'storeHelpers';
 
 const MonoAudioInterface = ({ id, audioContext }) => {
     const connections = useConnections(id);

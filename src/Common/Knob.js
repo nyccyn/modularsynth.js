@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import LABEL_POSITIONS from './LabelPositions';
 
 const MAX_ANGLE = 150;
 
-const Knob = ({ onChange, max, min, value, step, label, height = 50, width = 50 }) => {
+const Knob = ({ onChange, max, min, value, step, label, labelPosition = LABEL_POSITIONS.ABOVE, height = 50, width = 50 }) => {
     const [isMoving, setIsMoving] = useState(false);
     const imgRef = useRef(null);
 
@@ -57,12 +58,17 @@ const Knob = ({ onChange, max, min, value, step, label, height = 50, width = 50 
         };
     }, [handleMouseUp, handleMouseMove]);
 
-    return <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {label}
+    return <div style={{
+        display: 'flex',
+        flexDirection: labelPosition === LABEL_POSITIONS.RIGHT || labelPosition === LABEL_POSITIONS.LEFT ? 'row' : 'column'
+    }}
+    >
+        {(labelPosition === LABEL_POSITIONS.ABOVE || labelPosition === LABEL_POSITIONS.LEFT) && label}
         <img ref={imgRef}
             style={{ cursor: 'pointer', margin: 'auto', transform: `rotate(${calculateValueAngle()}deg)` }}
             onMouseDown={handleMouseDown}
             alt='knob' src={require('./knob.svg')} height={height} width={width} />
+        {(labelPosition === LABEL_POSITIONS.BELOW || labelPosition === LABEL_POSITIONS.RIGHT) && label}
     </div>;
 };
 

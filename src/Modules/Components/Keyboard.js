@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import * as R from 'ramda';
 import * as actions from '../actions';
-import Port from '../../Common/Port';
-import Switch from '../../Common/Switch';
+import Port from 'Common/Port';
+import Switch from 'Common/Switch';
 import styles from './styles';
 import { useConnections } from '../lib';
-import { useAction } from '../../storeHelpers';
+import { useAction } from 'storeHelpers';
 
 const KEY_CODES_NOTES = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188];
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C'];
@@ -131,6 +131,6 @@ const Keyboard = ({ id, audioContext }) => {
 };
 
 Keyboard.isBrowserSupported = typeof ConstantSourceNode !== 'undefined';
-Keyboard.panelWidth = 6;
+Keyboard.panelWidth = 8;
 
 export default Keyboard;

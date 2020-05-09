@@ -11,12 +11,12 @@ export default {
           { type: MODULE_TYPE.MONO_AUDIO_INTERFACE, id: 'MONO_AUDIO_INTERFACE1' }
       ],
       connections: [
-          { input: { moduleId: 'VCO1', portId: 'V/Oct' }, output: { moduleId: 'KEYBOARD1', portId: 'CV' } },
+          { input: { moduleId: 'VCO1', portId: 'CV1' }, output: { moduleId: 'KEYBOARD1', portId: 'CV' } },
           { input: { moduleId: 'VCF1', portId: 'In' }, output: { moduleId: 'VCO1', portId: 'Sine' } },
           { input: { moduleId: 'ADSR1', portId: 'Gate' }, output: { moduleId: 'KEYBOARD1', portId: 'Gate' } },
-          { input: { moduleId: 'VCA1', portId: 'In' }, output: { moduleId: 'VCF1', portId: 'Out' } },
-          { input: { moduleId: 'VCA1', portId: 'CV' }, output: { moduleId: 'ADSR1', portId: 'Out' } },
-          { input: { moduleId: 'MONO_AUDIO_INTERFACE1', portId: 'In' }, output: { moduleId: 'VCA1', portId: 'Out' } }
+          { input: { moduleId: 'VCA1', portId: 'AudioIn1' }, output: { moduleId: 'VCF1', portId: 'Out' } },
+          { input: { moduleId: 'VCA1', portId: 'CV1' }, output: { moduleId: 'ADSR1', portId: 'Out' } },
+          { input: { moduleId: 'MONO_AUDIO_INTERFACE1', portId: 'In' }, output: { moduleId: 'VCA1', portId: 'AudioOut' } }
       ]
   }
 };

@@ -76,7 +76,7 @@ const Switch = ({ value, onChange, options, vertical = false, size = 30, handler
         {
             onChange(options[newVal].value);
         }
-    }, [ranges, handlerSize, onChange, options]);
+    }, [ranges, handlerSize, onChange, options, vertical]);
 
     const handleSpaceMouseDown = useCallback(e => {
         e.stopPropagation();

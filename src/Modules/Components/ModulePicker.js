@@ -1,7 +1,7 @@
 import React from 'react';
 import * as actions from '../actions';
 import { MODULE_TYPE } from '../moduleFactory';
-import { useAction } from '../../storeHelpers';
+import { useAction } from 'storeHelpers';
 
 const ModulePicker = () => {
     const addModule = useAction(actions.addModule);

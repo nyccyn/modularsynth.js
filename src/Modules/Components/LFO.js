@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as R from 'ramda';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DroppedSaw } from '@mohayonao/wave-tables';
 import * as actions from '../actions';
-import Port, { LABEL_POSITIONS } from '../../Common/Port';
-import Knob from '../../Common/Knob';
-import Switch from "../../Common/Switch";
+import Port from 'Common/Port';
+import LABEL_POSITIONS from 'Common/LabelPositions';
+import Knob from 'Common/Knob';
+import Switch from "Common/Switch";
 import { Container, Grid, GridCell } from './styles';
-import { useAction } from '../../storeHelpers';
+import { useAction } from 'storeHelpers';
 
 const createOscillator = (audioContext, type) => {
     const oscillator = audioContext.createOscillator();
@@ -109,7 +110,7 @@ const LFO = ({ id, audioContext }) => {
                     R.take(4),
                     mapIndexed((osc, i) =>
                         [
-                            <GridCell column={2} row={i + 1}>
+                            <GridCell key={osc+'arrow'} column={2} row={i + 1}>
                                 <FontAwesomeIcon size='xs' icon='arrow-left' />
                             </GridCell>,
                             <GridCell key={osc} column={3} row={i + 1}>
@@ -139,6 +140,6 @@ const LFO = ({ id, audioContext }) => {
 };
 
 LFO.isBrowserSupported = typeof OscillatorNode !== 'undefined' && typeof ConstantSourceNode !== 'undefined';
-LFO.panelWidth = 6;
+LFO.panelWidth = 8;
 
 export default LFO;

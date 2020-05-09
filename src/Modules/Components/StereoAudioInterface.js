@@ -1,9 +1,9 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
-import Port from '../../Common/Port';
+import React, { useEffect, useMemo } from 'react';
+import Port from 'Common/Port';
 import styles from './styles';
 import * as actions from '../actions';
 import { useConnections } from '../lib';
-import { useAction } from '../../storeHelpers';
+import { useAction } from 'storeHelpers';
 
 const StereoAudioInterface = ({ id, audioContext }) => {
     const connections = useConnections(id);

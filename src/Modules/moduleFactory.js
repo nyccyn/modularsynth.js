@@ -23,7 +23,7 @@ export const MODULE_TYPE = {
 
 const moduleCounters = R.map(R.always(1))(MODULE_TYPE);
 
-const ONE_HP_IN_PIXELS = 20;
+const ONE_HP_IN_PIXELS = 16;
 
 export const createModule = ({ type, id = undefined }) => {
     const module = { id: id || `${type}${moduleCounters[type]}` };

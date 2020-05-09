@@ -7,9 +7,22 @@ export const Container = styled.div`
     height: 100%
 `;
 
+export const Body = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-evenly;
+`;
+
+export const SpaceAround = styled.div`
+    display: flex;
+    justify-content: space-around;
+`;
+
 export const Grid = styled.div`
     display: grid;
     flex: 1;
+    grid-template-rows: ${prop('gridTemplateRows')};
     margin-top: ${prop('marginTop')}px;
     margin-bottom: ${prop('marginBottom')}px;
     margin-left: ${prop('marginLeft')}px;

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { isNil } from 'ramda';
 import * as actions from '../actions';
-import Port from '../../Common/Port';
-import Knob from '../../Common/Knob';
+import Port from 'Common/Port';
+import Knob from 'Common/Knob';
 import { useListenToFirstAudioParam, useConnections } from '../lib';
 import styles from './styles';
-import { useAction } from '../../storeHelpers';
+import { useAction } from 'storeHelpers';
 
 const convertKnobValueToTime = value => Math.pow(value, 4) * 15 + 0.001;
 
@@ -13,11 +14,11 @@ const ADSR = ({ id, audioContext }) => {
     const registerInputs = useAction(actions.registerInputs);
     const registerOutputs = useAction(actions.registerOutputs);
 
-    const [gateAudioNode, setGateAudioNode] = useState(null);
+    const [gateAudioNode, setGateAudioNode] = useState(null);    
     const [attack, setAttack] = useState(0.5);
     const [decay, setDecay] = useState(0.5);
     const [sustain, setSustain] = useState(0.5);
-    const [release, setRelease] = useState(0.5);
+    const [release, setRelease] = useState(0.5);    
 
     const module = useMemo(() => {
         const adsr = audioContext.createConstantSource();
@@ -27,8 +28,8 @@ const ADSR = ({ id, audioContext }) => {
     }, [audioContext]);    
 
     const handleGateInChange = useCallback((value) => {
-        if (!module) return;
-
+        if (!module || isNil(value)) return;
+        
         const convAttack = convertKnobValueToTime(attack) + 0.01;
         const convDecay = convertKnobValueToTime(decay);
         const convRelease = convertKnobValueToTime(release);       
@@ -92,6 +93,6 @@ const ADSR = ({ id, audioContext }) => {
 };
 
 ADSR.isBrowserSupported = typeof ConstantSourceNode !== 'undefined';
-ADSR.panelWidth = 6;
+ADSR.panelWidth = 8;
 
 export default ADSR;

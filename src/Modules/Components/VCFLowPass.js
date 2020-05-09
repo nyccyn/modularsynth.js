@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import * as actions from '../actions';
-import Port from '../../Common/Port';
-import Knob from '../../Common/Knob';
+import Port from 'Common/Port';
+import Knob from 'Common/Knob';
 import { useConnections } from '../lib';
-import { useAction } from '../../storeHelpers';
+import { useAction } from 'storeHelpers';
 import styles from './styles';
 
 const QUAL_MUL = 30;
@@ -146,6 +146,6 @@ const VCFLowPass = ({ id, audioContext }) => {
 };
 
 VCFLowPass.isBrowserSupported = typeof BiquadFilterNode !== 'undefined';
-VCFLowPass.panelWidth = 6;
+VCFLowPass.panelWidth = 8;
 
 export default VCFLowPass;
