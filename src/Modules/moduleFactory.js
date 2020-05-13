@@ -26,7 +26,7 @@ const moduleCounters = R.map(R.always(1))(MODULE_TYPE);
 const ONE_HP_IN_PIXELS = 16;
 
 export const createModule = ({ type, id = undefined }) => {
-    const module = { id: id || `${type}${moduleCounters[type]}` };
+    const module = { id: id || `${type}${moduleCounters[type]}`, type };
     switch (type) {
         case MODULE_TYPE.VCO:
             module.Module = VCO;

@@ -11,6 +11,7 @@ import './Rack.css';
 import Panel from 'Common/Panel';
 import createPulseOscillator from '../helpers/createPulseOscillator';
 import createVoltToHzConverter from '../helpers/createVoltToHzConverter';
+import createGate from '../helpers/createGate';
 import { useAction } from 'storeHelpers';
 import rackBg from './rack_bg.svg';
 
@@ -58,6 +59,7 @@ const Synth = () => {
         const newAudioContext = new AudioContext();
         newAudioContext.createPulseOscillator = createPulseOscillator;
         newAudioContext.createVoltToHzConverter = createVoltToHzConverter;
+        newAudioContext.createGate = createGate;
         setAudioContext(newAudioContext);
     }, [audioContext, audioContextInitiliazed]);
 

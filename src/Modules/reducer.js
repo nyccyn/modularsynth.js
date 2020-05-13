@@ -37,14 +37,14 @@ const findFreeSpace = (modules, width) => {
 };
 
 export default handleActions({
-    [ActionTypes.ADD_MODULE]: (state, { moduleType, id, rackId = 0 }) => {
-        const newModule = createModule({ type: moduleType, id });
+    [ActionTypes.ADD_MODULE]: (state, { module: { type, id, rackId = 0, left } }) => {
+        const newModule = createModule({ type: type, id });
         if (!newModule) {
-            window.alert(`Your browser doesn't support this module: ${moduleType}`);
+            window.alert(`Your browser doesn't support this module: ${type}`);
             return state;
         }
 
-        newModule.left = findFreeSpace(state.modules, newModule.width);;
+        newModule.left =  left || findFreeSpace(state.modules, newModule.width);;
         newModule.rackId = rackId;
         return R.evolve({
             audioContextInitiliazed: R.T,
@@ -80,7 +80,7 @@ export default handleActions({
             removeLastConnection(output),
             removeLastConnection(input),
             R.evolve({
-                [input.moduleId]: R.assoc(input.portId, { moduleId: output.moduleId, portId: output.portId, counter: 0 }),
+                [input.moduleId]: R.assoc(input.portId, { moduleId: output.moduleId, portId: output.portId, counter: 0, output: true }),
                 [output.moduleId]: R.assoc(output.portId, { moduleId: input.moduleId, portId: input.portId, counter: 0 })
             }))
     })(state),

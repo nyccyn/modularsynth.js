@@ -8,4 +8,8 @@ const middlewareChain = [
     middleware
 ];
 
-export default createStore(reducer, applyMiddleware(...middlewareChain));
+const enhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__(applyMiddleware(...middlewareChain)) :
+    applyMiddleware(...middlewareChain);
+
+export default createStore(reducer, enhancer);

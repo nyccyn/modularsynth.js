@@ -4,7 +4,7 @@ import { MODULE_TYPE } from '../moduleFactory';
 import { useAction } from 'storeHelpers';
 
 const ModulePicker = () => {
-    const addModule = useAction(actions.addModule);
+    const addModule = useAction(type => actions.addModule({ type }));
     return <div>
         <button onClick={() => addModule(MODULE_TYPE.KEYBOARD)}>Add Keyboard</button>
         <button onClick={() => addModule(MODULE_TYPE.VCO)}>Add VCO</button>

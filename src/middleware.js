@@ -2,7 +2,7 @@ import * as R from 'ramda';
 import * as actionType from './actionTypes';
 
 const middleware = ({ getState }) => next => action => {
-    switch  (action.type) {
+    switch (action.type) {
         case actionType.CONNECT_MODULES: {
             const { modules, connections } = getState().modules;
             const input = R.path([action.input.moduleId, 'inputs', action.input.portId])(modules);
@@ -23,8 +23,7 @@ const middleware = ({ getState }) => next => action => {
                 ))
             )(connections);
 
-            if (input && output)
-            {
+            if (input && output) {
                 input.connect(output);
             }
             break;
@@ -49,8 +48,37 @@ const middleware = ({ getState }) => next => action => {
             }
             break;
         }
+        case actionType.SAVE_PRESET: {
+            const { modules: { modules, connections } } = getState();
+            const preset = {
+                modules: R.pipe(
+                    R.map(R.pick(['id', 'type', 'left', 'rackId'])),
+                    R.values
+                )(modules),
+                connections: R.pipe(
+                    R.reject(R.isEmpty),
+                    R.mapObjIndexed((inputConnections, inputModuleId) => {
+                        return R.pipe(
+                            R.filter(R.whereEq({ output: true })),
+                            R.mapObjIndexed(({ moduleId, portId }, inputPortId) => {
+                                return {
+                                    input: { moduleId: inputModuleId, portId: inputPortId },
+                                    output: { portId: portId, moduleId }
+                                };
+                            }),
+                            R.values
+                        )(inputConnections);
+                    }),
+                    R.values,            
+                    R.reject(R.isEmpty),
+                    R.unnest
+                )(connections)
+            }
+            localStorage.setItem('preset', JSON.stringify(preset));
+            break;
+        }
         default:
-            break;        
+            break;
     }
 
     return next(action);

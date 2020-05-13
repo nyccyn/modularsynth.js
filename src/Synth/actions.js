@@ -2,7 +2,11 @@ import * as R from 'ramda';
 import { addModule, connectModules, removeAllModules } from '../Modules/actions';
 import { addCable, modifyCable } from '../Cables/actions';
 import randomColor from 'randomcolor';
-import { LOAD_PRESET_START, LOAD_PRESET_FINISH } from '../actionTypes';
+import { LOAD_PRESET_START, LOAD_PRESET_FINISH, SAVE_PRESET } from '../actionTypes';
+
+export const savePreset = () => ({
+    type: SAVE_PRESET
+});
 
 const connectModulesAndCables = R.curry((dispatch, connection) => {
     const { input, output } = connection;
@@ -41,7 +45,7 @@ const checkIfAllModulesRemoves = (dispatch, getState, preset) => () => {
         setTimeout(checkIfAllModulesRemoves(dispatch, getState, preset), 10);
     }
     else {
-        R.forEach(module => dispatch(addModule(module.type, module.id)))(preset.modules);
+        R.forEach(module => dispatch(addModule(module)))(preset.modules);
         setTimeout(checkIfModulesCreated(dispatch, getState, preset), 10);
     }
 };

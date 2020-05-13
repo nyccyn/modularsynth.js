@@ -2,11 +2,9 @@ import * as ActionTypes from '../actionTypes';
 import * as R from 'ramda';
 import { removeCable } from '../Cables/actions';
 
-export const addModule = (moduleType, id, rackId) => ({
+export const addModule = module => ({
     type: ActionTypes.ADD_MODULE,
-    moduleType,
-    id,
-    rackId
+    module
 });
 
 export const connectModules = ({ output, input }) => ({
