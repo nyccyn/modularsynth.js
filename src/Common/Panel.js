@@ -29,14 +29,14 @@ const PanelContainer = styled.div`
     flex-direction: column;
     background: #E8E8E8;
     border: black 0.2px solid;
-    position: absolute;
+    position: ${({ viewMode }) => viewMode ? 'relative' : 'absolute'};
     height: 100%;
     user-select: none;
     width: ${prop('width')}px;
     height: ${prop('height')}px;
     left: ${prop('left')}px;
     top: ${prop('top')}px;
-    cursor: ${({ dragging }) => dragging ? 'grabbing' : 'grab'};
+    cursor: ${({ viewMode, dragging }) => viewMode ? 'pointer' : dragging ? 'grabbing' : 'grab'};
 `;
 
 const RemoveModuleButton = styled.span`
@@ -49,29 +49,38 @@ const RemoveModuleButton = styled.span`
     }
 
     ${PanelContainer}:hover & {
-        visibility: visible;
+        visibility: ${({ viewMode }) => viewMode ? 'hidden' : 'visible' };
     }
 `;
 
 const PanelContent = styled.div`
     flex: 1;
+    position: relative;
+`;
+
+const Overlay = styled.div`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
 `;
 
 const Panel = props => {
-    const { children, setDragging, moduleId } = props;
+    const { children, setDragging, moduleId, viewMode } = props;
     const removeModule = useAction(actions.removeModule);
     const onTrashMouseDown = useCallback(e => {
         e.stopPropagation();
         e.preventDefault();
     }, []);
 
-    return <PanelContainer {...props} onMouseDown={() => setDragging(true)} onMouseUp={() => setDragging(false)}>
+    return <PanelContainer {...props} onMouseDown={() => !viewMode && setDragging(true)} onMouseUp={() => !viewMode && setDragging(false)}>
         <PanelEdge>
-            <RemoveModuleButton onClick={() => removeModule(moduleId)} onMouseDown={onTrashMouseDown}>
+            <RemoveModuleButton viewMode={viewMode} onClick={() => removeModule(moduleId)} onMouseDown={onTrashMouseDown}>
                 <FontAwesomeIcon size='xs' icon='trash' />
             </RemoveModuleButton>
         </PanelEdge>
         <PanelContent>
+            { viewMode && <Overlay/> }
             {children}
         </PanelContent>
         <PanelEdge />

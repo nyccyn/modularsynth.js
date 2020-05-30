@@ -5,17 +5,19 @@ import * as actions from '../actions';
 import { useConnections } from '../lib';
 import { useAction } from 'storeHelpers';
 
-const StereoAudioInterface = ({ id, audioContext }) => {
+const StereoAudioInterface = ({ id, audioContext, viewMode }) => {
     const connections = useConnections(id);
     const registerInputs = useAction(actions.registerInputs);    
 
     const module = useMemo(() => {
+        if (viewMode) return null;
+
         const leftPanner = new StereoPannerNode(audioContext, { pan: -1 });
         const rightPanner = new StereoPannerNode(audioContext, { pan: 1 });
         leftPanner.connect(audioContext.destination);
         rightPanner.connect(audioContext.destination);
         return { leftPanner, rightPanner };
-    }, [audioContext])
+    }, [audioContext, viewMode])
 
     useEffect(() => {
         if (!module) return;
@@ -43,5 +45,9 @@ const StereoAudioInterface = ({ id, audioContext }) => {
 
 StereoAudioInterface.isBrowserSupported = typeof StereoPannerNode !== 'undefined';
 StereoAudioInterface.panelWidth = 4;
+StereoAudioInterface.title = `
+Stereo Audio Interface<br/>
+Sends stereo audio to the computer's audio interface
+`;
 
 export default StereoAudioInterface;

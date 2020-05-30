@@ -14,8 +14,13 @@ import createVoltToHzConverter from '../helpers/createVoltToHzConverter';
 import createGate from '../helpers/createGate';
 import { useAction } from 'storeHelpers';
 import rackBg from './rack_bg.svg';
+import IconButton from 'Common/IconButton';
 
 const RACK_HEIGHT = 370;
+
+const Container = styled.div`
+    position: relative;
+`;
 
 const SynthContainer = styled.div`
     overflow-x: scroll;
@@ -29,6 +34,15 @@ const Rack = styled.div`
     background-size: contain;
     background-image: url(${rackBg});
     height: ${RACK_HEIGHT}px;    
+`;
+
+const TopBar = styled.div`
+    display: flex;
+    flex-direction: row;
+    background-color: #353535;
+    align-items: center;
+    height: 50px;
+    padding-left: 30px;
 `;
 
 const Synth = () => {
@@ -47,6 +61,7 @@ const Synth = () => {
     const [scrollTop, setScrollTop] = useState(0);
     const [activeRackId, setActiveRackId] = useState(0);
     const [audioContext, setAudioContext] = useState(null);
+    const [displayPicker, setDisplayPicker] = useState(false);
 
     useEffect(() => {
         window.onscroll = e => setScrollTop(window.scrollY);
@@ -97,10 +112,13 @@ const Synth = () => {
         setScrollLeft(e.target.scrollLeft);
     }, []);
 
-    return <div onMouseUp={handleMouseUp} onMouseMove={handleMouseMove} onScroll={handleRackScroll}>
-        <ModulePicker />
-        <PresetManager />
-        <SynthContainer>
+    return <Container onMouseUp={handleMouseUp} onMouseMove={handleMouseMove} onScroll={handleRackScroll}> 
+        { displayPicker && <ModulePicker onClose={() => setDisplayPicker(false)}/> }       
+        <TopBar>
+            <IconButton icon='plus-circle' title='Add Module' onClick={() => setDisplayPicker(true)} />
+            <PresetManager/>
+        </TopBar>        
+        <SynthContainer>            
             {
                 R.pipe(
                     R.range(0),
@@ -114,15 +132,15 @@ const Synth = () => {
                         setDragging={handleDragging(id)}
                         dragging={id === draggingModuleId}
                         width={width}
-                        height={RACK_HEIGHT}
-                        left={left}>
-                        <Module id={id} audioContext={audioContext} />
+                        height={RACK_HEIGHT}                        
+                        left={left}>                            
+                        <Module id={id} audioContext={audioContext}/>
                     </Panel>
                 )
             }
         </SynthContainer>
         <CablesContainer scrollLeft={scrollLeft} scrollTop={scrollTop} height={racks * 1.5 * RACK_HEIGHT} />
-    </div>;
+    </Container>;
 };
 
 export default Synth;

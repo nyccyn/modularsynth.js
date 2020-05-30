@@ -1,9 +1,27 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import Select from 'react-select';
+import styled from 'styled-components';
 import * as R from 'ramda';
 import defaultPresets from '../defaultPresets';
 import { useSelector } from 'react-redux';
 import * as actions from '../actions';
 import { useAction } from 'storeHelpers';
+import IconButton from 'Common/IconButton';
+
+const Container = styled.div`
+    display: flex;
+    flex: 1;
+    align-items: center;
+
+    > * {
+        margin: 0 10px;
+    }
+`;
+
+const PresetSelect = styled(Select)`
+    flex: 1;
+    max-width: 200px;
+`;
 
 const PresetManager = () => {
     const isDirty = useSelector(R.path(['rack', 'isDirty']));
@@ -20,7 +38,14 @@ const PresetManager = () => {
         }
     }, [isDirty, presetLoading]);
 
-    const handlePresetChange = useCallback(({ target: { value } }) => {
+    const presetOptions = useMemo(() => {
+        return R.pipe(
+            R.keys,
+            R.map(preset => ({ value: preset, label: preset }))
+        )(defaultPresets);
+    }, []);
+
+    const handlePresetChange = useCallback(({ value }) => {
         setPreset(value);
         loadPreset(defaultPresets[value]);
     }, [loadPreset])
@@ -32,19 +57,11 @@ const PresetManager = () => {
         }
     }, [loadPreset]);
 
-    return <div>
-        <button onClick={savePreset}>Save</button>
-        <button onClick={handleLoadPreset}>Load</button>
-        <select value={preset} onChange={handlePresetChange}>
-            {
-                preset === '' && <option value=''>Select Preset</option>
-            }
-            {R.pipe(
-                R.keys,
-                R.map(p => <option key={p} value={p}>{p}</option>)
-            )(defaultPresets)}
-        </select>
-    </div>;
+    return <Container>
+        <IconButton icon='file-download' title='Save' onClick={savePreset}/>
+        <IconButton icon='file-upload' title='Load' onClick={handleLoadPreset}/>
+        <PresetSelect options={presetOptions} onChange={handlePresetChange} placeholder='Select Preset'/>       
+    </Container>;
 };
 
 export default PresetManager;

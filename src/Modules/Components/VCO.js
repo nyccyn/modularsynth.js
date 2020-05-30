@@ -14,7 +14,14 @@ const createOscillator = (audioContext, type) => {
     return oscillator;
 };
 
-const VCO = ({ id, audioContext }) => {
+const OSCILLATOR_TYPES = {
+    Sawtooth: 'Sawtooth',
+    Pulse: 'Pulse',
+    Triangle: 'Triangle',
+    Sine: 'Sine'
+};
+
+const VCO = ({ id, audioContext, viewMode }) => {
     const registerInputs = useAction(actions.registerInputs);
     const registerOutputs = useAction(actions.registerOutputs);
 
@@ -25,6 +32,8 @@ const VCO = ({ id, audioContext }) => {
     const [fmCv, setFmCv] = useState(0);
 
     const module = useMemo(() => {
+        if (viewMode) return null;
+
         const pulse = audioContext.createPulseOscillator();
         pulse.frequency.value = 0;
         pulse.width.value = 0;
@@ -55,7 +64,7 @@ const VCO = ({ id, audioContext }) => {
         detuneControl.start();
 
         return { oscillators, frequencyControl, detuneControl, cv2Gain, pwCvGain2 };
-    }, [audioContext]);
+    }, [audioContext, viewMode]);
 
     useEffect(() => {
         if (!module) return;
@@ -146,12 +155,12 @@ const VCO = ({ id, audioContext }) => {
             </Grid>             
             <SpaceAround>
                 {
-                    module && R.pipe(
+                    R.pipe(
                         R.keys,
                         R.map(osc =>
                             <Port key={osc} label={<img width={25} src={require(`./${osc.toLowerCase()}.svg`)} alt={osc} />}
                                 labelPosition={LABEL_POSITIONS.BELOW} portId={osc} moduleId={id} portType='output' />)
-                    )(module.oscillators)
+                    )(OSCILLATOR_TYPES)
                 }
             </SpaceAround>
         </Body>
@@ -160,5 +169,11 @@ const VCO = ({ id, audioContext }) => {
 
 VCO.isBrowserSupported = typeof OscillatorNode !== 'undefined' && typeof ConstantSourceNode !== 'undefined';
 VCO.panelWidth = 10;
+VCO.title = `
+Standard VCO<br/>
+Voltage Controlled Oscillator<br/>
+It can produce four waveforms simultaneously:<br/>
+rectangle, sawtooth, triangle, and sine wave
+`
 
 export default VCO;

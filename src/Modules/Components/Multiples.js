@@ -7,7 +7,7 @@ import styles from './styles';
 import { useConnections } from '../lib';
 import { useAction } from 'storeHelpers';
 
-const Multiples = ({ id }) => {
+const Multiples = ({ id, viewMode }) => {
     const connections = useConnections(id);
     const registerInputs = useAction(actions.registerInputs);
     const registerOutputs = useAction(actions.registerOutputs);
@@ -15,10 +15,12 @@ const Multiples = ({ id }) => {
     const [groupsInput, setGroupsInput] = useState({ A: null, B: null });
 
     const module = useMemo(() => {
+        if (viewMode) return null;
+
         const groupA = { input: null, audioNode: null };
         const groupB = { input: null, audioNode: null };
         return { groupA, groupB };
-    }, []);
+    }, [viewMode]);
 
     useEffect(() => {
         if (!module) return;
@@ -92,4 +94,10 @@ const Multiples = ({ id }) => {
 
 Multiples.isBrowserSupported = typeof ConstantSourceNode !== 'undefined';
 Multiples.panelWidth = 4;
+Multiples.title = `
+Multiples<br/>
+Simple multi-connectors.<br/>
+Come as two four-fold multiples.
+`;
+
 export default Multiples;

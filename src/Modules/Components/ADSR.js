@@ -25,7 +25,7 @@ const convertKnobValueToTime = (value, range) => {
     }
 }
 
-const ADSR = ({ id, audioContext }) => {
+const ADSR = ({ id, audioContext, viewMode }) => {
     const connections = useConnections(id);
     const registerInputs = useAction(actions.registerInputs);
     const registerOutputs = useAction(actions.registerOutputs);
@@ -38,6 +38,8 @@ const ADSR = ({ id, audioContext }) => {
     const [range, setRange] = useState(TIME_RANGE.MEDIUM);
 
     const module = useMemo(() => {
+        if (viewMode) return null;
+
         const adsr = audioContext.createConstantSource();
         const inverese = audioContext.createConstantSource();
         const gate = audioContext.createGate();
@@ -47,7 +49,7 @@ const ADSR = ({ id, audioContext }) => {
         inverese.offset.value = 0;
         inverese.start();
         return { adsr, inverese, gate, retrigger };
-    }, [audioContext]);    
+    }, [audioContext, viewMode]);    
 
     const generateEnvelope = useCallback(value => {
         if (!module) return;
@@ -78,7 +80,7 @@ const ADSR = ({ id, audioContext }) => {
             invereseOffset.setValueAtTime(invereseOffset.value, now);
             invereseOffset.linearRampToValueAtTime(0, now + convRelease);
         }
-    }, [module, attack, decay, sustain, release, audioContext.currentTime, range]);
+    }, [module, attack, decay, sustain, release, audioContext, range]);
 
     const handleGateInChange = useCallback(value => {                
         setGate(value);
@@ -178,5 +180,13 @@ const ADSR = ({ id, audioContext }) => {
 
 ADSR.isBrowserSupported = typeof ConstantSourceNode !== 'undefined';
 ADSR.panelWidth = 8;
+ADSR.title = `
+ADSR<br/>
+Envelope Generator<br/>
+The shape of the envelope is governed by four parameters:<br/>
+Attack, Decay, Sustain and Release.<br/>
+As soon as the gate input receives sufficient voltage,<br/>
+the ADSR generates a variable voltage, changing in time, called an envelope.
+`;
 
 export default ADSR;

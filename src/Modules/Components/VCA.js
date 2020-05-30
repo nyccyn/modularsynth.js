@@ -6,7 +6,7 @@ import styles from './styles';
 import { useConnections } from '../lib';
 import { useAction } from 'storeHelpers';
 
-const VCA = ({ id, audioContext }) => {    
+const VCA = ({ id, audioContext, viewMode }) => {    
     const connections = useConnections(id);
     const registerInputs = useAction(actions.registerInputs);
     const registerOutputs = useAction(actions.registerOutputs);
@@ -18,6 +18,8 @@ const VCA = ({ id, audioContext }) => {
     const [out, setOut] = useState(1);
 
     const module = useMemo(() => {
+        if (viewMode) return null;
+
         const gain = audioContext.createGain();
         const gainVolume = audioContext.createGain();
         const input1Gain = audioContext.createGain();
@@ -38,7 +40,7 @@ const VCA = ({ id, audioContext }) => {
         gain.connect(gainVolume).connect(outputGain);
 
         return { input1Gain, input2Gain, cv2, cv2Gain, gainVolume, outputGain, gain };
-    }, [audioContext]);    
+    }, [audioContext, viewMode]);    
 
     useEffect(() => {
         if (!module) return;
@@ -146,5 +148,12 @@ const VCA = ({ id, audioContext }) => {
 
 VCA.isBrowserSupported = typeof GainNode !== 'undefined';
 VCA.panelWidth = 8;
+VCA.title = `
+Linear VCA<br/>
+Voltage Controlled Amplifiers<br/>
+The VCA has two audio inputs, each with an attenuator.<br/>
+They are amplified by an amount determined<br/>
+by the combination of the gain and the two CV controls.
+`;
 
 export default VCA;

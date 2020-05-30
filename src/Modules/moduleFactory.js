@@ -61,6 +61,7 @@ export const createModule = ({ type, id = undefined }) => {
     if (!module.Module.isBrowserSupported) return null;
 
     module.width = module.Module.panelWidth * ONE_HP_IN_PIXELS;
+    module.title = module.Module.title || type;
     moduleCounters[type]++;
     return module;
 };

@@ -20,7 +20,7 @@ const BLACK_KEYS_GRID_ROW = {
 // The ground oscillation frequency is 440, so we want to send 0 volts when keyboard is in A4
 const calculateNoteVolt = (noteIndex, octave) => octave - 5 + (noteIndex + 3) / 12;
 
-const Keyboard = ({ id, audioContext }) => {
+const Keyboard = ({ id, audioContext, viewMode }) => {
     const connections = useConnections(id);    
     const registerOutputs = useAction(actions.registerOutputs);
 
@@ -29,6 +29,8 @@ const Keyboard = ({ id, audioContext }) => {
     const [keyboardDown, setKeyboardDown] = useState(false);
 
     const module = useMemo(() => {
+        if (viewMode) return null;
+
         const gate = audioContext.createConstantSource();
         gate.offset.value = 0;
         gate.start();
@@ -37,7 +39,7 @@ const Keyboard = ({ id, audioContext }) => {
         cv.start();
 
         return { gate, cv };
-    }, [audioContext]);
+    }, [audioContext, viewMode]);
 
     useEffect(() => {
         if (!module) return;
@@ -75,6 +77,7 @@ const Keyboard = ({ id, audioContext }) => {
     }, [handleKeyUp]);
 
     useEffect(() => {
+        if (viewMode) return;
         document.onkeydown = handleKeyboardDown;
         document.onkeyup = handleKeyboardUp;
     }, [handleKeyboardDown, handleKeyboardUp]);
@@ -132,5 +135,10 @@ const Keyboard = ({ id, audioContext }) => {
 
 Keyboard.isBrowserSupported = typeof ConstantSourceNode !== 'undefined';
 Keyboard.panelWidth = 8;
+Keyboard.title = `
+Micro Keyboard<br/>
+1 octave micro keyboard and a five-position octave switch.<br/>
+Used to generate 1V/Octave CV signal.
+`;
 
 export default Keyboard;

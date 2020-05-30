@@ -8,7 +8,7 @@ import styles from './styles';
 
 const QUAL_MUL = 30;
 
-const VCFLowPass = ({ id, audioContext }) => {
+const VCFLowPass = ({ id, audioContext, viewMode }) => {
     const connections = useConnections(id);
     const registerInputs = useAction(actions.registerInputs);
     const registerOutputs = useAction(actions.registerOutputs);
@@ -19,6 +19,8 @@ const VCFLowPass = ({ id, audioContext }) => {
     const [cv3Gain, setCv3Gain] = useState(0.5);
 
     const module = useMemo(() => {
+        if (viewMode) return null;
+
         const vcf = audioContext.createBiquadFilter();
         const cv = audioContext.createVoltToHzConverter(440, 2);
         const cv2 = audioContext.createVoltToHzConverter(440, 2);
@@ -45,7 +47,7 @@ const VCFLowPass = ({ id, audioContext }) => {
         vcf.type = 'lowpass';
         vcf.Q.value = 0.5;
         return { vcf, cv, cv2, cv3, cv2Gain, cv3Gain };
-    }, [audioContext]);
+    }, [audioContext, viewMode]);
 
     useEffect(() => {
         if (!module) return;
@@ -147,5 +149,11 @@ const VCFLowPass = ({ id, audioContext }) => {
 
 VCFLowPass.isBrowserSupported = typeof BiquadFilterNode !== 'undefined';
 VCFLowPass.panelWidth = 8;
+VCFLowPass.title = `
+VCF<br/>
+Low-Pass Filter<br/>
+filters out the higher parts of the sound spectrum,<br/>
+and lets lower frequencies pass through.
+`;
 
 export default VCFLowPass;
