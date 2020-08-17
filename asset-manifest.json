@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/modularsynth.js/static/css/main.c0806046.chunk.css",
-    "main.js": "/modularsynth.js/static/js/main.f506eaca.chunk.js",
-    "main.js.map": "/modularsynth.js/static/js/main.f506eaca.chunk.js.map",
+    "main.css": "/modularsynth.js/static/css/main.9bd04023.chunk.css",
+    "main.js": "/modularsynth.js/static/js/main.82c7846f.chunk.js",
+    "main.js.map": "/modularsynth.js/static/js/main.82c7846f.chunk.js.map",
     "runtime-main.js": "/modularsynth.js/static/js/runtime-main.9b224b13.js",
     "runtime-main.js.map": "/modularsynth.js/static/js/runtime-main.9b224b13.js.map",
-    "static/js/2.f77c2c36.chunk.js": "/modularsynth.js/static/js/2.f77c2c36.chunk.js",
-    "static/js/2.f77c2c36.chunk.js.map": "/modularsynth.js/static/js/2.f77c2c36.chunk.js.map",
+    "static/js/2.2c5e51f6.chunk.js": "/modularsynth.js/static/js/2.2c5e51f6.chunk.js",
+    "static/js/2.2c5e51f6.chunk.js.map": "/modularsynth.js/static/js/2.2c5e51f6.chunk.js.map",
     "index.html": "/modularsynth.js/index.html",
-    "precache-manifest.08cd728443fab7719112beae03fda3b6.js": "/modularsynth.js/precache-manifest.08cd728443fab7719112beae03fda3b6.js",
+    "precache-manifest.3d0e4e8fd2b30cfaf5bc626f6f90eeca.js": "/modularsynth.js/precache-manifest.3d0e4e8fd2b30cfaf5bc626f6f90eeca.js",
     "service-worker.js": "/modularsynth.js/service-worker.js",
-    "static/css/main.c0806046.chunk.css.map": "/modularsynth.js/static/css/main.c0806046.chunk.css.map",
-    "static/js/2.f77c2c36.chunk.js.LICENSE.txt": "/modularsynth.js/static/js/2.f77c2c36.chunk.js.LICENSE.txt",
+    "static/css/main.9bd04023.chunk.css.map": "/modularsynth.js/static/css/main.9bd04023.chunk.css.map",
+    "static/js/2.2c5e51f6.chunk.js.LICENSE.txt": "/modularsynth.js/static/js/2.2c5e51f6.chunk.js.LICENSE.txt",
     "static/media/knob.svg": "/modularsynth.js/static/media/knob.23f417df.svg",
     "static/media/port.svg": "/modularsynth.js/static/media/port.1b33f6c1.svg",
     "static/media/pulse.svg": "/modularsynth.js/static/media/pulse.f9689bc2.svg",
@@ -24,8 +24,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.9b224b13.js",
-    "static/js/2.f77c2c36.chunk.js",
-    "static/css/main.c0806046.chunk.css",
-    "static/js/main.f506eaca.chunk.js"
+    "static/js/2.2c5e51f6.chunk.js",
+    "static/css/main.9bd04023.chunk.css",
+    "static/js/main.82c7846f.chunk.js"
   ]
 }

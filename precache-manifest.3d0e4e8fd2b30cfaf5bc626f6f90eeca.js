@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "31cd0453eb2b1b3ba0c2597c33abe0e3",
+    "revision": "52526c5ccd118c3c1edb8aaee063aaa9",
     "url": "/modularsynth.js/index.html"
   },
   {
-    "revision": "3cf104fb98f2e371f0ae",
-    "url": "/modularsynth.js/static/css/main.c0806046.chunk.css"
+    "revision": "260c27c9881013934e3d",
+    "url": "/modularsynth.js/static/css/main.9bd04023.chunk.css"
   },
   {
-    "revision": "7d23786530d89b7c2594",
-    "url": "/modularsynth.js/static/js/2.f77c2c36.chunk.js"
+    "revision": "188995cf3a9c34dceacf",
+    "url": "/modularsynth.js/static/js/2.2c5e51f6.chunk.js"
   },
   {
     "revision": "3453b8997016469371284a28c0e873e2",
-    "url": "/modularsynth.js/static/js/2.f77c2c36.chunk.js.LICENSE.txt"
+    "url": "/modularsynth.js/static/js/2.2c5e51f6.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "3cf104fb98f2e371f0ae",
-    "url": "/modularsynth.js/static/js/main.f506eaca.chunk.js"
+    "revision": "260c27c9881013934e3d",
+    "url": "/modularsynth.js/static/js/main.82c7846f.chunk.js"
   },
   {
     "revision": "3f73b3c011ef6638bc3b",
