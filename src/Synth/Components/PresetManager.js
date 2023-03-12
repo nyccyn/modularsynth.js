@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import * as actions from '../actions';
 import { useAction } from 'storeHelpers';
 import IconButton from 'Common/IconButton';
+import { digitalSelectStyle } from 'Common/selectStyles';
 
 const Container = styled.div`
     display: flex;
@@ -60,7 +61,10 @@ const PresetManager = () => {
     return <Container>
         <IconButton icon='file-download' title='Save' onClick={savePreset}/>
         <IconButton icon='file-upload' title='Load' onClick={handleLoadPreset}/>
-        <PresetSelect options={presetOptions} onChange={handlePresetChange} placeholder='Select Preset'/>       
+        <PresetSelect options={presetOptions} onChange={handlePresetChange} placeholder='Select Preset'
+            components={{ IndicatorSeparator:() => null }}
+            styles={digitalSelectStyle}
+        />       
     </Container>;
 };
 
