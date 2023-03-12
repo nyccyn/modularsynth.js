@@ -9,6 +9,7 @@ import VCFLowPass from './Components/VCFLowPass';
 import Multiples from './Components/Multiples';
 import LFO from './Components/LFO';
 import MidiToCv from './Components/MidiToCv';
+import Mixer from './Components/Mixer';
 
 export const MODULE_TYPE = {
     VCO: 'VCO',
@@ -20,7 +21,8 @@ export const MODULE_TYPE = {
     VCF_LOW_PASS: 'VCF_LOW_ASS',
     MULTIPLES: 'MULTIPLES',
     LFO: 'LFO',
-    MIDI_CV: 'MIDI_CV'
+    MIDI_CV: 'MIDI_CV',
+    MIXER: 'MIXER'
 };
 
 const moduleCounters = R.map(R.always(1))(MODULE_TYPE);
@@ -58,8 +60,11 @@ export const createModule = ({ type, id = undefined }) => {
             module.Module = LFO;
             break;
         case MODULE_TYPE.MIDI_CV:
-                module.Module = MidiToCv;
-                break;
+            module.Module = MidiToCv;
+            break;
+        case MODULE_TYPE.MIXER:
+            module.Module = Mixer;
+            break;
         default:
             throw new Error(`Cannot create module of type: ${type}`)
     }
