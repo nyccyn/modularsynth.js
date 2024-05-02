@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as actions from '../actions';
 import { MODULE_TYPE, createModule } from '../moduleFactory';
@@ -16,6 +16,7 @@ const Overlay = styled.div`
     display: flex;
     justify-content: center;
     padding-top: 20px;
+    flex-flow: wrap;
 `;
 
 const ModuleWrapper = styled.div`
@@ -55,7 +56,7 @@ const ModulePicker = ({ onClose }) => {
                 values,
                 map(type => {
                     const { width, title, Module } = createModule({ type });
-                    return <ModuleWrapper data-tip={title} key={type} onClick={e => handleAdd(e, type)}>
+                    return <ModuleWrapper data-tooltip-id="my-tooltip" data-tooltip-html={title} key={type} onClick={e => handleAdd(e, type)}>
                         <Panel viewMode
                             width={width}
                             height={370}>
@@ -65,7 +66,7 @@ const ModulePicker = ({ onClose }) => {
                 }
                 ))(MODULE_TYPE)
         }
-        <Tooltip place='right' multiline/>
+        <Tooltip id="my-tooltip" data-tooltip-place='right' multiline/>
     </Overlay>;
 };
 

@@ -123,33 +123,33 @@ const VCO = ({ id, audioContext, viewMode }) => {
     return <Container>
         <span style={{ marginBottom:4 }}>VCO</span>
         <Body>
-            <Grid gridTemplateRows='22px auto'>
-                <GridCell column={1} row={2}>
+            <Grid $gridTemplateRows='22px auto'>
+                <GridCell $column={1} $row={2}>
                     <Port portId='CV1' moduleId={id} portType='input' />
                 </GridCell>
-                <GridCell column={1} row={3}>
+                <GridCell $column={1} $row={3}>
                     <Port portId='CV2' moduleId={id} portType='input' />
                 </GridCell>
-                <GridCell column={1} row={4}>
+                <GridCell $column={1} $row={4}>
                     <Port portId='PWCV1' moduleId={id} portType='input' />
                 </GridCell>
-                <GridCell column={1} row={5}>
+                <GridCell $column={1} $row={5}>
                     <Port portId='PWCV2' moduleId={id} portType='input' />
                 </GridCell>
 
-                <GridCell column={2} row={1}>
+                <GridCell $column={2} $row={1}>
                     <Knob label='Range' labelPosition={LABEL_POSITIONS.RIGHT} min={-4} max={4} step={1} value={frequency} width={20} height={20} onChange={handleFrequencyChange} />
                 </GridCell>
-                <GridCell column='2/4' row={2}>
+                <GridCell $column='2/4' $row={2}>
                     <Knob label='Tune' min={-600} max={600} step={1} value={tune} width={30} height={30} onChange={handleTuneChange} />
                 </GridCell>
-                <GridCell column='2/4' row={3}>
+                <GridCell $column='2/4' $row={3}>
                     <Knob label='CV2' min={0} max={1} step={0.005} value={fmCv} width={30} height={30} onChange={handleFmCvChange} />
                 </GridCell>
-                <GridCell column='2/4' row={4}>
+                <GridCell $column='2/4' $row={4}>
                     <Knob label='PW' min={-1} max={1} step={0.001} value={pw} width={30} height={30} onChange={handlePwChange} />
                 </GridCell>
-                <GridCell column='2/4' row={5}>
+                <GridCell $column='2/4' $row={5}>
                     <Knob label='PW CV2' min={0} max={1} step={0.005} value={pwmCv2} width={30} height={30} onChange={handlePwmCvChange} />
                 </GridCell>
             </Grid>             

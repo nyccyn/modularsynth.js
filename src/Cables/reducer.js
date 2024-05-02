@@ -15,7 +15,7 @@ export default handleActions({
 
     [ActionTypes.MODIFY_CABLE]: (state, { portId, fromPoint, toPoint, toPortId }) => R.evolve({
         cables: R.evolve({
-            [portId]: R.merge(R.__, R.reject(R.isNil, ({ fromPoint, toPoint, toPortId })))
+            [portId]: R.mergeRight(R.__, R.reject(R.isNil, ({ fromPoint, toPoint, toPortId })))
         })
     })(state),
 

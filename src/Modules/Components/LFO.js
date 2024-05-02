@@ -96,19 +96,19 @@ const LFO = ({ id, audioContext, viewMode }) => {
 
     return <Container>
         <span>LFO</span>
-        <Grid marginTop={15}>
+        <Grid $marginTop={15}>
             {
                 R.pipe(
                     R.keys,
                     R.take(4),
                     mapIndexed((osc, i) =>
-                        <GridCell key={osc} column={1} row={i + 1}>
+                        <GridCell key={osc} $column={1} $row={i + 1}>
                             <Port label={''} portId={osc} moduleId={id} portType='output' />
                         </GridCell>
                     )
                 )(OSCILLATOR_TYPES)
             }
-            <GridCell column={1} row={5}>
+            <GridCell $column={1} $row={5}>
                 <Port portId={[OSCILLATOR_TYPES.Pulse]} moduleId={id} portType='output'
                     label={<img width={25} src={require(`./pulse.svg`)} alt='Pulse' />}
                     labelPosition={LABEL_POSITIONS.BELOW} />
@@ -120,20 +120,20 @@ const LFO = ({ id, audioContext, viewMode }) => {
                     R.take(4),
                     mapIndexed((osc, i) =>
                         [
-                            <GridCell key={osc + 'arrow'} column={2} row={i + 1}>
+                            <GridCell key={osc + 'arrow'} $column={2} $row={i + 1}>
                                 <FontAwesomeIcon size='xs' icon='arrow-left' />
                             </GridCell>,
-                            <GridCell key={osc} column={3} row={i + 1}>
+                            <GridCell key={osc} $column={3} $row={i + 1}>
                                 <img width={25} src={require(`./${osc.toLowerCase()}.svg`)} alt={osc} />
                             </GridCell>
                         ]
                     )
                 )(OSCILLATOR_TYPES)
             }
-            <GridCell column='2/4' row={5}>
+            <GridCell $column='2/4' $row={5}>
                 <Knob label='Frequ.' min={-4} max={4} step={0.001} value={frequency} width={30} height={30} onChange={setFrequency} />
             </GridCell>
-            <GridCell column='1/4' row={6}>
+            <GridCell $column='1/4' $row={6}>
                 <Switch value={range}
                     onChange={setRange}
                     options={[

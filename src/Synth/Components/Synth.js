@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as R from 'ramda';
@@ -12,6 +12,7 @@ import Panel from 'Common/Panel';
 import createPulseOscillator from '../helpers/createPulseOscillator';
 import createVoltToHzConverter from '../helpers/createVoltToHzConverter';
 import createGate from '../helpers/createGate';
+import createClockProcessorNode from '../helpers/createClockProcessorNode';
 import { useAction } from 'storeHelpers';
 import rackBg from './rack_bg.svg';
 import IconButton from 'Common/IconButton';
@@ -25,10 +26,11 @@ const Container = styled.div`
 const SynthContainer = styled.div`
     overflow-x: scroll;
     position: relative;
+    height: 100%;
 `;
 
 const Rack = styled.div`
-    width: ${({ scrollLeft }) => `calc(100% + ${scrollLeft}px)`};
+    width: ${({ $scrollLeft }) => `calc(100% + ${$scrollLeft}px)`};
     position: relative;
     user-select: none;
     background-size: contain;
@@ -45,11 +47,11 @@ const TopBar = styled.div`
     padding-left: 30px;
 `;
 
-const Synth = () => {
-    const modules = useSelector(R.pipe(R.path(['modules', 'modules']), R.values));
-    const racks = useSelector(R.path(['modules', 'racks']));
-    const startingPort = useSelector(R.path(['modules', 'startingPort']));
-    const audioContextInitiliazed = useSelector(R.path(['modules', 'audioContextInitiliazed']));
+const Synth = () => {    
+    const modulesState = useSelector(({ modules: { modules } }) => modules);
+    const modules = useMemo(() => Object.values(modulesState), [modulesState]);
+    const racks = useSelector(({ modules: { racks } }) => racks);
+    const startingPort = useSelector(({ modules: { startingPort } }) => startingPort);
 
     const unsetStartingPort = useAction(modulesActions.unsetStartingPort);
     const moveModule = useAction(modulesActions.moveModule);
@@ -67,16 +69,20 @@ const Synth = () => {
         window.onscroll = e => setScrollTop(window.scrollY);
     }, []);
 
-    useEffect(() => {
+    const initAudioContext = useCallback(async () => {
         if (audioContext) return;
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const newAudioContext = new AudioContext();
+        const newAudioContext = new AudioContext();  
+   
+        await newAudioContext.audioWorklet.addModule('worklet/clock-processor.js');
+        await newAudioContext.audioWorklet.addModule('worklet/gate-processor.js');
         newAudioContext.createPulseOscillator = createPulseOscillator;
         newAudioContext.createVoltToHzConverter = createVoltToHzConverter;
         newAudioContext.createGate = createGate;
+        newAudioContext.createClock = createClockProcessorNode;
         setAudioContext(newAudioContext);
-    }, [audioContext, audioContextInitiliazed]);
+    }, [audioContext])
 
     const moveCable = useCallback((e) => {
         if (!startingPort) return;
@@ -112,17 +118,22 @@ const Synth = () => {
         setScrollLeft(e.target.scrollLeft);
     }, []);
 
-    return <Container onMouseUp={handleMouseUp} onMouseMove={handleMouseMove} onScroll={handleRackScroll}> 
+    const handleAddModule = useCallback(async () => {
+        await initAudioContext();
+        setDisplayPicker(true);        
+    }, [setDisplayPicker, initAudioContext])
+
+    return <Container onMouseUp={handleMouseUp} onMouseMove={handleMouseMove} onScroll={handleRackScroll}>         
         { displayPicker && <ModulePicker onClose={() => setDisplayPicker(false)}/> }       
-        <TopBar>
-            <IconButton icon='plus-circle' title='Add Module' onClick={() => setDisplayPicker(true)} />
-            <PresetManager/>
+        <TopBar>            
+            <IconButton icon='plus-circle' title='Add Module' onClick={handleAddModule} />
+            <PresetManager initAudioContext={initAudioContext}/>
         </TopBar>        
         <SynthContainer>            
             {
                 R.pipe(
                     R.range(0),
-                    R.map(rackId => <Rack key={rackId} scrollLeft={scrollLeft} onMouseEnter={() => setActiveRackId(rackId)} />)
+                    R.map(rackId => <Rack key={rackId} $scrollLeft={scrollLeft} onMouseEnter={() => setActiveRackId(rackId)} />)
                 )(racks)
             }
             {

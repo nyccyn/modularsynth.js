@@ -126,43 +126,43 @@ const ADSR = ({ id, audioContext, viewMode }) => {
     return <Container>
         <span>ADSR</span>
         <Grid>
-            <GridCell column={1} row={1}>
+            <GridCell $column={1} $row={1}>
                 <Port portId='Gate' connections={connections} moduleId={id} portType='input' />
             </GridCell>
-            <GridCell column={1} row={2}>    
+            <GridCell $column={1} $row={2}>    
                 <Port label='Retrig.' portId='Retrigger' connections={connections} moduleId={id} portType='input' />            
             </GridCell>
-            <GridCell column={1} row={3}>
+            <GridCell $column={1} $row={3}>
                 <Port label='Output' portId='Out1' connections={connections} moduleId={id} portType='output' />
             </GridCell>
-            <GridCell column={1} row={4}>
+            <GridCell $column={1} $row={4}>
                 <Port label='Output' portId='Out2' connections={connections} moduleId={id} portType='output' />
             </GridCell>
-            <GridCell column={1} row={5}>
+            <GridCell $column={1} $row={5}>
                 <Port label='Inverse Output' portId='Inverse' connections={connections} moduleId={id} portType='output' />
             </GridCell>
 
-            <GridCell column={2} row={1}>
+            <GridCell $column={2} $row={1}>
                 <Knob min={0} max={1} step={0.001} value={attack} label='A'
                     onChange={setAttack}
                     width={30} height={30} />
             </GridCell>
-            <GridCell column={2} row={2}>
+            <GridCell $column={2} $row={2}>
                 <Knob min={0} max={1} step={0.001} value={decay} label='D'
                     onChange={setDecay}
                     width={30} height={30} />
             </GridCell>
-            <GridCell column={2} row={3}>
+            <GridCell $column={2} $row={3}>
                 <Knob min={0} max={1} step={0.01} value={sustain} label='S'
                     onChange={setSustain}
                     width={30} height={30} />
             </GridCell>
-            <GridCell column={2} row={4}>
+            <GridCell $column={2} $row={4}>
                 <Knob min={0} max={1} step={0.001} value={release} label='R'
                     onChange={setRelease}
                     width={30} height={30} />
             </GridCell>
-            <GridCell column={2} row={5}>                
+            <GridCell $column={2} $row={5}>                
                 <Switch value={range}
                         onChange={setRange}
                         options={[

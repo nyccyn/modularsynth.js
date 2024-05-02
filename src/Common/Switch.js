@@ -4,17 +4,17 @@ import styled, { css } from 'styled-components';
 
 const Container = styled.div`
     display: flex;
-    flex-direction: ${({ vertical }) => vertical ? 'row': 'column' };
+    flex-direction: ${({ $vertical }) => $vertical ? 'row': 'column' };
     align-items: center;
     justify-content: center;
 `;
 
 const LabelsContainer = styled.div`
     display: flex;
-    flex-direction: ${({ vertical }) => vertical ? 'column': 'row' };
+    flex-direction: ${({ $vertical }) => $vertical ? 'column': 'row' };
     justify-content: space-between;
-    ${({ vertical, size }) =>
-        vertical ?
+    ${({ $vertical, size }) =>
+        $vertical ?
         css`height: ${size + 10}px;` :
         css`width: ${size + 10}px;`
     }
@@ -27,26 +27,26 @@ const Label = styled.span`
 
 const HandlerContainer = styled.div`
     background-color: black;
-    width: ${({ vertical, size }) => vertical ? 10 : size}px;
-    height: ${({ vertical, size }) => vertical ? size : 10}px;
+    width: ${({ $vertical, size }) => $vertical ? 10 : size}px;
+    height: ${({ $vertical, size }) => $vertical ? size : 10}px;
     cursor: pointer;
     position: relative;
 `;
 
 const Handler = styled.div`        
-    width: ${({ vertical, handlerSize }) => vertical ? 10 : handlerSize}px;
-    height: ${({ vertical, handlerSize }) => vertical ? handlerSize : 10}px;
+    width: ${({ $vertical, $handlerSize }) => $vertical ? 10 : $handlerSize}px;
+    height: ${({ $vertical, $handlerSize }) => $vertical ? $handlerSize : 10}px;
     background-color: gray;
     position: absolute;
-    transition: ${({ vertical }) => vertical ? 'top': 'left' } .2s;
-    ${({ vertical, position }) =>
-        vertical ?
-        css`top: ${position}px;` :
-        css`left: ${position}px;`
+    transition: ${({ $vertical }) => $vertical ? 'top': 'left' } .2s;
+    ${({ $vertical, $position }) =>
+        $vertical ?
+        css`top: ${$position}px;` :
+        css`left: ${$position}px;`
     }
 `;
 
-const Switch = ({ value, onChange, options, vertical = false, size = 30, handlerSize = 5 }) => {
+const Switch = ({ value, onChange, options, vertical = false, labelSize, size = 30, handlerSize = 5 }) => {
     
     const [position, setPosition] = useState(0);
     const [isMoving, setIsMoving] = useState(false);
@@ -110,12 +110,12 @@ const Switch = ({ value, onChange, options, vertical = false, size = 30, handler
         };
     }, [handleMouseUp, handleMouseMove]);
     
-    return <Container vertical={vertical}>
-        <LabelsContainer size={size} vertical={vertical}>
+    return <Container $vertical={vertical}>
+        <LabelsContainer size={labelSize || size} $vertical={vertical}>
             { options.map(({ value, label }) => <Label key={value}>{label}</Label>) }
         </LabelsContainer>        
-        <HandlerContainer size={size} vertical={vertical} onMouseDown={handleSpaceMouseDown} ref={ref}>
-                <Handler position={position} vertical={vertical} handlerSize={handlerSize} onMouseDown={handleHandlerMouseDown}/>            
+        <HandlerContainer size={size} $vertical={vertical} onMouseDown={handleSpaceMouseDown} ref={ref}>
+                <Handler $position={position} $vertical={vertical} $handlerSize={handlerSize} onMouseDown={handleHandlerMouseDown}/>            
         </HandlerContainer>
     </Container>;
 }

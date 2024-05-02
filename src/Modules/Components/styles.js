@@ -22,16 +22,17 @@ export const SpaceAround = styled.div`
 export const Grid = styled.div`
     display: grid;
     flex: 1;
-    grid-template-rows: ${prop('gridTemplateRows')};
-    margin-top: ${prop('marginTop')}px;
-    margin-bottom: ${prop('marginBottom')}px;
-    margin-left: ${prop('marginLeft')}px;
-    margin-right: ${prop('marginRight')}px;
+    grid-template-rows: ${prop('$gridTemplateRows')};
+    grid-template-columns: ${prop('$gridTemplateColumns')};
+    margin-top: ${prop('$marginTop')}px;
+    margin-bottom: ${prop('$marginBottom')}px;
+    margin-left: ${prop('$marginLeft')}px;
+    margin-right: ${prop('$marginRight')}px;
 `;
 
 export const GridCell = styled.div`
-    grid-column: ${prop('column')};
-    grid-row: ${prop('row')};
+    grid-column: ${prop('$column')};
+    grid-row: ${prop('$row')};
 `;
 
 export default {

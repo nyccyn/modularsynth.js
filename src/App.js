@@ -12,7 +12,28 @@ library.add(faPlusCircle);
 library.add(faFileUpload);
 library.add(faFileDownload);
 
-class App extends Component {
+
+// await atx.audioWorklet.addModule("worklet/clock-processor.js");
+
+class App extends Component { 
+    constructor() {
+        super();
+        // this.actx = new (window.AudioContext || window.webkitAudioContext)();
+        // this.loadModule();
+    }
+
+    // async loadModule() {
+    //     const {  actx } = this;   
+    //     try {
+    //       await actx.audioWorklet.addModule(`worklet/clock-processor.js`);
+          
+          
+    //     } catch(e) {
+          
+    //       console.log(`Failed to load module`, e);
+    //     }
+    //   }
+
     render()
     {
         return (

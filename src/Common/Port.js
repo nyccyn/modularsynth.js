@@ -9,10 +9,11 @@ import './Port.css';
 import { useAction } from '../storeHelpers';
 import LABEL_POSITIONS from './LabelPositions';
 
-const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, portType }) => {
-    const startingPort = useSelector(R.path(['modules', 'startingPort']));
-    const connection = useSelector(R.path(['modules', 'connections', moduleId, portId]));
-    const cables = useSelector(R.pipe(R.path(['cables', 'cables']), R.values));
+const Port = ({ label, labelStyle = {}, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, portType }) => {    
+    const startingPort = useSelector(({ modules: { startingPort } }) => startingPort);    
+    const connection = useSelector(({ modules: { connections } }) => connections[moduleId] ? connections[moduleId][portId] : null);
+    const cablesState = useSelector(({ cables: { cables } }) => cables);
+    const cables = useMemo(() => Object.values(cablesState), [cablesState]);
 
     const connectModules = useAction(modulesActions.connectModules);
     const disconnectModule = useAction(modulesActions.disconnectModule);
@@ -99,18 +100,19 @@ const Port = ({ label, labelPosition = LABEL_POSITIONS.ABOVE, portId, moduleId, 
             }
         });
     };
+    
+    const labelComp = useMemo(() => <span style={labelStyle}>{R.isNil(label) ? portId : label}</span>, [label, portId, labelStyle]);
 
-    const portLabel = R.isNil(label) ? portId : label;
     return <div className={cx('port', { disabled: startingPort && startingPort.portType === portType })}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
     >
-        {labelPosition === LABEL_POSITIONS.ABOVE && portLabel}
+        {labelPosition === LABEL_POSITIONS.ABOVE && labelComp}
         <img id={fullPortId} height="30" width="30" ref={imgElem}
             onMouseEnter={() => changeOverPort(fullPortId)}
             onMouseLeave={() => changeOverPort(null)}
-            onMouseDown={e => e.preventDefault()} src={require('./port.svg')} alt={fullPortId} />
-        {labelPosition === LABEL_POSITIONS.BELOW && portLabel}
+            onMouseDown={e => e.preventDefault()} src={require('./port.svg').default} alt={fullPortId} />
+        {labelPosition === LABEL_POSITIONS.BELOW && labelComp}
     </div>;
 };
 

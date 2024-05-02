@@ -24,7 +24,7 @@ const PresetSelect = styled(Select)`
     max-width: 200px;
 `;
 
-const PresetManager = () => {
+const PresetManager = ({ initAudioContext }) => {
     const isDirty = useSelector(R.path(['rack', 'isDirty']));
     const presetLoading = useSelector(R.path(['rack', 'presetLoading']));
 
@@ -46,17 +46,19 @@ const PresetManager = () => {
         )(defaultPresets);
     }, []);
 
-    const handlePresetChange = useCallback(({ value }) => {
+    const handlePresetChange = useCallback(async ({ value }) => {
+        await initAudioContext();
         setPreset(value);
         loadPreset(defaultPresets[value]);
-    }, [loadPreset])
+    }, [loadPreset, initAudioContext])
 
-    const handleLoadPreset = useCallback(() => {
+    const handleLoadPreset = useCallback(async () => {
+        await initAudioContext();
         const preset = localStorage.getItem('preset')
         if (preset) {
             loadPreset(JSON.parse(preset));
         }
-    }, [loadPreset]);
+    }, [loadPreset, initAudioContext]);
 
     return <Container>
         <IconButton icon='file-download' title='Save' onClick={savePreset}/>
