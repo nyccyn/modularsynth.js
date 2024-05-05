@@ -1,31 +1,22 @@
 {
   "files": {
-    "main.css": "/modularsynth.js/static/css/main.9bd04023.chunk.css",
-    "main.js": "/modularsynth.js/static/js/main.82c7846f.chunk.js",
-    "main.js.map": "/modularsynth.js/static/js/main.82c7846f.chunk.js.map",
-    "runtime-main.js": "/modularsynth.js/static/js/runtime-main.9b224b13.js",
-    "runtime-main.js.map": "/modularsynth.js/static/js/runtime-main.9b224b13.js.map",
-    "static/js/2.2c5e51f6.chunk.js": "/modularsynth.js/static/js/2.2c5e51f6.chunk.js",
-    "static/js/2.2c5e51f6.chunk.js.map": "/modularsynth.js/static/js/2.2c5e51f6.chunk.js.map",
+    "main.css": "/modularsynth.js/static/css/main.d2e5d2a3.css",
+    "main.js": "/modularsynth.js/static/js/main.dc812c2c.js",
     "index.html": "/modularsynth.js/index.html",
-    "precache-manifest.3d0e4e8fd2b30cfaf5bc626f6f90eeca.js": "/modularsynth.js/precache-manifest.3d0e4e8fd2b30cfaf5bc626f6f90eeca.js",
-    "service-worker.js": "/modularsynth.js/service-worker.js",
-    "static/css/main.9bd04023.chunk.css.map": "/modularsynth.js/static/css/main.9bd04023.chunk.css.map",
-    "static/js/2.2c5e51f6.chunk.js.LICENSE.txt": "/modularsynth.js/static/js/2.2c5e51f6.chunk.js.LICENSE.txt",
-    "static/media/knob.svg": "/modularsynth.js/static/media/knob.23f417df.svg",
-    "static/media/port.svg": "/modularsynth.js/static/media/port.1b33f6c1.svg",
-    "static/media/pulse.svg": "/modularsynth.js/static/media/pulse.f9689bc2.svg",
-    "static/media/Rack.css": "/modularsynth.js/static/media/rack_bg.cd50a535.svg",
-    "static/media/revsawtooth.svg": "/modularsynth.js/static/media/revsawtooth.e22804aa.svg",
-    "static/media/sawtooth.svg": "/modularsynth.js/static/media/sawtooth.de511017.svg",
-    "static/media/screw_header.svg": "/modularsynth.js/static/media/screw_header.2c2805d6.svg",
-    "static/media/sine.svg": "/modularsynth.js/static/media/sine.e1994103.svg",
-    "static/media/triangle.svg": "/modularsynth.js/static/media/triangle.87d20148.svg"
+    "static/media/rack_bg.svg": "/modularsynth.js/static/media/rack_bg.3f1d409ab9d07c35922eee2e8317c9ca.svg",
+    "static/media/port.svg": "/modularsynth.js/static/media/port.8b3613146d6de1a84016204473fe6cfb.svg",
+    "static/media/knob.svg": "/modularsynth.js/static/media/knob.b0f8668574cf63aadcf2d40c5734b850.svg",
+    "static/media/screw_header.svg": "/modularsynth.js/static/media/screw_header.a4bb809c27518202baab5dc78ac676e6.svg",
+    "static/media/pulse.svg": "/modularsynth.js/static/media/pulse.15525c6e52caccf112a6af7e14617276.svg",
+    "static/media/sine.svg": "/modularsynth.js/static/media/sine.ef142a147c624641cfda.svg",
+    "static/media/revsawtooth.svg": "/modularsynth.js/static/media/revsawtooth.dc82dc008900573ea117.svg",
+    "static/media/sawtooth.svg": "/modularsynth.js/static/media/sawtooth.1033f2d8f96aec36a8b6.svg",
+    "static/media/triangle.svg": "/modularsynth.js/static/media/triangle.4bc09e3ba321da89f9c2.svg",
+    "main.d2e5d2a3.css.map": "/modularsynth.js/static/css/main.d2e5d2a3.css.map",
+    "main.dc812c2c.js.map": "/modularsynth.js/static/js/main.dc812c2c.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.9b224b13.js",
-    "static/js/2.2c5e51f6.chunk.js",
-    "static/css/main.9bd04023.chunk.css",
-    "static/js/main.82c7846f.chunk.js"
+    "static/css/main.d2e5d2a3.css",
+    "static/js/main.dc812c2c.js"
   ]
 }
