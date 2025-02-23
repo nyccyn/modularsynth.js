@@ -137,7 +137,7 @@ const Synth = () => {
                 )(racks)
             }
             {
-                audioContext && modules.map(({ Module, width, left, id, rackId }) =>
+                audioContext && modules.map(({ Module, width, left, id, rackId, ...otherProps }) =>
                     <Panel key={id} top={rackId * RACK_HEIGHT}
                         moduleId={id}
                         setDragging={handleDragging(id)}
@@ -145,7 +145,7 @@ const Synth = () => {
                         width={width}
                         height={RACK_HEIGHT}                        
                         left={left}>                            
-                        <Module id={id} audioContext={audioContext}/>
+                        <Module id={id} audioContext={audioContext} {...otherProps}/>
                     </Panel>
                 )
             }

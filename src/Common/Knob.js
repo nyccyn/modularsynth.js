@@ -35,10 +35,13 @@ const Knob = ({ onChange, max, min, value, step, label, labelStyle = {}, labelPo
 
     const handleMouseDown = useCallback((e) => {
         e.stopPropagation();
+        e.preventDefault();
         setIsMoving(true);
     }, []);
 
-    const handleMouseUp = useCallback(() => {
+    const handleMouseUp = useCallback((e) => {
+        e.stopPropagation();
+        e.preventDefault();
         setIsMoving(false);
     }, []);
 

@@ -61,8 +61,8 @@ const PresetManager = ({ initAudioContext }) => {
     }, [loadPreset, initAudioContext]);
 
     return <Container>
-        <IconButton icon='file-download' title='Save' onClick={savePreset}/>
-        <IconButton icon='file-upload' title='Load' onClick={handleLoadPreset}/>
+        {/* <IconButton icon='file-download' title='Save' onClick={savePreset}/>
+        <IconButton icon='file-upload' title='Load' onClick={handleLoadPreset}/> */}
         <PresetSelect options={presetOptions} onChange={handlePresetChange} placeholder='Select Preset'
             components={{ IndicatorSeparator:() => null }}
             styles={digitalSelectStyle}

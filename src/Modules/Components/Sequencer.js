@@ -53,7 +53,7 @@ class SequencerModule {
 
     #audioContext;
     #playingStep = 0;
-    #currentChannel;
+    #currentChannel = 0;
     #playing;
 
     constructor(audioContext, onStepChanged) {
@@ -79,7 +79,7 @@ class SequencerModule {
         this.onStepChanged = onStepChanged;
     }
 
-    #play() {
+    #play() {        
         const maxSteps = this.channelMode === CHANNEL_MODES.PARALLEL || this.#currentChannel === 1 ?
             this.stepNumber : MAX_STEPS;
         const isLastStep = this.#playingStep >= maxSteps;
@@ -148,18 +148,18 @@ const Led = ({ on, label }) =>
         <div style={{ backgroundColor: on ? 'red' : 'grey', width: 5, height: 5, borderRadius: 50 }} />
     </div>;
 
-const Sequencer = ({ id, audioContext, viewMode }) => {
+const Sequencer = ({ id, audioContext, viewMode, ...otherProps }) => {
     const connections = useConnections(id);
     const registerInputs = useAction(actions.registerInputs);
     const registerOutputs = useAction(actions.registerOutputs);
 
-    const [channelFrequencies, setChannelFrequencies] = useState(R.repeat(R.repeat(0, 8), 2));
+    const [channelFrequencies, setChannelFrequencies] = useState(otherProps.channelFrequencies || R.repeat(R.repeat(0, 8), 2));
     const [tempo, setTempo] = useState(-2.5);
     const [delay, setDelay] = useState(0);
     const [gateTime, setGateTime] = useState(5);
-    const [stepNumber, setStepNumber] = useState(2);
+    const [stepNumber, setStepNumber] = useState(otherProps.stepNumber || 2);
     const [stepMode, setStepMode] = useState(STEP_MODES.REPEAT);
-    const [channelMode, setChannelMode] = useState(CHANNEL_MODES.PARALLEL);
+    const [channelMode, setChannelMode] = useState(otherProps.channelMode || CHANNEL_MODES.PARALLEL);
     const [playingStep, setPlayingStep] = useState(1);
 
     const module = useMemo(() => {
@@ -169,7 +169,7 @@ const Sequencer = ({ id, audioContext, viewMode }) => {
     }, [audioContext, viewMode, setPlayingStep]);
 
     useEffect(() => {
-        if (!module) return;
+        if (!module) return;        
         module.channelFrequencies = channelFrequencies;
     }, [module, channelFrequencies]);
 

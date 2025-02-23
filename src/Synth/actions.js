@@ -37,12 +37,12 @@ const connectModulesAndCables = R.curry((dispatch, connection) => {
 export const loadPreset = preset => (dispatch, getState) => {
     dispatch({ type: LOAD_PRESET_START });
     dispatch(removeAllModules());
-    setTimeout(checkIfAllModulesRemoves(dispatch, getState, preset), 10);
+    setTimeout(checkIfAllModulesRemoved(dispatch, getState, preset), 10);
 };
 
-const checkIfAllModulesRemoves = (dispatch, getState, preset) => () => {
+const checkIfAllModulesRemoved = (dispatch, getState, preset) => () => {
     if (!R.isEmpty(getState().modules.modules)) {
-        setTimeout(checkIfAllModulesRemoves(dispatch, getState, preset), 10);
+        setTimeout(checkIfAllModulesRemoved(dispatch, getState, preset), 10);
     }
     else {
         R.forEach(module => dispatch(addModule(module)))(preset.modules);

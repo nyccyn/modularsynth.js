@@ -37,15 +37,15 @@ const findFreeSpace = (modules, width) => {
 };
 
 export default handleActions({
-    [ActionTypes.ADD_MODULE]: (state, { module: { type, id, rackId = 0, left } }) => {
-        const newModule = createModule({ type: type, id });
+    [ActionTypes.ADD_MODULE]: (state, { module: { type, id, rackId = 0, left, ...otherProps } }) => {
+        const newModule = createModule({ type: type, id, ...otherProps });
         if (!newModule) {
             window.alert(`Your browser doesn't support this module: ${type}`);
             return state;
         }
 
         newModule.left =  left || findFreeSpace(state.modules, newModule.width);;
-        newModule.rackId = rackId;
+        newModule.rackId = rackId;        
         return R.evolve({
             audioContextInitiliazed: R.T,
             modules: R.assoc(newModule.id, newModule),
