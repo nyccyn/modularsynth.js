@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/modularsynth.js/static/css/main.d2e5d2a3.css",
-    "main.js": "/modularsynth.js/static/js/main.dc812c2c.js",
+    "main.js": "/modularsynth.js/static/js/main.05a7f617.js",
     "index.html": "/modularsynth.js/index.html",
     "static/media/rack_bg.svg": "/modularsynth.js/static/media/rack_bg.3f1d409ab9d07c35922eee2e8317c9ca.svg",
     "static/media/port.svg": "/modularsynth.js/static/media/port.8b3613146d6de1a84016204473fe6cfb.svg",
@@ -13,10 +13,10 @@
     "static/media/sawtooth.svg": "/modularsynth.js/static/media/sawtooth.1033f2d8f96aec36a8b6.svg",
     "static/media/triangle.svg": "/modularsynth.js/static/media/triangle.4bc09e3ba321da89f9c2.svg",
     "main.d2e5d2a3.css.map": "/modularsynth.js/static/css/main.d2e5d2a3.css.map",
-    "main.dc812c2c.js.map": "/modularsynth.js/static/js/main.dc812c2c.js.map"
+    "main.05a7f617.js.map": "/modularsynth.js/static/js/main.05a7f617.js.map"
   },
   "entrypoints": [
     "static/css/main.d2e5d2a3.css",
-    "static/js/main.dc812c2c.js"
+    "static/js/main.05a7f617.js"
   ]
 }
